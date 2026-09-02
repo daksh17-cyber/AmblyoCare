@@ -322,7 +322,8 @@
     <div class="research-note">
       AmblyoCare is a computer-vision research prototype. It is not a
       medical device and does not replace clinical guidance from an eye-care
-      professional.
+      professional. Eye occlusion detection is experimental and has not been
+      clinically validated.
     </div>
   </section>
 
@@ -590,7 +591,10 @@
 <!-- CORRECTION OVERLAY -->
 <div id="correctionOverlay" class="hidden">
   <div class="overlayBox">
-    <h1>Let's Fix Your Position</h1>
+
+    <h1 id="overlayTitle">
+      Let's Fix Your Position
+    </h1>
 
     <p id="overlayMessage">
       Please move back to the target distance and position your face correctly.
@@ -599,6 +603,7 @@
     <p>
       Monitoring will continue automatically once the issue is corrected.
     </p>
+
   </div>
 </div>
 
@@ -697,6 +702,9 @@ const progressText =
 
 const correctionOverlay =
   document.getElementById("correctionOverlay");
+
+const overlayTitle =
+  document.getElementById("overlayTitle");
 
 const overlayMessage =
   document.getElementById("overlayMessage");
@@ -966,35 +974,23 @@ let eyeBaselineCapturing = false;
 
 
 /*
-  IMPORTANT CAMERA MIRROR FIX
+  IMPORTANT:
 
-  The video preview is mirrored with:
+  The actual eye-region detector below is intentionally kept
+  in its original detector-side configuration.
 
-      transform: scaleX(-1)
+  We do NOT change the MediaPipe/pixel regions themselves.
 
-  The pixel/MediaPipe eye regions themselves are still
-  associated with the opposite displayed side.
+  Because the selfie camera preview is mirrored, the detector
+  result is translated into the person's anatomical eye only
+  when we display it or use it for the therapy warning.
 
-  Therefore we explicitly map the detected regions to
-  anatomical left/right labels.
+  Detector region "left" corresponds to the person's RIGHT eye.
+  Detector region "right" corresponds to the person's LEFT eye.
 
-  Detector "left" -> person's right eye
-  Detector "right" -> person's left eye
+  This keeps the previously working eye-analysis algorithm
+  unchanged while correcting the displayed direction.
 */
-
-function detectorSideForAnatomicalSide(
-  anatomicalSide
-) {
-
-  if (
-    anatomicalSide === "left"
-  ) {
-
-    return "right";
-  }
-
-  return "left";
-}
 
 
 /* =========================================================
@@ -2148,58 +2144,78 @@ function eyeStateText(
 
 
 /*
-  Returns the anatomical eye states.
+  This is the ONLY place where the mirror correction is
+  applied.
 
-  This function is also where the camera mirror correction
-  is applied.
+  Original detector-side result:
 
-  The detector regions are deliberately mapped:
+      detector "left"  = person's RIGHT eye
+      detector "right" = person's LEFT eye
 
-      anatomical LEFT  <- detector RIGHT
-      anatomical RIGHT <- detector LEFT
+  Therefore:
+
+      displayed LEFT  = detector "right"
+      displayed RIGHT = detector "left"
+
+  The actual eye-analysis algorithm itself is unchanged.
 */
 
 function getAnatomicalEyeStates(
   landmarks
 ) {
 
-  const detectorForLeft =
-    detectorSideForAnatomicalSide(
+  const detectorLeftResult =
+    evaluateEyeWithPixels(
+      landmarks,
       "left"
     );
 
-  const detectorForRight =
-    detectorSideForAnatomicalSide(
+  const detectorRightResult =
+    evaluateEyeWithPixels(
+      landmarks,
       "right"
     );
 
-  const leftResult =
-    evaluateEyeWithPixels(
-      landmarks,
-      detectorForLeft
-    );
 
-  const rightResult =
-    evaluateEyeWithPixels(
-      landmarks,
-      detectorForRight
-    );
+  /*
+    IMPORTANT:
 
-  const leftState =
+    Keep the smoothing histories attached to the
+    detector-side streams exactly as before.
+
+    We only rename the final results anatomically.
+  */
+
+  const detectorLeftState =
     smoothEyeState(
       leftEyeHistory,
-      leftResult.state
+      detectorLeftResult.state
     );
 
-  const rightState =
+  const detectorRightState =
     smoothEyeState(
       rightEyeHistory,
-      rightResult.state
+      detectorRightResult.state
     );
 
+
   return {
-    left: leftState,
-    right: rightState
+
+    /*
+      Detector right corresponds to the person's
+      anatomical LEFT eye.
+    */
+
+    left:
+      detectorRightState,
+
+    /*
+      Detector left corresponds to the person's
+      anatomical RIGHT eye.
+    */
+
+    right:
+      detectorLeftState
   };
 }
 
@@ -2323,14 +2339,12 @@ function updateEyeDisplay(
       Treatment = Left
       Correct patch location = Right
 
-  If the LEFT eye is detected as occluded, the patch is
-  probably on the wrong eye.
-
       Treatment = Right
       Correct patch location = Left
 
-  If the non-treatment eye is occluded, that is the expected
-  configuration and should NOT trigger the warning.
+  The warning is based on the ANATOMICAL eye states returned
+  by getAnatomicalEyeStates(), so the mirror correction is
+  already accounted for.
 */
 
 function getWrongEyeOcclusion(
@@ -2344,17 +2358,17 @@ function getWrongEyeOcclusion(
   const treatmentEye =
     therapyProfile.treatmentEye;
 
-  const nonTreatmentEye =
+  const correctPatchEye =
     treatmentEye === "left"
       ? "right"
       : "left";
 
-  /*
-    The treatment eye should be visible.
 
-    If the treatment eye is the one showing persistent
-    possible occlusion, this is the condition we want
-    to warn about.
+  /*
+    The treatment eye should remain visible.
+
+    If that eye is showing persistent possible occlusion,
+    trigger the experimental wrong-eye warning.
   */
 
   if (
@@ -2368,7 +2382,7 @@ function getWrongEyeOcclusion(
         treatmentEye,
 
       correctPatchEye:
-        nonTreatmentEye
+        correctPatchEye
     };
   }
 
@@ -2431,6 +2445,21 @@ captureEyeBaselineButton.addEventListener(
       "status warning";
 
 
+    /*
+      IMPORTANT:
+
+      The baseline capture is restored to the original
+      detector-side configuration.
+
+      We do NOT swap the detector regions here.
+
+      Detector "left" gets baseline "left".
+      Detector "right" gets baseline "right".
+
+      The anatomical label correction happens later,
+      when displaying/using the results.
+    */
+
     const leftSamples = [];
 
     const rightSamples = [];
@@ -2472,35 +2501,16 @@ captureEyeBaselineButton.addEventListener(
       }
 
 
-      /*
-        Capture detector regions, then store them
-        according to anatomical eye labels.
-
-        This is the same mirror correction used
-        during live detection.
-      */
-
-      const detectorLeft =
-        detectorSideForAnatomicalSide(
-          "left"
-        );
-
-      const detectorRight =
-        detectorSideForAnatomicalSide(
-          "right"
-        );
-
-
       const leftFeature =
         extractEyeFeature(
           currentFaceLandmarks,
-          detectorLeft
+          "left"
         );
 
       const rightFeature =
         extractEyeFeature(
           currentFaceLandmarks,
-          detectorRight
+          "right"
         );
 
 
@@ -2508,7 +2518,7 @@ captureEyeBaselineButton.addEventListener(
         leftFeature &&
         !isEyeLikelyClosed(
           currentFaceLandmarks,
-          detectorLeft
+          "left"
         )
       ) {
 
@@ -2522,7 +2532,7 @@ captureEyeBaselineButton.addEventListener(
         rightFeature &&
         !isEyeLikelyClosed(
           currentFaceLandmarks,
-          detectorRight
+          "right"
         )
       ) {
 
@@ -2554,6 +2564,10 @@ captureEyeBaselineButton.addEventListener(
       return;
     }
 
+
+    /*
+      Keep the original detector-side baseline storage.
+    */
 
     eyeBaseline.left =
       averageEyeFeatures(
@@ -2912,6 +2926,9 @@ function updateCorrectionOverlay(
 
       }
 
+      overlayTitle.textContent =
+        "Let's Fix Your Position";
+
       overlayMessage.textContent =
         "Please move farther away from the screen. Your target distance is approximately " +
         therapyProfile.targetDistance +
@@ -2964,6 +2981,9 @@ function updateCorrectionOverlay(
 
       }
 
+      overlayTitle.textContent =
+        "Let's Fix Your Position";
+
       overlayMessage.textContent =
         "Please reposition your face so it is centered and comfortably aligned with the screen.";
 
@@ -2974,9 +2994,9 @@ function updateCorrectionOverlay(
 
 
   /*
-    Distance and position are now acceptable.
+    Distance and face position are acceptable.
 
-    Reset the old position timer.
+    Reset the position correction timer.
   */
 
   invalidStartedAt =
@@ -2987,10 +3007,8 @@ function updateCorrectionOverlay(
     PRIORITY 3:
     Wrong-eye occlusion.
 
-    This is separate from compliance analytics.
-
-    Only the treatment eye being occluded triggers
-    this warning.
+    This does NOT affect the numerical compliance
+    analytics yet because eye detection is experimental.
   */
 
   if (
@@ -3029,14 +3047,19 @@ function updateCorrectionOverlay(
       const correctPatchEye =
         wrongEyeOcclusion.correctPatchEye;
 
-      const capitalizedEye =
+      const eyeName =
         correctPatchEye === "left"
           ? "left"
           : "right";
 
+      overlayTitle.textContent =
+        "Check Eye Patch Position";
+
       overlayMessage.textContent =
-        "Possible wrong-eye occlusion detected. Please place the eye patch over your " +
-        capitalizedEye +
+        "Please uncover your " +
+        therapyProfile.treatmentEye +
+        " eye and place the eye patch over your " +
+        eyeName +
         " eye.";
 
     }
@@ -3048,7 +3071,7 @@ function updateCorrectionOverlay(
   /*
     Nothing currently requires correction.
 
-    Reset all correction timers and hide the overlay.
+    Reset correction timers and hide the overlay.
   */
 
   invalidStartedAt =
