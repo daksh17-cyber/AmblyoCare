@@ -24,6 +24,7 @@
             border-radius: 16px;
             margin-top: 20px;
             display: none;
+            transform: scaleX(-1);
         }
 
         button {
@@ -36,7 +37,8 @@
 
         #status {
             margin-top: 20px;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -49,7 +51,7 @@
 
     <p>
         A research prototype exploring how computer vision
-        could help support amblyopia therapy compliance.
+        could support amblyopia therapy compliance.
     </p>
 
     <button onclick="startCamera()">Start Session</button>
@@ -60,10 +62,12 @@
 
     <script>
         async function startCamera() {
+
             const video = document.getElementById("camera");
             const status = document.getElementById("status");
 
             try {
+
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: {
                         facingMode: "user"
@@ -74,11 +78,20 @@
                 video.srcObject = stream;
                 video.style.display = "block";
 
-                status.textContent = "Camera active. Session started.";
+                status.textContent = "Camera active — detecting face...";
+
+                /*
+                 * Face detection will be added in the next stage.
+                 * For now, this confirms that the camera pipeline works.
+                 */
+
             } catch (error) {
+
+                console.error(error);
+
                 status.textContent =
                     "Camera access was not granted.";
-                console.error(error);
+
             }
         }
     </script>
