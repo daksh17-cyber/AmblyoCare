@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>AmblyoCare</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,9 +14,11 @@
             padding: 30px;
             background: #f5f7fa;
         }
+
         h1 {
             font-size: 40px;
         }
+
         video {
             width: 100%;
             max-width: 700px;
@@ -23,6 +27,7 @@
             display: none;
             transform: scaleX(-1);
         }
+
         button {
             padding: 15px 25px;
             font-size: 18px;
@@ -32,6 +37,7 @@
             color: white;
             margin: 8px;
         }
+
         input {
             padding: 12px;
             font-size: 18px;
@@ -40,58 +46,103 @@
             border-radius: 8px;
             border: 1px solid #aaa;
         }
+
         #status,
         #visionStatus,
         #calibrationStatus {
             margin-top: 20px;
             font-size: 18px;
         }
+
         #faceStatus {
             margin-top: 15px;
             font-size: 24px;
             font-weight: bold;
         }
+
         #distance {
             margin-top: 20px;
             font-size: 30px;
             font-weight: bold;
         }
+
         #distanceStatus {
             margin-top: 10px;
             font-size: 22px;
             font-weight: bold;
         }
+
         #calibrationBox {
             margin-top: 25px;
         }
+
+        #sessionBox {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 16px;
+            background: white;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #sessionTimer {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 15px;
+        }
+
+        #sessionStatus {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #sessionSummary {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 16px;
+            background: white;
+            display: none;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .summaryNumber {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 12px;
+        }
     </style>
 </head>
+
 <body>
+
     <h1>AmblyoCare</h1>
+
     <h2>Computer Vision for Amblyopia Therapy Support</h2>
+
     <p>
         A research prototype exploring how computer vision
         could support amblyopia therapy compliance.
     </p>
-    <button id="startButton">
-        Start Session
-    </button>
-    <p id="status">
-        Session not started.
-    </p>
-    <p id="visionStatus">
-        Vision system waiting.
-    </p>
-    <p id="faceStatus">
-        Face detection waiting.
-    </p>
-    <!-- ============================= -->
+
+    <button id="startButton">Start Session</button>
+    <button id="endButton" style="display:none;">End Session</button>
+
+    <p id="status">Session not started.</p>
+
+    <p id="visionStatus">Vision system waiting.</p>
+
+    <p id="faceStatus">Face detection waiting.</p>
+
+
     <!-- CALIBRATION -->
-    <!-- ============================= -->
+
     <div id="calibrationBox">
-        <p>
-            Enter your current distance from the iPad:
-        </p>
+
+        <p>Enter your current distance from the iPad:</p>
+
         <input
             id="calibrationDistance"
             type="number"
@@ -99,75 +150,286 @@
             min="10"
             max="200"
         >
+
         <span>cm</span>
+
         <br>
+
         <button id="calibrateButton">
             Calibrate Distance
         </button>
+
         <p id="calibrationStatus">
             Distance not calibrated.
         </p>
+
     </div>
-    <!-- ============================= -->
+
+
     <!-- DISTANCE -->
-    <!-- ============================= -->
+
     <div id="distance">
         Estimated distance: --
     </div>
+
     <div id="distanceStatus">
         Waiting for calibration...
     </div>
+
+
+    <!-- SESSION -->
+
+    <div id="sessionBox">
+
+        <h2>Therapy Session</h2>
+
+        <div id="sessionTimer">
+            00:00
+        </div>
+
+        <p id="sessionStatus">
+            Session inactive.
+        </p>
+
+        <p>
+            Grace period for brief movements:
+            <strong>20 seconds</strong>
+        </p>
+
+        <p>
+            Compliant time:
+            <strong id="compliantTime">00:00</strong>
+        </p>
+
+        <p>
+            Too-close time:
+            <strong id="tooCloseTime">00:00</strong>
+        </p>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div id="sessionSummary">
+
+        <h2>Session Summary</h2>
+
+        <p>
+            Total session:
+        </p>
+
+        <div
+            id="summaryTotal"
+            class="summaryNumber"
+        >
+            00:00
+        </div>
+
+        <p>
+            Compliant time:
+        </p>
+
+        <div
+            id="summaryCompliant"
+            class="summaryNumber"
+        >
+            00:00
+        </div>
+
+        <p>
+            Too-close time:
+        </p>
+
+        <div
+            id="summaryTooClose"
+            class="summaryNumber"
+        >
+            00:00
+        </div>
+
+        <p>
+            Distance compliance:
+        </p>
+
+        <div
+            id="summaryCompliance"
+            class="summaryNumber"
+        >
+            0%
+        </div>
+
+    </div>
+
+
     <video
         id="camera"
         autoplay
-        playsinline>
-    </video>
+        playsinline
+    ></video>
+
+
     <script>
+
+        /*
+         * ============================================
+         * ELEMENTS
+         * ============================================
+         */
+
         const button =
             document.getElementById("startButton");
+
+        const endButton =
+            document.getElementById("endButton");
+
         const calibrateButton =
             document.getElementById("calibrateButton");
+
         const video =
             document.getElementById("camera");
+
         const status =
             document.getElementById("status");
+
         const visionStatus =
             document.getElementById("visionStatus");
+
         const faceStatus =
             document.getElementById("faceStatus");
+
         const distanceDisplay =
             document.getElementById("distance");
+
         const distanceStatus =
             document.getElementById("distanceStatus");
+
         const calibrationDistance =
             document.getElementById("calibrationDistance");
+
         const calibrationStatus =
             document.getElementById("calibrationStatus");
+
+        const sessionTimer =
+            document.getElementById("sessionTimer");
+
+        const sessionStatus =
+            document.getElementById("sessionStatus");
+
+        const compliantTimeDisplay =
+            document.getElementById("compliantTime");
+
+        const tooCloseTimeDisplay =
+            document.getElementById("tooCloseTime");
+
+        const sessionSummary =
+            document.getElementById("sessionSummary");
+
+        const summaryTotal =
+            document.getElementById("summaryTotal");
+
+        const summaryCompliant =
+            document.getElementById("summaryCompliant");
+
+        const summaryTooClose =
+            document.getElementById("summaryTooClose");
+
+        const summaryCompliance =
+            document.getElementById("summaryCompliance");
+
+
+        /*
+         * ============================================
+         * COMPUTER VISION VARIABLES
+         * ============================================
+         */
+
         let faceLandmarker = null;
+
         let lastVideoTime = -1;
+
         let calibrated = false;
+
         let referenceDistance = 40;
+
         let referenceFaceSize = 0;
-        // ==========================================
-        // DISTANCE SMOOTHING
-        // ==========================================
+
         let faceSizeHistory = [];
+
         const smoothingFrames = 15;
+
+
+        /*
+         * ============================================
+         * SESSION VARIABLES
+         * ============================================
+         */
+
+        let sessionActive = false;
+
+        let sessionStartTime = 0;
+
+        let lastSessionUpdate = 0;
+
+        let compliantSeconds = 0;
+
+        let tooCloseSeconds = 0;
+
+        let faceCurrentlyDetected = false;
+
+        let currentDistanceTooClose = false;
+
+        /*
+         * A brief movement closer to the screen
+         * should NOT immediately trigger anything.
+         *
+         * After 20 seconds, the system can later
+         * intervene.
+         */
+
+        const gracePeriodSeconds = 20;
+
+        let tooCloseStartedAt = null;
+
+
+        /*
+         * ============================================
+         * BUTTONS
+         * ============================================
+         */
+
         button.addEventListener(
             "click",
             startSession
         );
+
+        endButton.addEventListener(
+            "click",
+            endSession
+        );
+
         calibrateButton.addEventListener(
             "click",
             calibrateDistance
         );
-        // ==========================================
-        // START CAMERA
-        // ==========================================
+
+
+        /*
+         * ============================================
+         * START SESSION
+         * ============================================
+         */
+
         async function startSession() {
+
             status.textContent =
                 "Starting camera...";
+
+            sessionSummary.style.display =
+                "none";
+
             try {
+
                 const stream =
                     await navigator.mediaDevices.getUserMedia({
                         video: {
@@ -175,166 +437,308 @@
                         },
                         audio: false
                     });
+
                 video.srcObject = stream;
-                video.style.display = "block";
+
+                video.style.display =
+                    "block";
+
                 status.textContent =
                     "Camera active. Session started.";
+
+                /*
+                 * Start session tracking.
+                 */
+
+                sessionActive = true;
+
+                sessionStartTime =
+                    Date.now();
+
+                lastSessionUpdate =
+                    Date.now();
+
+                compliantSeconds = 0;
+
+                tooCloseSeconds = 0;
+
+                tooCloseStartedAt = null;
+
+                sessionStatus.textContent =
+                    "Session active.";
+
+                button.style.display =
+                    "none";
+
+                endButton.style.display =
+                    "inline-block";
+
+                updateSessionDisplay();
+
                 loadFaceLandmarker();
+
             } catch (error) {
+
                 console.error(error);
+
                 status.textContent =
                     "Camera access was not granted.";
+
                 faceStatus.textContent =
                     "Camera error.";
             }
         }
-        // ==========================================
-        // LOAD MEDIAPIPE
-        // ==========================================
+
+
+        /*
+         * ============================================
+         * END SESSION
+         * ============================================
+         */
+
+        function endSession() {
+
+            if (!sessionActive) {
+                return;
+            }
+
+            /*
+             * Update one final time before ending.
+             */
+
+            updateSessionTracking();
+
+            sessionActive = false;
+
+            sessionStatus.textContent =
+                "Session ended.";
+
+            status.textContent =
+                "Session complete.";
+
+            button.style.display =
+                "inline-block";
+
+            endButton.style.display =
+                "none";
+
+            showSessionSummary();
+        }
+
+
+        /*
+         * ============================================
+         * LOAD MEDIAPIPE
+         * ============================================
+         */
+
         async function loadFaceLandmarker() {
+
             visionStatus.textContent =
                 "Loading face detection model...";
+
             try {
+
                 const vision =
                     await import(
                         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
                     );
+
                 const FilesetResolver =
                     vision.FilesetResolver;
+
                 const FaceLandmarker =
                     vision.FaceLandmarker;
+
                 const filesetResolver =
                     await FilesetResolver.forVisionTasks(
                         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
                     );
+
                 faceLandmarker =
                     await FaceLandmarker.createFromOptions(
                         filesetResolver,
                         {
                             baseOptions: {
+
                                 modelAssetPath:
                                     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
                             },
-                            runningMode: "VIDEO",
-                            numFaces: 1
+
+                            runningMode:
+                                "VIDEO",
+
+                            numFaces:
+                                1
                         }
                     );
+
                 visionStatus.textContent =
                     "Computer vision ready.";
+
                 faceStatus.textContent =
                     "Face detection starting...";
+
                 detectFace();
+
             } catch (error) {
+
                 console.error(
                     "Face model error:",
                     error
                 );
+
                 visionStatus.textContent =
                     "Computer vision model failed.";
+
                 faceStatus.textContent =
                     "Error loading face detection.";
             }
         }
-        // ==========================================
-        // GET FACE SIZE
-        // ==========================================
+
+
+        /*
+         * ============================================
+         * FACE SIZE
+         * ============================================
+         */
+
         function getFaceSize(landmarks) {
+
             const left =
                 landmarks[234];
+
             const right =
                 landmarks[454];
+
             const dx =
                 right.x - left.x;
+
             const dy =
                 right.y - left.y;
+
             return Math.sqrt(
                 dx * dx +
                 dy * dy
             );
         }
-        // ==========================================
-        // CALIBRATION
-        // ==========================================
+
+
+        /*
+         * ============================================
+         * CALIBRATION
+         * ============================================
+         */
+
         function calibrateDistance() {
+
             if (!faceLandmarker) {
+
                 calibrationStatus.textContent =
                     "Start the camera and wait for computer vision.";
+
                 return;
             }
+
             if (referenceFaceSize === 0) {
+
                 calibrationStatus.textContent =
                     "Face not detected yet. Look at the camera.";
+
                 return;
             }
+
             const enteredDistance =
                 Number(
                     calibrationDistance.value
                 );
+
             if (
                 !enteredDistance ||
                 enteredDistance < 10 ||
                 enteredDistance > 200
             ) {
+
                 calibrationStatus.textContent =
                     "Enter a distance between 10 and 200 cm.";
+
                 return;
             }
+
             referenceDistance =
                 enteredDistance;
+
             calibrated = true;
+
             calibrationStatus.textContent =
                 "Calibration complete at " +
                 referenceDistance +
                 " cm.";
+
             distanceStatus.textContent =
                 "Distance monitoring active.";
         }
-        // ==========================================
-        // FACE DETECTION LOOP
-        // ==========================================
+
+
+        /*
+         * ============================================
+         * FACE DETECTION
+         * ============================================
+         */
+
         function detectFace() {
+
             if (!faceLandmarker) {
                 return;
             }
+
             if (
                 video.readyState >= 2 &&
                 video.currentTime !== lastVideoTime
             ) {
+
                 lastVideoTime =
                     video.currentTime;
+
                 try {
+
                     const results =
                         faceLandmarker.detectForVideo(
                             video,
                             performance.now()
                         );
+
                     if (
                         results.faceLandmarks &&
                         results.faceLandmarks.length > 0
                     ) {
+
+                        faceCurrentlyDetected =
+                            true;
+
                         const landmarks =
                             results.faceLandmarks[0];
+
                         faceStatus.textContent =
                             "🟢 Face detected";
-                        // ==========================
-                        // RAW FACE MEASUREMENT
-                        // ==========================
+
                         const rawFaceSize =
                             getFaceSize(
                                 landmarks
                             );
-                        // ==========================
-                        // SMOOTH THE MEASUREMENT
-                        // ==========================
+
                         faceSizeHistory.push(
                             rawFaceSize
                         );
+
                         if (
                             faceSizeHistory.length >
                             smoothingFrames
                         ) {
+
                             faceSizeHistory.shift();
                         }
+
                         const faceSize =
                             faceSizeHistory.reduce(
                                 (sum, value) =>
@@ -342,73 +746,421 @@
                                 0
                             ) /
                             faceSizeHistory.length;
-                        // ==========================
-                        // SET REFERENCE
-                        // ==========================
+
+                        /*
+                         * Before calibration,
+                         * continuously establish
+                         * the reference face size.
+                         */
+
                         if (
                             !calibrated &&
                             faceSize > 0
                         ) {
+
                             referenceFaceSize =
                                 faceSize;
                         }
-                        // ==========================
-                        // ESTIMATE DISTANCE
-                        // ==========================
+
+                        /*
+                         * Distance calculation.
+                         */
+
                         if (
                             calibrated &&
                             faceSize > 0 &&
                             referenceFaceSize > 0
                         ) {
+
                             const estimatedDistance =
                                 referenceDistance *
                                 (
                                     referenceFaceSize /
                                     faceSize
                                 );
+
                             const roundedDistance =
                                 Math.round(
                                     estimatedDistance
                                 );
+
                             distanceDisplay.textContent =
                                 "Estimated distance: " +
                                 roundedDistance +
                                 " cm";
-                            // ==========================
-                            // DISTANCE WARNING
-                            // ==========================
+
+                            /*
+                             * Currently anything
+                             * below 90% of the
+                             * calibrated distance
+                             * is considered too close.
+                             */
+
                             if (
                                 estimatedDistance <
                                 referenceDistance * 0.9
                             ) {
-                                distanceStatus.textContent =
-                                    "⚠️ You are closer than your calibrated distance.";
+
+                                currentDistanceTooClose =
+                                    true;
+
+                                handleTooClose();
+
                             } else {
-                                distanceStatus.textContent =
-                                    "✓ Distance near calibrated range.";
+
+                                currentDistanceTooClose =
+                                    false;
+
+                                handleDistanceRecovered();
+
                             }
+
                         }
+
                     } else {
+
+                        faceCurrentlyDetected =
+                            false;
+
                         faceStatus.textContent =
                             "🔴 No face detected";
+
                         if (calibrated) {
+
                             distanceDisplay.textContent =
                                 "Estimated distance: --";
+
                             distanceStatus.textContent =
                                 "Face not detected.";
                         }
                     }
+
                 } catch (error) {
+
                     console.error(
                         "Detection error:",
                         error
                     );
                 }
             }
+
             requestAnimationFrame(
                 detectFace
             );
         }
+
+
+        /*
+         * ============================================
+         * TOO-CLOSE HANDLING
+         * ============================================
+         */
+
+        function handleTooClose() {
+
+            if (!sessionActive) {
+                return;
+            }
+
+            /*
+             * Start the grace-period clock
+             * the first time the user gets too close.
+             */
+
+            if (tooCloseStartedAt === null) {
+
+                tooCloseStartedAt =
+                    Date.now();
+
+                distanceStatus.textContent =
+                    "⚠️ Slightly too close — you have 20 seconds to adjust.";
+
+                return;
+            }
+
+            const secondsTooClose =
+                (
+                    Date.now() -
+                    tooCloseStartedAt
+                ) / 1000;
+
+            if (
+                secondsTooClose <
+                gracePeriodSeconds
+            ) {
+
+                const remaining =
+                    Math.ceil(
+                        gracePeriodSeconds -
+                        secondsTooClose
+                    );
+
+                distanceStatus.textContent =
+                    "⚠️ Too close — " +
+                    remaining +
+                    "s grace period remaining.";
+
+            } else {
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * We DO NOT freeze the screen yet.
+                 *
+                 * This is where the future intervention
+                 * system will connect.
+                 */
+
+                distanceStatus.textContent =
+                    "⚠️ Please move back to your calibrated distance.";
+            }
+        }
+
+
+        /*
+         * ============================================
+         * DISTANCE RECOVERED
+         * ============================================
+         */
+
+        function handleDistanceRecovered() {
+
+            if (!sessionActive) {
+                return;
+            }
+
+            if (tooCloseStartedAt !== null) {
+
+                tooCloseStartedAt =
+                    null;
+
+                distanceStatus.textContent =
+                    "✓ Distance back within range.";
+            }
+        }
+
+
+        /*
+         * ============================================
+         * SESSION TRACKING
+         * ============================================
+         */
+
+        function updateSessionTracking() {
+
+            if (!sessionActive) {
+                return;
+            }
+
+            const now =
+                Date.now();
+
+            const elapsed =
+                (
+                    now -
+                    lastSessionUpdate
+                ) / 1000;
+
+            lastSessionUpdate =
+                now;
+
+            /*
+             * We only count time when a face
+             * is actually visible.
+             */
+
+            if (!faceCurrentlyDetected) {
+                updateSessionDisplay();
+                return;
+            }
+
+            /*
+             * If the user is too close,
+             * count that time as too-close time.
+             */
+
+            if (currentDistanceTooClose) {
+
+                tooCloseSeconds +=
+                    elapsed;
+
+            } else {
+
+                compliantSeconds +=
+                    elapsed;
+            }
+
+            updateSessionDisplay();
+        }
+
+
+        /*
+         * ============================================
+         * SESSION DISPLAY
+         * ============================================
+         */
+
+        function updateSessionDisplay() {
+
+            if (!sessionActive) {
+                return;
+            }
+
+            /*
+             * Update tracking first.
+             */
+
+            updateSessionTrackingInternal();
+
+            const now =
+                Date.now();
+
+            const elapsed =
+                (
+                    now -
+                    sessionStartTime
+                ) / 1000;
+
+            sessionTimer.textContent =
+                formatTime(elapsed);
+
+            compliantTimeDisplay.textContent =
+                formatTime(
+                    compliantSeconds
+                );
+
+            tooCloseTimeDisplay.textContent =
+                formatTime(
+                    tooCloseSeconds
+                );
+
+            requestAnimationFrame(
+                updateSessionDisplay
+            );
+        }
+
+
+        /*
+         * This prevents recursive calls between
+         * updateSessionTracking() and the display loop.
+         */
+
+        function updateSessionTrackingInternal() {
+
+            const now =
+                Date.now();
+
+            const elapsed =
+                (
+                    now -
+                    lastSessionUpdate
+                ) / 1000;
+
+            if (
+                elapsed <= 0 ||
+                !sessionActive
+            ) {
+                return;
+            }
+
+            lastSessionUpdate =
+                now;
+
+            if (!faceCurrentlyDetected) {
+                return;
+            }
+
+            if (currentDistanceTooClose) {
+
+                tooCloseSeconds +=
+                    elapsed;
+
+            } else {
+
+                compliantSeconds +=
+                    elapsed;
+            }
+        }
+
+
+        /*
+         * ============================================
+         * SESSION SUMMARY
+         * ============================================
+         */
+
+        function showSessionSummary() {
+
+            const totalTime =
+                compliantSeconds +
+                tooCloseSeconds;
+
+            let compliance =
+                0;
+
+            if (totalTime > 0) {
+
+                compliance =
+                    (
+                        compliantSeconds /
+                        totalTime
+                    ) * 100;
+            }
+
+            summaryTotal.textContent =
+                formatTime(totalTime);
+
+            summaryCompliant.textContent =
+                formatTime(
+                    compliantSeconds
+                );
+
+            summaryTooClose.textContent =
+                formatTime(
+                    tooCloseSeconds
+                );
+
+            summaryCompliance.textContent =
+                Math.round(compliance) +
+                "%";
+
+            sessionSummary.style.display =
+                "block";
+        }
+
+
+        /*
+         * ============================================
+         * TIME FORMATTER
+         * ============================================
+         */
+
+        function formatTime(seconds) {
+
+            seconds =
+                Math.max(
+                    0,
+                    Math.floor(seconds)
+                );
+
+            const minutes =
+                Math.floor(
+                    seconds / 60
+                );
+
+            const remainingSeconds =
+                seconds % 60;
+
+            return (
+                String(minutes).padStart(2, "0") +
+                ":" +
+                String(
+                    remainingSeconds
+                ).padStart(2, "0")
+            );
+        }
+
     </script>
+
 </body>
 </html>
