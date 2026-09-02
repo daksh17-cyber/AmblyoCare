@@ -349,12 +349,18 @@
       Waiting for face...
     </div>
 
+    <!-- NEW: FACE POSITION STATUS -->
+    <div id="positionStatus" class="status">
+      Face position: Waiting...
+    </div>
+
     <div class="summary-grid">
 
       <div class="summary-item">
         <div class="summary-label">
           Target distance
         </div>
+
         <div id="targetDisplay" class="summary-value">
           -- cm
         </div>
@@ -364,6 +370,7 @@
         <div class="summary-label">
           Session goal
         </div>
+
         <div id="goalDisplay" class="summary-value">
           -- min
         </div>
@@ -404,7 +411,7 @@
 
 /* =========================================================
    AMBLYOCARE
-   STEP 3 — THERAPY PROFILE
+   STEP 4 — FACE POSITION MONITORING
    ========================================================= */
 
 
@@ -438,6 +445,9 @@ const distanceDisplay =
 
 const monitorStatus =
   document.getElementById("monitorStatus");
+
+const positionStatus =
+  document.getElementById("positionStatus");
 
 const sessionTimer =
   document.getElementById("sessionTimer");
@@ -694,6 +704,162 @@ const smoothingHistory = [];
 const smoothingWindow = 15;
 
 
+/* =========================================================
+   FACE POSITION
+   ========================================================= */
+
+/*
+  We use the approximate center of the detected face.
+
+  x = horizontal position
+  y = vertical position
+
+  MediaPipe coordinates are normalized from 0 to 1.
+
+  A central region is considered acceptable.
+  These thresholds are intentionally generous because
+  this is a research prototype rather than a clinical
+  posture detector.
+*/
+
+let currentFacePosition = "unknown";
+
+let currentFaceCenterX = null;
+let currentFaceCenterY = null;
+
+
+/*
+  Position boundaries.
+
+  Between 0.25 and 0.75 horizontally:
+      acceptable
+
+  Between 0.25 and 0.75 vertically:
+      acceptable
+*/
+
+const positionMinX = 0.25;
+const positionMaxX = 0.75;
+
+const positionMinY = 0.25;
+const positionMaxY = 0.75;
+
+
+function updateFacePosition(landmarks) {
+
+  /*
+    Use several stable landmarks to estimate
+    the center of the detected face.
+
+    10  = nose region
+    152 = lower face/chin region
+    234 = left side
+    454 = right side
+  */
+
+  const nose =
+    landmarks[1];
+
+  const chin =
+    landmarks[152];
+
+  const leftSide =
+    landmarks[234];
+
+  const rightSide =
+    landmarks[454];
+
+
+  const centerX =
+    (
+      nose.x +
+      chin.x +
+      leftSide.x +
+      rightSide.x
+    ) / 4;
+
+
+  const centerY =
+    (
+      nose.y +
+      chin.y +
+      leftSide.y +
+      rightSide.y
+    ) / 4;
+
+
+  currentFaceCenterX = centerX;
+  currentFaceCenterY = centerY;
+
+
+  let position = "good";
+
+
+  if (centerX < positionMinX) {
+
+    position = "too far left";
+
+  } else if (centerX > positionMaxX) {
+
+    position = "too far right";
+
+  } else if (centerY < positionMinY) {
+
+    position = "too high";
+
+  } else if (centerY > positionMaxY) {
+
+    position = "too low";
+
+  }
+
+
+  currentFacePosition = position;
+
+
+  if (position === "good") {
+
+    positionStatus.textContent =
+      "Face position: Good";
+
+    positionStatus.className =
+      "status good";
+
+  } else {
+
+    positionStatus.textContent =
+      "Face position: " +
+      position.charAt(0).toUpperCase() +
+      position.slice(1);
+
+    positionStatus.className =
+      "status warning";
+
+  }
+
+}
+
+
+function resetFacePosition() {
+
+  currentFacePosition = "unknown";
+
+  currentFaceCenterX = null;
+  currentFaceCenterY = null;
+
+  positionStatus.textContent =
+    "Face position: No face detected";
+
+  positionStatus.className =
+    "status warning";
+
+}
+
+
+/* =========================================================
+   FACE DETECTION LOOP
+   ========================================================= */
+
 function detectFace(timestamp) {
 
   if (
@@ -720,6 +886,10 @@ function detectFace(timestamp) {
       const landmarks =
         result.faceLandmarks[0];
 
+
+      /* -----------------------------
+         FACE SIZE
+      ----------------------------- */
 
       const leftSide =
         landmarks[234];
@@ -751,7 +921,9 @@ function detectFace(timestamp) {
         smoothingHistory.length >
         smoothingWindow
       ) {
+
         smoothingHistory.shift();
+
       }
 
 
@@ -762,6 +934,17 @@ function detectFace(timestamp) {
           0
         ) / smoothingHistory.length;
 
+
+      /* -----------------------------
+         FACE POSITION
+      ----------------------------- */
+
+      updateFacePosition(landmarks);
+
+
+      /* -----------------------------
+         DISTANCE
+      ----------------------------- */
 
       if (referenceFaceSize !== null) {
 
@@ -796,14 +979,22 @@ function detectFace(timestamp) {
 
       currentFaceSize = null;
 
+      currentEstimatedDistance = null;
+
+
       distanceDisplay.textContent =
         "-- cm";
+
 
       monitorStatus.textContent =
         "No face detected";
 
       monitorStatus.className =
         "status warning";
+
+
+      resetFacePosition();
+
 
       if (sessionRunning) {
         updateSessionTracking();
@@ -1279,8 +1470,12 @@ window.endSession = function() {
     <div class="note">
 
       Compliance is calculated from tracked time where a face
-      was detected. This prototype is not a medical device and
-      does not establish clinical treatment effectiveness.
+      was detected. Face-position monitoring is currently
+      displayed separately and is not yet included in the
+      compliance percentage.
+
+      This prototype is not a medical device and does not
+      establish clinical treatment effectiveness.
 
     </div>
   `;
@@ -1314,6 +1509,8 @@ window.newSession = function() {
     "status";
 
   startButton.classList.add("hidden");
+
+  resetFacePosition();
 
 };
 
