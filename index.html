@@ -349,6 +349,11 @@
       Waiting for face...
     </div>
 
+    <!-- FACE POSITION MONITOR -->
+    <div id="positionStatus" class="status">
+      Face position: Waiting...
+    </div>
+
     <div class="summary-grid">
 
       <div class="summary-item">
@@ -404,7 +409,7 @@
 
 /* =========================================================
    AMBLYOCARE
-   STEP 3 — THERAPY PROFILE
+   THERAPY PROFILE + DISTANCE + FACE POSITION
    ========================================================= */
 
 
@@ -438,6 +443,9 @@ const distanceDisplay =
 
 const monitorStatus =
   document.getElementById("monitorStatus");
+
+const positionStatus =
+  document.getElementById("positionStatus");
 
 const sessionTimer =
   document.getElementById("sessionTimer");
@@ -694,6 +702,146 @@ const smoothingHistory = [];
 const smoothingWindow = 15;
 
 
+/* =========================================================
+   FACE POSITION MONITORING
+   ========================================================= */
+
+let currentFacePosition = "unknown";
+
+let currentFaceCenterX = null;
+
+let currentFaceCenterY = null;
+
+
+/*
+  These values divide the camera frame into
+  a central "acceptable" region.
+
+  x:
+    below 0.25  = too far left
+    above 0.75  = too far right
+
+  y:
+    below 0.25  = too high
+    above 0.75  = too low
+*/
+
+const positionMinX = 0.25;
+const positionMaxX = 0.75;
+
+const positionMinY = 0.25;
+const positionMaxY = 0.75;
+
+
+function updateFacePosition(landmarks) {
+
+  /*
+    MediaPipe landmark references:
+
+    1   = nose
+    152 = chin
+    234 = left side of face
+    454 = right side of face
+  */
+
+  const nose =
+    landmarks[1];
+
+  const chin =
+    landmarks[152];
+
+  const leftSide =
+    landmarks[234];
+
+  const rightSide =
+    landmarks[454];
+
+
+  /*
+    Estimate the center of the face
+    using several landmarks rather than
+    relying on one point.
+  */
+
+  const centerX =
+    (
+      nose.x +
+      chin.x +
+      leftSide.x +
+      rightSide.x
+    ) / 4;
+
+
+  const centerY =
+    (
+      nose.y +
+      chin.y +
+      leftSide.y +
+      rightSide.y
+    ) / 4;
+
+
+  currentFaceCenterX =
+    centerX;
+
+  currentFaceCenterY =
+    centerY;
+
+
+  let position =
+    "center";
+
+
+  if (centerX < positionMinX) {
+
+    position =
+      "too far left";
+
+  } else if (centerX > positionMaxX) {
+
+    position =
+      "too far right";
+
+  } else if (centerY < positionMinY) {
+
+    position =
+      "too high";
+
+  } else if (centerY > positionMaxY) {
+
+    position =
+      "too low";
+
+  }
+
+
+  currentFacePosition =
+    position;
+
+
+  if (position === "center") {
+
+    positionStatus.className =
+      "status good";
+
+    positionStatus.innerText =
+      "Face position: Good";
+
+  } else {
+
+    positionStatus.className =
+      "status warning";
+
+    positionStatus.innerText =
+      "Face position: " +
+      position.charAt(0).toUpperCase() +
+      position.slice(1);
+
+  }
+
+}
+
+
 function detectFace(timestamp) {
 
   if (
@@ -702,7 +850,8 @@ function detectFace(timestamp) {
     video.currentTime !== lastVideoTime
   ) {
 
-    lastVideoTime = video.currentTime;
+    lastVideoTime =
+      video.currentTime;
 
 
     const result =
@@ -720,6 +869,19 @@ function detectFace(timestamp) {
       const landmarks =
         result.faceLandmarks[0];
 
+
+      /* -----------------------------
+         FACE POSITION
+      ----------------------------- */
+
+      updateFacePosition(
+        landmarks
+      );
+
+
+      /* -----------------------------
+         FACE SIZE
+      ----------------------------- */
 
       const leftSide =
         landmarks[234];
@@ -741,17 +903,22 @@ function detectFace(timestamp) {
         );
 
 
-      currentFaceSize = faceSize;
+      currentFaceSize =
+        faceSize;
 
 
-      smoothingHistory.push(faceSize);
+      smoothingHistory.push(
+        faceSize
+      );
 
 
       if (
         smoothingHistory.length >
         smoothingWindow
       ) {
+
         smoothingHistory.shift();
+
       }
 
 
@@ -763,7 +930,9 @@ function detectFace(timestamp) {
         ) / smoothingHistory.length;
 
 
-      if (referenceFaceSize !== null) {
+      if (
+        referenceFaceSize !== null
+      ) {
 
         const estimatedDistance =
           therapyProfile.targetDistance *
@@ -787,17 +956,31 @@ function detectFace(timestamp) {
 
 
         if (sessionRunning) {
+
           updateSessionTracking();
+
         }
 
       }
 
     } else {
 
-      currentFaceSize = null;
+      currentFaceSize =
+        null;
+
+      currentFaceCenterX =
+        null;
+
+      currentFaceCenterY =
+        null;
+
+      currentFacePosition =
+        "unknown";
+
 
       distanceDisplay.textContent =
         "-- cm";
+
 
       monitorStatus.textContent =
         "No face detected";
@@ -805,8 +988,18 @@ function detectFace(timestamp) {
       monitorStatus.className =
         "status warning";
 
+
+      positionStatus.textContent =
+        "Face position: No face detected";
+
+      positionStatus.className =
+        "status warning";
+
+
       if (sessionRunning) {
+
         updateSessionTracking();
+
       }
 
     }
@@ -814,7 +1007,9 @@ function detectFace(timestamp) {
   }
 
 
-  requestAnimationFrame(detectFace);
+  requestAnimationFrame(
+    detectFace
+  );
 
 }
 
@@ -901,7 +1096,9 @@ window.calibrateDistance = function() {
     "status good";
 
 
-  startButton.classList.remove("hidden");
+  startButton.classList.remove(
+    "hidden"
+  );
 
 };
 
@@ -913,7 +1110,9 @@ window.calibrateDistance = function() {
 function updateDistanceStatus(distance) {
 
   if (!sessionRunning) {
+
     return;
+
   }
 
 
@@ -921,7 +1120,9 @@ function updateDistanceStatus(distance) {
     therapyProfile.targetDistance;
 
 
-  if (distance >= target * 0.90) {
+  if (
+    distance >= target * 0.90
+  ) {
 
     monitorStatus.textContent =
       "Distance OK";
@@ -946,26 +1147,36 @@ function updateDistanceStatus(distance) {
    SESSION TRACKING
    ========================================================= */
 
-let sessionRunning = false;
+let sessionRunning =
+  false;
 
-let sessionStartTime = null;
+let sessionStartTime =
+  null;
 
-let lastTrackingTime = null;
+let lastTrackingTime =
+  null;
 
-let compliantTime = 0;
+let compliantTime =
+  0;
 
-let tooCloseTime = 0;
+let tooCloseTime =
+  0;
 
-let noFaceTime = 0;
+let noFaceTime =
+  0;
 
-let tooCloseStartedAt = null;
+let tooCloseStartedAt =
+  null;
 
 
 function updateSessionTracking() {
 
   if (!sessionRunning) {
+
     return;
+
   }
+
 
   const now =
     performance.now();
@@ -973,7 +1184,9 @@ function updateSessionTracking() {
 
   if (lastTrackingTime === null) {
 
-    lastTrackingTime = now;
+    lastTrackingTime =
+      now;
+
     return;
 
   }
@@ -983,7 +1196,8 @@ function updateSessionTracking() {
     (now - lastTrackingTime) / 1000;
 
 
-  lastTrackingTime = now;
+  lastTrackingTime =
+    now;
 
 
   /*
@@ -991,14 +1205,22 @@ function updateSessionTracking() {
     to create a huge time jump.
   */
 
-  if (delta < 0 || delta > 2) {
+  if (
+    delta < 0 ||
+    delta > 2
+  ) {
+
     return;
+
   }
 
 
-  if (currentEstimatedDistance === null) {
+  if (
+    currentEstimatedDistance === null
+  ) {
 
-    noFaceTime += delta;
+    noFaceTime +=
+      delta;
 
     return;
 
@@ -1014,10 +1236,13 @@ function updateSessionTracking() {
     target * 0.90
   ) {
 
-    tooCloseTime += delta;
+    tooCloseTime +=
+      delta;
 
 
-    if (tooCloseStartedAt === null) {
+    if (
+      tooCloseStartedAt === null
+    ) {
 
       tooCloseStartedAt =
         performance.now();
@@ -1047,9 +1272,11 @@ function updateSessionTracking() {
 
   } else {
 
-    compliantTime += delta;
+    compliantTime +=
+      delta;
 
-    tooCloseStartedAt = null;
+    tooCloseStartedAt =
+      null;
 
   }
 
@@ -1062,7 +1289,9 @@ function updateSessionTracking() {
 
 window.startSession = function() {
 
-  if (referenceFaceSize === null) {
+  if (
+    referenceFaceSize === null
+  ) {
 
     alert(
       "Please calibrate before starting the session."
@@ -1073,24 +1302,35 @@ window.startSession = function() {
   }
 
 
-  sessionRunning = true;
+  sessionRunning =
+    true;
 
   sessionStartTime =
     performance.now();
 
-  lastTrackingTime = null;
+  lastTrackingTime =
+    null;
 
-  compliantTime = 0;
+  compliantTime =
+    0;
 
-  tooCloseTime = 0;
+  tooCloseTime =
+    0;
 
-  noFaceTime = 0;
+  noFaceTime =
+    0;
 
-  tooCloseStartedAt = null;
+  tooCloseStartedAt =
+    null;
 
 
-  calibrationCard.classList.add("hidden");
-  monitorCard.classList.remove("hidden");
+  calibrationCard.classList.add(
+    "hidden"
+  );
+
+  monitorCard.classList.remove(
+    "hidden"
+  );
 
 
   monitorStatus.textContent =
@@ -1098,6 +1338,29 @@ window.startSession = function() {
 
   monitorStatus.className =
     "status good";
+
+
+  if (
+    currentFacePosition === "center"
+  ) {
+
+    positionStatus.textContent =
+      "Face position: Good";
+
+    positionStatus.className =
+      "status good";
+
+  } else if (
+    currentFacePosition === "unknown"
+  ) {
+
+    positionStatus.textContent =
+      "Face position: No face detected";
+
+    positionStatus.className =
+      "status warning";
+
+  }
 
 
   updateTimer();
@@ -1112,7 +1375,9 @@ window.startSession = function() {
 function updateTimer() {
 
   if (!sessionRunning) {
+
     return;
+
   }
 
 
@@ -1124,10 +1389,14 @@ function updateTimer() {
 
 
   const minutes =
-    Math.floor(elapsed / 60);
+    Math.floor(
+      elapsed / 60
+    );
 
   const seconds =
-    Math.floor(elapsed % 60);
+    Math.floor(
+      elapsed % 60
+    );
 
 
   sessionTimer.textContent =
@@ -1140,7 +1409,9 @@ function updateTimer() {
     60;
 
 
-  if (elapsed >= goalSeconds) {
+  if (
+    elapsed >= goalSeconds
+  ) {
 
     monitorStatus.textContent =
       "Session goal reached.";
@@ -1151,7 +1422,9 @@ function updateTimer() {
   }
 
 
-  requestAnimationFrame(updateTimer);
+  requestAnimationFrame(
+    updateTimer
+  );
 
 }
 
@@ -1163,14 +1436,17 @@ function updateTimer() {
 window.endSession = function() {
 
   if (!sessionRunning) {
+
     return;
+
   }
 
 
   updateSessionTracking();
 
 
-  sessionRunning = false;
+  sessionRunning =
+    false;
 
 
   const totalTracked =
@@ -1195,14 +1471,23 @@ window.endSession = function() {
 
 
   const totalMinutes =
-    Math.floor(totalSession / 60);
+    Math.floor(
+      totalSession / 60
+    );
 
   const totalSeconds =
-    Math.floor(totalSession % 60);
+    Math.floor(
+      totalSession % 60
+    );
 
 
-  monitorCard.classList.add("hidden");
-  summaryCard.classList.remove("hidden");
+  monitorCard.classList.add(
+    "hidden"
+  );
+
+  summaryCard.classList.remove(
+    "hidden"
+  );
 
 
   document.getElementById(
@@ -1294,18 +1579,28 @@ window.endSession = function() {
 
 window.newSession = function() {
 
-  summaryCard.classList.add("hidden");
+  summaryCard.classList.add(
+    "hidden"
+  );
 
-  calibrationCard.classList.remove("hidden");
+  calibrationCard.classList.remove(
+    "hidden"
+  );
 
-  referenceFaceSize = null;
 
-  currentEstimatedDistance = null;
+  referenceFaceSize =
+    null;
 
-  smoothingHistory.length = 0;
+  currentEstimatedDistance =
+    null;
+
+  smoothingHistory.length =
+    0;
+
 
   distanceDisplay.textContent =
     "-- cm";
+
 
   calibrationStatus.textContent =
     "Waiting for calibration...";
@@ -1313,7 +1608,17 @@ window.newSession = function() {
   calibrationStatus.className =
     "status";
 
-  startButton.classList.add("hidden");
+
+  positionStatus.textContent =
+    "Face position: Waiting...";
+
+  positionStatus.className =
+    "status";
+
+
+  startButton.classList.add(
+    "hidden"
+  );
 
 };
 
@@ -1327,8 +1632,12 @@ function formatSeconds(seconds) {
   const rounded =
     Math.round(seconds);
 
+
   const minutes =
-    Math.floor(rounded / 60);
+    Math.floor(
+      rounded / 60
+    );
+
 
   const remaining =
     rounded % 60;
