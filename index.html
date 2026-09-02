@@ -891,6 +891,24 @@
       </p>
 
 
+      <!-- STEP 8A EXPORT -->
+      <h3 style="margin-top: 24px;">
+        Research Data
+      </h3>
+
+      <p class="analytics-note">
+        Export the latest completed experiment as a CSV file for analysis,
+        documentation, or inclusion in your research dataset.
+      </p>
+
+      <button
+        onclick="exportLatestResults()"
+        class="secondary"
+      >
+        Export Latest Results (CSV)
+      </button>
+
+
       <button onclick="newSession()">
         Start New Experiment
       </button>
@@ -1101,6 +1119,13 @@
       "amblyocare_session_history";
 
     let sessionHistory = [];
+
+    /*
+     * Stores the most recently completed session
+     * so the Export button knows exactly which
+     * experiment to export.
+     */
+    let latestCompletedSession = null;
 
 
     /* ================================
@@ -2820,7 +2845,7 @@
          SAVE SESSION
       ================================= */
 
-      saveSessionToHistory({
+      const completedSession = {
 
         date:
           new Date().toISOString(),
@@ -2839,6 +2864,33 @@
 
         experiment: true,
 
+        /* STEP 8A: SAVE EXPERIMENT SETTINGS */
+
+        settings: {
+
+          treatmentEye:
+            therapyProfile.treatmentEye,
+
+          targetDistance:
+            therapyProfile.targetDistance,
+
+          sessionGoalMinutes:
+            therapyProfile.sessionGoalMinutes,
+
+          gracePeriodSeconds:
+            therapyProfile.gracePeriodSeconds,
+
+          baselineDurationSeconds:
+            therapyProfile.baselineDurationSeconds,
+
+          interventionDurationSeconds:
+            therapyProfile.interventionDurationSeconds,
+
+          finalDurationSeconds:
+            therapyProfile.finalDurationSeconds
+
+        },
+
         phaseData: {
 
           baseline:
@@ -2852,7 +2904,16 @@
 
         }
 
-      });
+      };
+
+
+      latestCompletedSession =
+        completedSession;
+
+
+      saveSessionToHistory(
+        completedSession
+      );
 
 
       monitorCard.classList.add(
@@ -3342,6 +3403,336 @@
 
 
     /* ================================
+       STEP 8A
+       EXPORT LATEST RESULTS
+    ================================= */
+
+    window.exportLatestResults = function () {
+
+      /*
+       * Normally the latest completed session
+       * is available in memory immediately after
+       * finishing an experiment.
+       *
+       * If the page was refreshed, use the newest
+       * experiment stored in local history.
+       */
+
+      let session =
+        latestCompletedSession;
+
+
+      if (!session) {
+
+        const experimentSessions =
+          sessionHistory.filter(
+            (item) =>
+              item.experiment === true
+          );
+
+
+        if (
+          experimentSessions.length > 0
+        ) {
+
+          session =
+            experimentSessions[0];
+
+        }
+
+      }
+
+
+      if (!session) {
+
+        alert(
+          "No completed experiment is available to export yet."
+        );
+
+        return;
+
+      }
+
+
+      const settings =
+        session.settings || {};
+
+
+      const baseline =
+        session.phaseData &&
+        session.phaseData.baseline
+          ? session.phaseData.baseline
+          : createEmptyPhaseData();
+
+
+      const intervention =
+        session.phaseData &&
+        session.phaseData.intervention
+          ? session.phaseData.intervention
+          : createEmptyPhaseData();
+
+
+      const final =
+        session.phaseData &&
+        session.phaseData.final
+          ? session.phaseData.final
+          : createEmptyPhaseData();
+
+
+      function phaseCompliance(
+        data
+      ) {
+
+        const total =
+          data.compliantTime +
+          data.tooCloseTime +
+          data.poorPositionTime +
+          data.noFaceTime;
+
+
+        return total > 0
+          ? (
+              data.compliantTime /
+              total
+            ) * 100
+          : 0;
+
+      }
+
+
+      /*
+       * CSV uses raw seconds rather than
+       * formatted MM:SS values so the dataset
+       * can be analyzed directly in Excel,
+       * Google Sheets, Python, R, etc.
+       */
+
+      const headers = [
+
+        "experiment_date",
+
+        "treatment_eye",
+
+        "target_distance_cm",
+
+        "grace_period_seconds",
+
+        "baseline_duration_configured_seconds",
+
+        "intervention_duration_configured_seconds",
+
+        "final_duration_configured_seconds",
+
+        "total_experiment_seconds",
+
+        "overall_compliance_percent",
+
+        "overall_compliant_seconds",
+
+        "overall_too_close_seconds",
+
+        "overall_poor_position_seconds",
+
+        "overall_no_face_seconds",
+
+        "baseline_compliance_percent",
+
+        "baseline_compliant_seconds",
+
+        "baseline_too_close_seconds",
+
+        "baseline_poor_position_seconds",
+
+        "baseline_no_face_seconds",
+
+        "intervention_compliance_percent",
+
+        "intervention_compliant_seconds",
+
+        "intervention_too_close_seconds",
+
+        "intervention_poor_position_seconds",
+
+        "intervention_no_face_seconds",
+
+        "final_compliance_percent",
+
+        "final_compliant_seconds",
+
+        "final_too_close_seconds",
+
+        "final_poor_position_seconds",
+
+        "final_no_face_seconds"
+
+      ];
+
+
+      const values = [
+
+        session.date,
+
+        settings.treatmentEye || "",
+
+        settings.targetDistance ?? "",
+
+        settings.gracePeriodSeconds ?? "",
+
+        settings.baselineDurationSeconds ?? "",
+
+        settings.interventionDurationSeconds ?? "",
+
+        settings.finalDurationSeconds ?? "",
+
+        session.totalSession ?? 0,
+
+        session.compliance ?? 0,
+
+        session.compliantTime ?? 0,
+
+        session.tooCloseTime ?? 0,
+
+        session.poorPositionTime ?? 0,
+
+        session.noFaceTime ?? 0,
+
+        phaseCompliance(baseline),
+
+        baseline.compliantTime,
+
+        baseline.tooCloseTime,
+
+        baseline.poorPositionTime,
+
+        baseline.noFaceTime,
+
+        phaseCompliance(intervention),
+
+        intervention.compliantTime,
+
+        intervention.tooCloseTime,
+
+        intervention.poorPositionTime,
+
+        intervention.noFaceTime,
+
+        phaseCompliance(final),
+
+        final.compliantTime,
+
+        final.tooCloseTime,
+
+        final.poorPositionTime,
+
+        final.noFaceTime
+
+      ];
+
+
+      function escapeCSV(
+        value
+      ) {
+
+        const text =
+          String(
+            value ?? ""
+          );
+
+
+        return (
+          '"' +
+          text.replace(
+            /"/g,
+            '""'
+          ) +
+          '"'
+        );
+
+      }
+
+
+      const csv =
+        headers
+          .map(
+            escapeCSV
+          )
+          .join(",") +
+        "\n" +
+        values
+          .map(
+            escapeCSV
+          )
+          .join(",");
+
+
+      const blob =
+        new Blob(
+          [
+            csv
+          ],
+          {
+            type:
+              "text/csv;charset=utf-8;"
+          }
+        );
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      const date =
+        new Date(
+          session.date
+        );
+
+
+      const timestamp =
+        date
+          .toISOString()
+          .replace(
+            /[:.]/g,
+            "-"
+          );
+
+
+      link.href =
+        url;
+
+
+      link.download =
+        `amblyocare_experiment_${timestamp}.csv`;
+
+
+      document.body.appendChild(
+        link
+      );
+
+
+      link.click();
+
+
+      document.body.removeChild(
+        link
+      );
+
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    };
+
+
+    /* ================================
        CLEAR HISTORY
     ================================= */
 
@@ -3365,6 +3756,10 @@
       localStorage.removeItem(
         HISTORY_KEY
       );
+
+
+      latestCompletedSession =
+        null;
 
 
       renderHistory();
