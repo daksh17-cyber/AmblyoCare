@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
@@ -173,9 +174,9 @@
   </p>
 
 
-  <!-- =========================
+  <!-- =========================================
        THERAPY PROFILE
-  ========================== -->
+  ========================================== -->
 
   <div class="card">
 
@@ -184,7 +185,10 @@
     <div class="profile-grid">
 
       <div>
-        <label for="childAge">Child Age</label>
+
+        <label for="childAge">
+          Child Age
+        </label>
 
         <input
           id="childAge"
@@ -193,15 +197,28 @@
           max="18"
           value="8"
         />
+
       </div>
 
+
       <div>
-        <label for="amblyopicEye">Amblyopic Eye</label>
+
+        <label for="amblyopicEye">
+          Amblyopic Eye
+        </label>
 
         <select id="amblyopicEye">
-          <option value="left">Left Eye</option>
-          <option value="right">Right Eye</option>
+
+          <option value="left">
+            Left Eye
+          </option>
+
+          <option value="right">
+            Right Eye
+          </option>
+
         </select>
+
       </div>
 
     </div>
@@ -241,13 +258,14 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =========================================
        CAMERA
-  ========================== -->
+  ========================================== -->
 
   <div class="card">
 
     <h2>Camera</h2>
+
 
     <div
       id="cameraStatus"
@@ -272,9 +290,9 @@
   </div>
 
 
-  <!-- =========================
-       MONITORING
-  ========================== -->
+  <!-- =========================================
+       LIVE MONITORING
+  ========================================== -->
 
   <div
     class="card"
@@ -309,14 +327,6 @@
 
 
     <div
-      id="orientationStatus"
-      class="status"
-    >
-      Head orientation: Waiting...
-    </div>
-
-
-    <div
       id="complianceStatus"
       class="status"
     >
@@ -339,9 +349,9 @@
   </div>
 
 
-  <!-- =========================
-       SUMMARY
-  ========================== -->
+  <!-- =========================================
+       SESSION SUMMARY
+  ========================================== -->
 
   <div
     class="card"
@@ -352,68 +362,98 @@
 
 
     <div class="metric">
-      <span>Total session</span>
+
+      <span>
+        Total session
+      </span>
+
       <span
         id="summaryTotal"
         class="metric-value"
       >
         --
       </span>
+
     </div>
 
 
     <div class="metric">
-      <span>Compliant time</span>
+
+      <span>
+        Compliant time
+      </span>
+
       <span
         id="summaryCompliant"
         class="metric-value"
       >
         --
       </span>
+
     </div>
 
 
     <div class="metric">
-      <span>Too-close time</span>
+
+      <span>
+        Too-close time
+      </span>
+
       <span
         id="summaryTooClose"
         class="metric-value"
       >
         --
       </span>
+
     </div>
 
 
     <div class="metric">
-      <span>No-face time</span>
+
+      <span>
+        No-face time
+      </span>
+
       <span
         id="summaryNoFace"
         class="metric-value"
       >
         --
       </span>
+
     </div>
 
 
     <div class="metric">
-      <span>Compliance</span>
+
+      <span>
+        Compliance
+      </span>
+
       <span
         id="summaryPercentage"
         class="metric-value"
       >
         --
       </span>
+
     </div>
 
 
     <div class="metric">
-      <span>Therapy eye</span>
+
+      <span>
+        Therapy eye
+      </span>
+
       <span
         id="summaryEye"
         class="metric-value"
       >
         --
       </span>
+
     </div>
 
 
@@ -426,9 +466,9 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =========================================
        SYSTEM STATUS
-  ========================== -->
+  ========================================== -->
 
   <div class="card">
 
@@ -458,9 +498,9 @@
 <script type="module">
 
 
-/* =====================================================
+/* =========================================
    DOM ELEMENTS
-===================================================== */
+========================================= */
 
 const video =
   document.getElementById("video");
@@ -482,9 +522,6 @@ const distanceStatus =
 
 const positionStatus =
   document.getElementById("positionStatus");
-
-const orientationStatus =
-  document.getElementById("orientationStatus");
 
 const complianceStatus =
   document.getElementById("complianceStatus");
@@ -535,9 +572,9 @@ const summaryEye =
   document.getElementById("summaryEye");
 
 
-/* =====================================================
+/* =========================================
    MEDIAPIPE
-===================================================== */
+========================================= */
 
 let FaceLandmarker = null;
 
@@ -548,16 +585,16 @@ let vision = null;
 let faceLandmarker = null;
 
 
-/* =====================================================
+/* =========================================
    CAMERA
-===================================================== */
+========================================= */
 
 let cameraStream = null;
 
 
-/* =====================================================
+/* =========================================
    SESSION
-===================================================== */
+========================================= */
 
 let sessionRunning = false;
 
@@ -574,9 +611,9 @@ let noFaceTime = 0;
 let tooCloseStartedAt = null;
 
 
-/* =====================================================
-   DISTANCE
-===================================================== */
+/* =========================================
+   DISTANCE ESTIMATION
+========================================= */
 
 const referenceFaceSize = 0.20;
 
@@ -589,15 +626,16 @@ let smoothedFaceSize = null;
 let currentDistance = null;
 
 
-/* =====================================================
+/* =========================================
    FACE POSITION
-===================================================== */
+========================================= */
 
 let currentFacePosition = "unknown";
 
 let currentFaceCenterX = null;
 
 let currentFaceCenterY = null;
+
 
 const positionMinX = 0.25;
 
@@ -608,20 +646,9 @@ const positionMinY = 0.25;
 const positionMaxY = 0.75;
 
 
-/* =====================================================
-   HEAD ORIENTATION
-===================================================== */
-
-let currentHeadOrientation = "unknown";
-
-let currentYaw = null;
-
-let currentPitch = null;
-
-
-/* =====================================================
+/* =========================================
    THERAPY PROFILE
-===================================================== */
+========================================= */
 
 let therapyProfile = {
 
@@ -636,9 +663,9 @@ let therapyProfile = {
 };
 
 
-/* =====================================================
+/* =========================================
    LOAD COMPUTER VISION LIBRARY
-===================================================== */
+========================================= */
 
 async function loadVisionLibrary() {
 
@@ -695,9 +722,9 @@ async function loadVisionLibrary() {
 }
 
 
-/* =====================================================
+/* =========================================
    LOAD FACE MODEL
-===================================================== */
+========================================= */
 
 async function loadFaceModel() {
 
@@ -717,11 +744,10 @@ async function loadFaceModel() {
 
 
     /*
-      KEEPING THE PREVIOUSLY WORKING
-      MODEL CONFIGURATION.
+      THIS IS THE ORIGINAL WORKING
+      FACE LANDMARKER CONFIGURATION.
 
-      Do NOT add confidence options here
-      until we have verified the model loads.
+      No experimental confidence settings.
     */
 
     faceLandmarker =
@@ -775,9 +801,9 @@ async function loadFaceModel() {
 }
 
 
-/* =====================================================
+/* =========================================
    START CAMERA
-===================================================== */
+========================================= */
 
 async function startCamera() {
 
@@ -842,9 +868,9 @@ async function startCamera() {
 }
 
 
-/* =====================================================
-   READ PROFILE
-===================================================== */
+/* =========================================
+   READ THERAPY PROFILE
+========================================= */
 
 function readTherapyProfile() {
 
@@ -871,9 +897,9 @@ function readTherapyProfile() {
 }
 
 
-/* =====================================================
-   FACE SIZE
-===================================================== */
+/* =========================================
+   CALCULATE FACE SIZE
+========================================= */
 
 function calculateFaceSize(
   landmarks
@@ -903,9 +929,9 @@ function calculateFaceSize(
 }
 
 
-/* =====================================================
-   DISTANCE
-===================================================== */
+/* =========================================
+   UPDATE VIEWING DISTANCE
+========================================= */
 
 function updateDistance(
   landmarks
@@ -948,6 +974,16 @@ function updateDistance(
     sum /
     faceSizeHistory.length;
 
+
+  /*
+    Relative calibrated estimate.
+
+    Larger face in camera =
+    user is closer.
+
+    Smaller face in camera =
+    user is farther away.
+  */
 
   currentDistance =
     therapyProfile.targetDistance *
@@ -1003,9 +1039,9 @@ function updateDistance(
 }
 
 
-/* =====================================================
-   FACE POSITION
-===================================================== */
+/* =========================================
+   UPDATE FACE POSITION
+========================================= */
 
 function updateFacePosition(
   landmarks
@@ -1125,151 +1161,9 @@ function updateFacePosition(
 }
 
 
-/* =====================================================
-   HEAD ORIENTATION
-===================================================== */
-
-function updateHeadOrientation(
-  landmarks
-) {
-
-  const nose =
-    landmarks[1];
-
-  const leftSide =
-    landmarks[234];
-
-  const rightSide =
-    landmarks[454];
-
-  const forehead =
-    landmarks[10];
-
-  const chin =
-    landmarks[152];
-
-
-  const faceCenterX =
-    (
-      leftSide.x +
-      rightSide.x
-    ) / 2;
-
-
-  const horizontalOffset =
-    nose.x -
-    faceCenterX;
-
-
-  const faceCenterY =
-    (
-      forehead.y +
-      chin.y
-    ) / 2;
-
-
-  const verticalOffset =
-    nose.y -
-    faceCenterY;
-
-
-  const yaw =
-    horizontalOffset * 100;
-
-
-  const pitch =
-    verticalOffset * 100;
-
-
-  currentYaw =
-    yaw;
-
-  currentPitch =
-    pitch;
-
-
-  const yawThreshold =
-    8;
-
-  const pitchThreshold =
-    10;
-
-
-  if (
-    yaw <
-    -yawThreshold
-  ) {
-
-    currentHeadOrientation =
-      "turned left";
-
-  }
-
-  else if (
-    yaw >
-    yawThreshold
-  ) {
-
-    currentHeadOrientation =
-      "turned right";
-
-  }
-
-  else if (
-    pitch <
-    -pitchThreshold
-  ) {
-
-    currentHeadOrientation =
-      "looking up";
-
-  }
-
-  else if (
-    pitch >
-    pitchThreshold
-  ) {
-
-    currentHeadOrientation =
-      "looking down";
-
-  }
-
-  else {
-
-    currentHeadOrientation =
-      "facing screen";
-
-  }
-
-
-  if (
-    currentHeadOrientation ===
-    "facing screen"
-  ) {
-
-    orientationStatus.className =
-      "status good";
-
-  }
-
-  else {
-
-    orientationStatus.className =
-      "status warning";
-
-  }
-
-
-  orientationStatus.innerText =
-    "Head orientation: " +
-    currentHeadOrientation;
-}
-
-
-/* =====================================================
+/* =========================================
    RESET FACE STATES
-===================================================== */
+========================================= */
 
 function resetFaceStates() {
 
@@ -1286,18 +1180,6 @@ function resetFaceStates() {
 
 
   currentFaceCenterY =
-    null;
-
-
-  currentHeadOrientation =
-    "unknown";
-
-
-  currentYaw =
-    null;
-
-
-  currentPitch =
     null;
 
 
@@ -1331,20 +1213,12 @@ function resetFaceStates() {
 
   positionStatus.innerText =
     "Face position: No face detected";
-
-
-  orientationStatus.className =
-    "status warning";
-
-
-  orientationStatus.innerText =
-    "Head orientation: No face detected";
 }
 
 
-/* =====================================================
+/* =========================================
    FACE DETECTION LOOP
-===================================================== */
+========================================= */
 
 let lastVideoTime =
   -1;
@@ -1434,11 +1308,6 @@ function detectFace() {
       );
 
 
-      updateHeadOrientation(
-        landmarks
-      );
-
-
       updateTrackingState(
         true
       );
@@ -1474,9 +1343,9 @@ function detectFace() {
 }
 
 
-/* =====================================================
+/* =========================================
    FORMAT TIME
-===================================================== */
+========================================= */
 
 function formatTime(
   seconds
@@ -1509,9 +1378,9 @@ function formatTime(
 }
 
 
-/* =====================================================
+/* =========================================
    UPDATE COMPLIANCE
-===================================================== */
+========================================= */
 
 function updateTrackingState(
   hasFace
@@ -1668,9 +1537,9 @@ function updateTrackingState(
 }
 
 
-/* =====================================================
-   SESSION DISPLAY
-===================================================== */
+/* =========================================
+   UPDATE SESSION DISPLAY
+========================================= */
 
 function updateSessionDisplay() {
 
@@ -1719,19 +1588,34 @@ function updateSessionDisplay() {
   }
 
 
-  complianceStatus.innerText =
-    complianceStatus.innerText.split(
-      " •"
-    )[0] +
-    " • " +
-    percentage.toFixed(0) +
-    "%";
+  /*
+    Keep the live percentage visible
+    without changing the main status text.
+  */
+
+  if (
+    complianceStatus.innerText
+      .includes("Compliance:")
+  ) {
+
+    const baseText =
+      complianceStatus.innerText
+        .split(" • ")[0];
+
+
+    complianceStatus.innerText =
+      baseText +
+      " • " +
+      percentage.toFixed(0) +
+      "%";
+
+  }
 }
 
 
-/* =====================================================
+/* =========================================
    START SESSION
-===================================================== */
+========================================= */
 
 async function startSession() {
 
@@ -1772,7 +1656,7 @@ async function startSession() {
 
   /*
     STEP 2:
-    Load library.
+    Load computer vision library.
   */
 
   if (
@@ -1831,6 +1715,18 @@ async function startSession() {
     null;
 
 
+  faceSizeHistory =
+    [];
+
+
+  smoothedFaceSize =
+    null;
+
+
+  currentDistance =
+    null;
+
+
   sessionStartTime =
     Date.now();
 
@@ -1879,14 +1775,6 @@ async function startSession() {
     "Face position: Searching...";
 
 
-  orientationStatus.className =
-    "status warning";
-
-
-  orientationStatus.innerText =
-    "Head orientation: Searching...";
-
-
   complianceStatus.className =
     "status warning";
 
@@ -1905,9 +1793,9 @@ async function startSession() {
 }
 
 
-/* =====================================================
+/* =========================================
    END SESSION
-===================================================== */
+========================================= */
 
 function endSession() {
 
@@ -2015,9 +1903,9 @@ function endSession() {
 }
 
 
-/* =====================================================
+/* =========================================
    BUTTONS
-===================================================== */
+========================================= */
 
 startButton.addEventListener(
   "click",
@@ -2031,12 +1919,13 @@ endButton.addEventListener(
 );
 
 
-/* =====================================================
+/* =========================================
    INITIAL STATE
-===================================================== */
+========================================= */
 
 endButton.disabled =
   true;
+
 
 cameraStatus.className =
   "status";
@@ -2044,11 +1933,13 @@ cameraStatus.className =
 cameraStatus.innerText =
   "Camera: Ready to start.";
 
+
 libraryStatus.className =
   "status";
 
 libraryStatus.innerText =
   "Computer vision library: Not loaded yet.";
+
 
 modelStatus.className =
   "status";
