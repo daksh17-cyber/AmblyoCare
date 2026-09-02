@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0,
-                 maximum-scale=1.0, user-scalable=no">
-
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
   <title>AmblyoCare</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -23,2156 +21,2104 @@
     }
 
     header {
-      padding: 22px 18px 10px;
+      background: #172033;
+      color: white;
+      padding: 24px 20px;
       text-align: center;
     }
 
-    h1 {
+    header h1 {
       margin: 0;
       font-size: 30px;
     }
 
-    .subtitle {
-      margin-top: 6px;
-      color: #657087;
+    header p {
+      margin: 7px 0 0;
+      opacity: 0.8;
       font-size: 14px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 700px;
-      margin: auto;
-      padding: 14px;
+    main {
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
     .card {
       background: white;
-      border-radius: 18px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
     }
 
     .card h2 {
       margin-top: 0;
-      font-size: 19px;
+      font-size: 20px;
     }
 
     label {
       display: block;
-      font-size: 14px;
+      margin-top: 14px;
+      margin-bottom: 6px;
       font-weight: 600;
-      margin-top: 15px;
-      margin-bottom: 7px;
+      font-size: 14px;
     }
 
+    input,
     select,
-    input {
+    button {
       width: 100%;
-      padding: 13px;
-      border: 1px solid #d8deea;
+      padding: 12px;
       border-radius: 10px;
+      border: 1px solid #ccd3df;
       font-size: 16px;
       background: white;
     }
 
     button {
-      width: 100%;
+      margin-top: 16px;
+      background: #172033;
+      color: white;
       border: none;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 14px;
-      font-size: 16px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    .primary {
-      background: #1d63ff;
-      color: white;
-    }
-
-    .secondary {
-      background: #e9edf5;
+    button.secondary {
+      background: #e9edf4;
       color: #172033;
     }
 
-    .danger {
-      background: #d94b4b;
+    button.danger {
+      background: #b42318;
       color: white;
     }
 
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .hidden {
-      display: none;
+      display: none !important;
+    }
+
+    .profile-grid,
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .profile-item,
+    .summary-item {
+      background: #f3f5f9;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .profile-item span,
+    .summary-item span {
+      display: block;
+      font-size: 12px;
+      color: #697386;
+      margin-bottom: 5px;
+    }
+
+    .profile-item strong,
+    .summary-item strong {
+      font-size: 18px;
     }
 
     video {
       width: 100%;
-      border-radius: 16px;
+      max-height: 480px;
+      object-fit: cover;
+      border-radius: 14px;
       background: #111;
       transform: scaleX(-1);
     }
 
     .status {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 12px;
-      background: #eef2f8;
-      text-align: center;
+      padding: 13px;
+      border-radius: 10px;
+      margin-top: 12px;
+      background: #eef1f6;
       font-weight: 600;
-    }
-
-    .distance {
-      font-size: 30px;
-      font-weight: 800;
       text-align: center;
-      margin: 10px 0;
     }
 
     .good {
-      color: #16834a;
+      background: #e7f6ec;
+      color: #176b35;
     }
 
     .warning {
-      color: #c77700;
+      background: #fff4d6;
+      color: #805b00;
     }
 
     .bad {
-      color: #c53939;
+      background: #fdeaea;
+      color: #a61b1b;
     }
 
-    .summary-grid {
+    .timer {
+      text-align: center;
+      font-size: 42px;
+      font-weight: 700;
+      margin: 12px 0;
+    }
+
+    .monitor-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .monitor-box {
+      background: #f3f5f9;
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .monitor-box span {
+      display: block;
+      font-size: 12px;
+      color: #697386;
+      margin-bottom: 5px;
+    }
+
+    .monitor-box strong {
+      font-size: 17px;
+    }
+
+    .bar-container {
+      width: 100%;
+      height: 34px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      background: #e9edf4;
+      margin-top: 15px;
+    }
+
+    .bar-segment {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+
+    .bar-compliant {
+      background: #4caf50;
+    }
+
+    .bar-close {
+      background: #f5a623;
+    }
+
+    .bar-position {
+      background: #7b61ff;
+    }
+
+    .bar-noface {
+      background: #9aa4b2;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 15px;
     }
 
-    .summary-item {
-      background: #f1f4f9;
-      padding: 14px;
-      border-radius: 12px;
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
     }
 
-    .summary-label {
-      font-size: 12px;
-      color: #69758a;
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
-    .summary-value {
-      margin-top: 4px;
-      font-size: 20px;
-      font-weight: 750;
-    }
-
-    .profile-box {
-      background: #f1f5ff;
-      padding: 14px;
-      border-radius: 12px;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .note {
-      font-size: 12px;
+    .analytics-note {
+      font-size: 13px;
+      color: #697386;
+      margin-top: 14px;
       line-height: 1.5;
-      color: #69758a;
+    }
+
+    .history-item {
+      border: 1px solid #e1e5ec;
+      border-radius: 12px;
+      padding: 14px;
       margin-top: 10px;
     }
 
-    /* =========================================================
-       CORRECTION OVERLAY
-       ========================================================= */
+    .history-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .history-date {
+      font-weight: 700;
+    }
+
+    .history-compliance {
+      font-weight: 700;
+    }
+
+    .history-details {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #697386;
+    }
+
+    .history-details strong {
+      display: block;
+      color: #172033;
+      font-size: 14px;
+      margin-top: 3px;
+    }
+
+    .disclaimer {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #697386;
+      margin-top: 12px;
+    }
 
     #correctionOverlay {
       position: fixed;
       inset: 0;
       z-index: 9999;
-
+      background: rgba(0, 0, 0, 0.78);
       display: flex;
       align-items: center;
       justify-content: center;
-
-      padding: 20px;
-
-      background: rgba(12, 18, 33, 0.88);
-    }
-
-    #correctionOverlay.hidden {
-      display: none;
+      padding: 25px;
     }
 
     .correction-box {
-      width: 100%;
-      max-width: 430px;
-
-      padding: 30px 24px;
-
       background: white;
-      border-radius: 24px;
-
+      width: min(520px, 100%);
+      border-radius: 20px;
+      padding: 30px 22px;
       text-align: center;
-
-      box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
     }
 
     .correction-icon {
-      font-size: 54px;
-      margin-bottom: 10px;
+      font-size: 50px;
+      margin-bottom: 8px;
     }
 
     .correction-box h2 {
-      margin: 8px 0 12px;
-      font-size: 25px;
-      color: #c53939;
+      margin: 0 0 10px;
+      font-size: 26px;
     }
 
     .correction-box p {
-      margin: 0;
       font-size: 18px;
-      font-weight: 700;
-      line-height: 1.4;
+      font-weight: 600;
+      margin: 10px 0;
     }
 
     .correction-subtext {
-      margin-top: 14px;
+      color: #697386;
       font-size: 13px;
+      margin-top: 14px;
       line-height: 1.5;
-      color: #69758a;
     }
 
+    @media (max-width: 600px) {
+      .profile-grid,
+      .summary-grid,
+      .monitor-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .legend {
+        grid-template-columns: 1fr;
+      }
+
+      .history-details {
+        grid-template-columns: 1fr;
+      }
+
+      .timer {
+        font-size: 36px;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-<header>
+  <header>
+    <h1>AmblyoCare</h1>
+    <p>Computer-vision prototype for amblyopia therapy support</p>
+  </header>
 
-  <h1>AmblyoCare</h1>
+  <main>
 
-  <div class="subtitle">
-    Computer-vision prototype for amblyopia therapy support
+    <!-- THERAPY PROFILE -->
+    <section id="profileCard" class="card">
+      <h2>Therapy Profile</h2>
+
+      <label for="treatmentEye">Treatment Eye</label>
+      <select id="treatmentEye">
+        <option value="left">Left Eye</option>
+        <option value="right">Right Eye</option>
+      </select>
+
+      <label for="targetDistance">Target Viewing Distance (cm)</label>
+      <input
+        id="targetDistance"
+        type="number"
+        min="10"
+        max="200"
+        value="40"
+      />
+
+      <label for="sessionGoal">Session Goal (minutes)</label>
+      <input
+        id="sessionGoal"
+        type="number"
+        min="1"
+        max="180"
+        value="20"
+      />
+
+      <label for="gracePeriod">Correction Grace Period (seconds)</label>
+      <input
+        id="gracePeriod"
+        type="number"
+        min="0"
+        max="120"
+        value="20"
+      />
+
+      <div class="disclaimer">
+        These are configurable monitoring values for this research prototype
+        and are not medical prescriptions.
+      </div>
+
+      <button onclick="saveProfile()">Save Profile & Continue</button>
+    </section>
+
+    <!-- PROFILE SUMMARY -->
+    <section id="profileSummaryCard" class="card hidden">
+      <h2>Profile Summary</h2>
+
+      <div class="profile-grid">
+        <div class="profile-item">
+          <span>Treatment Eye</span>
+          <strong id="summaryEye">-</strong>
+        </div>
+
+        <div class="profile-item">
+          <span>Target Distance</span>
+          <strong id="summaryTarget">-</strong>
+        </div>
+
+        <div class="profile-item">
+          <span>Session Goal</span>
+          <strong id="summaryGoal">-</strong>
+        </div>
+
+        <div class="profile-item">
+          <span>Grace Period</span>
+          <strong id="summaryGrace">-</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAMERA -->
+    <section id="cameraCard" class="card hidden">
+      <h2>Camera</h2>
+
+      <video id="video" autoplay playsinline muted></video>
+
+      <div id="cameraStatus" class="status">
+        Starting camera...
+      </div>
+    </section>
+
+    <!-- CALIBRATION -->
+    <section id="calibrationCard" class="card hidden">
+      <h2>Calibration</h2>
+
+      <p>
+        Sit at your intended viewing distance and enter the physical distance
+        between your face and the iPad.
+      </p>
+
+      <label for="physicalDistance">
+        Actual Distance From Screen (cm)
+      </label>
+
+      <input
+        id="physicalDistance"
+        type="number"
+        min="10"
+        max="200"
+        value="40"
+      />
+
+      <button onclick="calibrate()">Calibrate</button>
+
+      <div id="calibrationStatus" class="status">
+        Waiting for a detected face...
+      </div>
+
+      <button onclick="startSession()" id="startButton" disabled>
+        Start Therapy Session
+      </button>
+    </section>
+
+    <!-- MONITORING -->
+    <section id="monitorCard" class="card hidden">
+      <h2>Monitoring</h2>
+
+      <div id="sessionTimer" class="timer">
+        00:00
+      </div>
+
+      <div class="monitor-grid">
+
+        <div class="monitor-box">
+          <span>Estimated Distance</span>
+          <strong id="distanceDisplay">--</strong>
+        </div>
+
+        <div class="monitor-box">
+          <span>Target Distance</span>
+          <strong id="monitorTarget">--</strong>
+        </div>
+
+        <div class="monitor-box">
+          <span>Session Goal</span>
+          <strong id="monitorGoal">--</strong>
+        </div>
+
+        <div class="monitor-box">
+          <span>Face Position</span>
+          <strong id="positionStatus">--</strong>
+        </div>
+
+      </div>
+
+      <div id="monitorStatus" class="status">
+        Waiting...
+      </div>
+
+      <button onclick="endSession()" class="danger">
+        End Session
+      </button>
+    </section>
+
+    <!-- FINAL SUMMARY -->
+    <section id="finalSummaryCard" class="card hidden">
+      <h2>Session Summary</h2>
+
+      <div class="summary-grid">
+
+        <div class="summary-item">
+          <span>Total Session</span>
+          <strong id="finalTotal">--</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Compliance</span>
+          <strong id="finalCompliance">--</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Compliant Time</span>
+          <strong id="finalCompliant">--</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Too Close</span>
+          <strong id="finalTooClose">--</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Poor Position</span>
+          <strong id="finalPoorPosition">--</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Face Not Detected</span>
+          <strong id="finalNoFace">--</strong>
+        </div>
+
+      </div>
+
+      <!-- STEP 6 VISUAL BREAKDOWN -->
+      <h3 style="margin-top: 24px;">
+        Session Breakdown
+      </h3>
+
+      <div class="bar-container">
+        <div
+          id="barCompliant"
+          class="bar-segment bar-compliant"
+          style="width: 0%"
+        ></div>
+
+        <div
+          id="barTooClose"
+          class="bar-segment bar-close"
+          style="width: 0%"
+        ></div>
+
+        <div
+          id="barPoorPosition"
+          class="bar-segment bar-position"
+          style="width: 0%"
+        ></div>
+
+        <div
+          id="barNoFace"
+          class="bar-segment bar-noface"
+          style="width: 0%"
+        ></div>
+      </div>
+
+      <div class="legend">
+
+        <div class="legend-item">
+          <div class="legend-dot bar-compliant"></div>
+          <span id="legendCompliant">Compliant: 0%</span>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-dot bar-close"></div>
+          <span id="legendTooClose">Too close: 0%</span>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-dot bar-position"></div>
+          <span id="legendPoorPosition">Poor position: 0%</span>
+        </div>
+
+        <div class="legend-item">
+          <div class="legend-dot bar-noface"></div>
+          <span id="legendNoFace">Face not detected: 0%</span>
+        </div>
+
+      </div>
+
+      <p class="analytics-note">
+        Compliance is calculated across all tracked session states:
+        compliant, too close, poor position, and face not detected.
+      </p>
+
+      <button onclick="newSession()">
+        Start New Session
+      </button>
+    </section>
+
+    <!-- SESSION HISTORY -->
+    <section id="historyCard" class="card">
+      <h2>Session History</h2>
+
+      <div id="historyContainer">
+        <p class="analytics-note">
+          No completed sessions recorded yet.
+        </p>
+      </div>
+
+      <button
+        id="clearHistoryButton"
+        class="secondary hidden"
+        onclick="clearHistory()"
+      >
+        Clear Session History
+      </button>
+    </section>
+
+  </main>
+
+  <!-- CORRECTION OVERLAY -->
+  <div id="correctionOverlay" class="hidden">
+    <div class="correction-box">
+      <div class="correction-icon">⚠️</div>
+
+      <h2>Correction Required</h2>
+
+      <p id="correctionMessage">
+        Please adjust your position.
+      </p>
+
+      <div class="correction-subtext">
+        Monitoring will resume automatically when your position is corrected.
+      </div>
+    </div>
   </div>
 
-</header>
+  <script type="module">
 
-<div class="container">
+    /* ================================
+       DOM REFERENCES
+    ================================= */
 
-  <!-- =========================================================
+    const video = document.getElementById("video");
+
+    const profileCard =
+      document.getElementById("profileCard");
+
+    const profileSummaryCard =
+      document.getElementById("profileSummaryCard");
+
+    const cameraCard =
+      document.getElementById("cameraCard");
+
+    const calibrationCard =
+      document.getElementById("calibrationCard");
+
+    const monitorCard =
+      document.getElementById("monitorCard");
+
+    const finalSummaryCard =
+      document.getElementById("finalSummaryCard");
+
+    const cameraStatus =
+      document.getElementById("cameraStatus");
+
+    const calibrationStatus =
+      document.getElementById("calibrationStatus");
+
+    const monitorStatus =
+      document.getElementById("monitorStatus");
+
+    const distanceDisplay =
+      document.getElementById("distanceDisplay");
+
+    const positionStatus =
+      document.getElementById("positionStatus");
+
+    const sessionTimer =
+      document.getElementById("sessionTimer");
+
+    const startButton =
+      document.getElementById("startButton");
+
+    const correctionOverlay =
+      document.getElementById("correctionOverlay");
+
+    const correctionMessage =
+      document.getElementById("correctionMessage");
+
+
+    /* ================================
        THERAPY PROFILE
-       ========================================================= -->
+    ================================= */
 
-  <section id="profileCard" class="card">
+    let therapyProfile = {
+      treatmentEye: "left",
+      targetDistance: 40,
+      sessionGoalMinutes: 20,
+      gracePeriodSeconds: 20
+    };
 
-    <h2>Therapy Profile</h2>
 
-    <label for="treatmentEye">
-      Treatment eye
-    </label>
+    /* ================================
+       CAMERA / MEDIAPIPE
+    ================================= */
 
-    <select id="treatmentEye">
+    let stream = null;
+    let faceLandmarker = null;
+    let visionReady = false;
+    let detecting = false;
 
-      <option value="left">
-        Left eye
-      </option>
+    let referenceFaceSize = null;
+    let smoothedFaceSize = null;
 
-      <option value="right">
-        Right eye
-      </option>
+    const faceSizeHistory = [];
+    const smoothingFrames = 15;
 
-    </select>
+    let currentEstimatedDistance = null;
+    let currentFacePosition = "unknown";
 
-    <label for="targetDistance">
-      Target viewing distance (cm)
-    </label>
 
-    <input
-      id="targetDistance"
-      type="number"
-      min="10"
-      max="200"
-      value="40"
-    >
+    /* ================================
+       SESSION VARIABLES
+    ================================= */
 
-    <label for="sessionGoal">
-      Session goal (minutes)
-    </label>
+    let sessionRunning = false;
+    let sessionStartTime = null;
+    let lastTrackingTime = null;
 
-    <input
-      id="sessionGoal"
-      type="number"
-      min="1"
-      max="180"
-      value="20"
-    >
+    let compliantTime = 0;
+    let tooCloseTime = 0;
+    let poorPositionTime = 0;
+    let noFaceTime = 0;
 
-    <label for="gracePeriod">
-      Grace period (seconds)
-    </label>
+    let tooCloseStartedAt = null;
 
-    <input
-      id="gracePeriod"
-      type="number"
-      min="0"
-      max="120"
-      value="20"
-    >
+    let invalidStartedAt = null;
+    let correctionActive = false;
 
-    <div class="note">
 
-      Target distance is a configurable monitoring value for this
-      research prototype. It should not be interpreted as a medical
-      prescription or automatically determined from an eye prescription.
+    /* ================================
+       STEP 6 HISTORY
+    ================================= */
 
-    </div>
+    const HISTORY_KEY = "amblyocare_session_history";
 
-    <button
-      class="primary"
-      onclick="saveProfile()"
-    >
-      Continue to Calibration
-    </button>
+    let sessionHistory = [];
 
-  </section>
 
-  <!-- =========================================================
-       PROFILE SUMMARY
-       ========================================================= -->
+    /* ================================
+       PROFILE
+    ================================= */
 
-  <section
-    id="profileSummaryCard"
-    class="card hidden"
-  >
+    window.saveProfile = async function () {
 
-    <h2>
-      Therapy Profile
-    </h2>
+      const treatmentEye =
+        document.getElementById("treatmentEye").value;
 
-    <div
-      id="profileSummary"
-      class="profile-box"
-    ></div>
+      const targetDistance =
+        Number(document.getElementById("targetDistance").value);
 
-    <button
-      class="secondary"
-      onclick="editProfile()"
-    >
-      Edit Profile
-    </button>
+      const sessionGoalMinutes =
+        Number(document.getElementById("sessionGoal").value);
 
-  </section>
-
-  <!-- =========================================================
-       CAMERA
-       ========================================================= -->
-
-  <section
-    id="cameraCard"
-    class="card hidden"
-  >
-
-    <h2>
-      Camera
-    </h2>
-
-    <video
-      id="video"
-      autoplay
-      playsinline
-      muted
-    ></video>
-
-    <div
-      id="status"
-      class="status"
-    >
-      Starting camera...
-    </div>
-
-  </section>
-
-  <!-- =========================================================
-       CALIBRATION
-       ========================================================= -->
-
-  <section
-    id="calibrationCard"
-    class="card hidden"
-  >
-
-    <h2>
-      Distance Calibration
-    </h2>
-
-    <p>
-      Sit at your desired reference distance from the iPad.
-      Enter the actual physical distance below.
-    </p>
-
-    <label for="calibrationDistance">
-      Current physical distance (cm)
-    </label>
-
-    <input
-      id="calibrationDistance"
-      type="number"
-      min="10"
-      max="200"
-      value="40"
-    >
-
-    <button
-      id="calibrateButton"
-      class="primary"
-      onclick="calibrateDistance()"
-    >
-      Calibrate
-    </button>
-
-    <div
-      id="calibrationStatus"
-      class="status"
-    >
-      Waiting for calibration...
-    </div>
-
-    <button
-      id="startButton"
-      class="primary hidden"
-      onclick="startSession()"
-    >
-      Start Therapy Session
-    </button>
-
-  </section>
-
-  <!-- =========================================================
-       MONITORING
-       ========================================================= -->
-
-  <section
-    id="monitorCard"
-    class="card hidden"
-  >
-
-    <h2>
-      Live Monitoring
-    </h2>
-
-    <div
-      id="sessionTimer"
-      class="distance"
-    >
-      00:00
-    </div>
-
-    <div
-      id="distanceDisplay"
-      class="distance"
-    >
-      -- cm
-    </div>
-
-    <div
-      id="monitorStatus"
-      class="status"
-    >
-      Waiting for face...
-    </div>
-
-    <div
-      id="positionStatus"
-      class="status"
-    >
-      Face position: Waiting...
-    </div>
-
-    <div class="summary-grid">
-
-      <div class="summary-item">
-
-        <div class="summary-label">
-          Target distance
-        </div>
-
-        <div
-          id="targetDisplay"
-          class="summary-value"
-        >
-          -- cm
-        </div>
-
-      </div>
-
-      <div class="summary-item">
-
-        <div class="summary-label">
-          Session goal
-        </div>
-
-        <div
-          id="goalDisplay"
-          class="summary-value"
-        >
-          -- min
-        </div>
-
-      </div>
-
-    </div>
-
-    <button
-      class="danger"
-      onclick="endSession()"
-    >
-      End Session
-    </button>
-
-  </section>
-
-  <!-- =========================================================
-       FINAL SUMMARY
-       ========================================================= -->
-
-  <section
-    id="summaryCard"
-    class="card hidden"
-  >
-
-    <h2>
-      Session Summary
-    </h2>
-
-    <div id="finalSummary"></div>
-
-    <button
-      class="primary"
-      onclick="newSession()"
-    >
-      New Session
-    </button>
-
-  </section>
-
-</div>
-
-<!-- =========================================================
-     CORRECTION OVERLAY
-     ========================================================= -->
-
-<div
-  id="correctionOverlay"
-  class="hidden"
->
-
-  <div class="correction-box">
-
-    <div class="correction-icon">
-      ⚠️
-    </div>
-
-    <h2>
-      Correction Required
-    </h2>
-
-    <p id="correctionMessage">
-      Please adjust your position.
-    </p>
-
-    <div class="correction-subtext">
-
-      Monitoring will resume automatically
-      when your position is corrected.
-
-    </div>
-
-  </div>
-
-</div>
-
-<script type="module">
-
-/* =========================================================
-   DOM ELEMENTS
-   ========================================================= */
-
-const video =
-  document.getElementById("video");
-
-const status =
-  document.getElementById("status");
-
-const profileCard =
-  document.getElementById("profileCard");
-
-const profileSummaryCard =
-  document.getElementById("profileSummaryCard");
-
-const cameraCard =
-  document.getElementById("cameraCard");
-
-const calibrationCard =
-  document.getElementById("calibrationCard");
-
-const monitorCard =
-  document.getElementById("monitorCard");
-
-const summaryCard =
-  document.getElementById("summaryCard");
-
-const distanceDisplay =
-  document.getElementById("distanceDisplay");
-
-const monitorStatus =
-  document.getElementById("monitorStatus");
-
-const positionStatus =
-  document.getElementById("positionStatus");
-
-const sessionTimer =
-  document.getElementById("sessionTimer");
-
-const calibrationStatus =
-  document.getElementById("calibrationStatus");
-
-const startButton =
-  document.getElementById("startButton");
-
-const profileSummary =
-  document.getElementById("profileSummary");
-
-const targetDisplay =
-  document.getElementById("targetDisplay");
-
-const goalDisplay =
-  document.getElementById("goalDisplay");
-
-const correctionOverlay =
-  document.getElementById("correctionOverlay");
-
-const correctionMessage =
-  document.getElementById("correctionMessage");
-
-/* =========================================================
-   THERAPY PROFILE
-   ========================================================= */
-
-let therapyProfile = {
-
-  treatmentEye: "left",
-
-  targetDistance: 40,
-
-  sessionGoalMinutes: 20,
-
-  gracePeriodSeconds: 20
-
-};
-
-window.saveProfile = function() {
-
-  const eye =
-    document.getElementById(
-      "treatmentEye"
-    ).value;
-
-  const target =
-    Number(
-      document.getElementById(
-        "targetDistance"
-      ).value
-    );
-
-  const goal =
-    Number(
-      document.getElementById(
-        "sessionGoal"
-      ).value
-    );
-
-  const grace =
-    Number(
-      document.getElementById(
-        "gracePeriod"
-      ).value
-    );
-
-  if (
-    !target ||
-    target < 10 ||
-    target > 200
-  ) {
-
-    alert(
-      "Please enter a target distance between 10 and 200 cm."
-    );
-
-    return;
-
-  }
-
-  if (
-    !goal ||
-    goal < 1 ||
-    goal > 180
-  ) {
-
-    alert(
-      "Please enter a session goal between 1 and 180 minutes."
-    );
-
-    return;
-
-  }
-
-  if (
-    grace < 0 ||
-    grace > 120
-  ) {
-
-    alert(
-      "Please enter a grace period between 0 and 120 seconds."
-    );
-
-    return;
-
-  }
-
-  therapyProfile = {
-
-    treatmentEye: eye,
-
-    targetDistance: target,
-
-    sessionGoalMinutes: goal,
-
-    gracePeriodSeconds: grace
-
-  };
-
-  profileSummary.innerHTML = `
-
-    <strong>Treatment eye:</strong>
-    ${eye === "left" ? "Left eye" : "Right eye"}<br>
-
-    <strong>Target distance:</strong>
-    ${target} cm<br>
-
-    <strong>Session goal:</strong>
-    ${goal} minutes<br>
-
-    <strong>Grace period:</strong>
-    ${grace} seconds
-
-  `;
-
-  profileCard.classList.add(
-    "hidden"
-  );
-
-  profileSummaryCard.classList.remove(
-    "hidden"
-  );
-
-  cameraCard.classList.remove(
-    "hidden"
-  );
-
-  calibrationCard.classList.remove(
-    "hidden"
-  );
-
-  targetDisplay.textContent =
-    `${target} cm`;
-
-  goalDisplay.textContent =
-    `${goal} min`;
-
-  startCamera();
-
-};
-
-window.editProfile = function() {
-
-  document.getElementById(
-    "treatmentEye"
-  ).value =
-    therapyProfile.treatmentEye;
-
-  document.getElementById(
-    "targetDistance"
-  ).value =
-    therapyProfile.targetDistance;
-
-  document.getElementById(
-    "sessionGoal"
-  ).value =
-    therapyProfile.sessionGoalMinutes;
-
-  document.getElementById(
-    "gracePeriod"
-  ).value =
-    therapyProfile.gracePeriodSeconds;
-
-  profileSummaryCard.classList.add(
-    "hidden"
-  );
-
-  profileCard.classList.remove(
-    "hidden"
-  );
-
-};
-
-/* =========================================================
-   CAMERA
-   ========================================================= */
-
-let stream = null;
-
-async function startCamera() {
-
-  try {
-
-    status.textContent =
-      "Requesting camera permission...";
-
-    stream =
-      await navigator.mediaDevices.getUserMedia({
-
-        video: {
-          facingMode: "user"
-        },
-
-        audio: false
-
-      });
-
-    video.srcObject =
-      stream;
-
-    await video.play();
-
-    status.textContent =
-      "Camera working. Loading computer vision...";
-
-    await loadVision();
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.textContent =
-      "Camera error: " +
-      error.message;
-
-  }
-
-}
-
-/* =========================================================
-   MEDIAPIPE
-   ========================================================= */
-
-let FaceLandmarker = null;
-
-let FilesetResolver = null;
-
-let faceLandmarker = null;
-
-let visionReady = false;
-
-async function loadVision() {
-
-  try {
-
-    const visionModule =
-      await import(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
-      );
-
-    FaceLandmarker =
-      visionModule.FaceLandmarker;
-
-    FilesetResolver =
-      visionModule.FilesetResolver;
-
-    status.textContent =
-      "Computer vision library loaded successfully.";
-
-    const vision =
-      await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-      );
-
-    faceLandmarker =
-      await FaceLandmarker.createFromOptions(
-
-        vision,
-
-        {
-
-          baseOptions: {
-
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
-
-          },
-
-          runningMode:
-            "VIDEO",
-
-          numFaces:
-            1
-
-        }
-
-      );
-
-    visionReady =
-      true;
-
-    status.textContent =
-      "Face tracking ready.";
-
-    requestAnimationFrame(
-      detectFace
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.textContent =
-      "Computer vision error: " +
-      error.message;
-
-  }
-
-}
-
-/* =========================================================
-   FACE SIZE / DISTANCE
-   ========================================================= */
-
-let lastVideoTime =
-  -1;
-
-let currentFaceSize =
-  null;
-
-let smoothedFaceSize =
-  null;
-
-const smoothingHistory =
-  [];
-
-const smoothingWindow =
-  15;
-
-/* =========================================================
-   FACE POSITION
-   ========================================================= */
-
-let currentFacePosition =
-  "unknown";
-
-let currentFaceCenterX =
-  null;
-
-let currentFaceCenterY =
-  null;
-
-const positionMinX =
-  0.25;
-
-const positionMaxX =
-  0.75;
-
-const positionMinY =
-  0.25;
-
-const positionMaxY =
-  0.75;
-
-function updateFacePosition(
-  landmarks
-) {
-
-  const nose =
-    landmarks[1];
-
-  const chin =
-    landmarks[152];
-
-  const leftSide =
-    landmarks[234];
-
-  const rightSide =
-    landmarks[454];
-
-  const centerX =
-    (
-      nose.x +
-      chin.x +
-      leftSide.x +
-      rightSide.x
-    ) / 4;
-
-  const centerY =
-    (
-      nose.y +
-      chin.y +
-      leftSide.y +
-      rightSide.y
-    ) / 4;
-
-  currentFaceCenterX =
-    centerX;
-
-  currentFaceCenterY =
-    centerY;
-
-  let position =
-    "center";
-
-  if (
-    centerX <
-    positionMinX
-  ) {
-
-    position =
-      "too far left";
-
-  } else if (
-    centerX >
-    positionMaxX
-  ) {
-
-    position =
-      "too far right";
-
-  } else if (
-    centerY <
-    positionMinY
-  ) {
-
-    position =
-      "too high";
-
-  } else if (
-    centerY >
-    positionMaxY
-  ) {
-
-    position =
-      "too low";
-
-  }
-
-  currentFacePosition =
-    position;
-
-  if (
-    position === "center"
-  ) {
-
-    positionStatus.className =
-      "status good";
-
-    positionStatus.innerText =
-      "Face position: Good";
-
-  } else {
-
-    positionStatus.className =
-      "status warning";
-
-    positionStatus.innerText =
-      "Face position: " +
-      position.charAt(0).toUpperCase() +
-      position.slice(1);
-
-  }
-
-}
-
-/* =========================================================
-   FACE DETECTION LOOP
-   ========================================================= */
-
-function detectFace(
-  timestamp
-) {
-
-  if (
-    visionReady &&
-    video.readyState >= 2 &&
-    video.currentTime !== lastVideoTime
-  ) {
-
-    lastVideoTime =
-      video.currentTime;
-
-    const result =
-      faceLandmarker.detectForVideo(
-        video,
-        timestamp
-      );
-
-    if (
-      result.faceLandmarks &&
-      result.faceLandmarks.length > 0
-    ) {
-
-      const landmarks =
-        result.faceLandmarks[0];
-
-      /* -----------------------------
-         FACE POSITION
-      ----------------------------- */
-
-      updateFacePosition(
-        landmarks
-      );
-
-      /* -----------------------------
-         FACE SIZE
-      ----------------------------- */
-
-      const leftSide =
-        landmarks[234];
-
-      const rightSide =
-        landmarks[454];
-
-      const dx =
-        leftSide.x -
-        rightSide.x;
-
-      const dy =
-        leftSide.y -
-        rightSide.y;
-
-      const faceSize =
-        Math.sqrt(
-          dx * dx +
-          dy * dy
-        );
-
-      currentFaceSize =
-        faceSize;
-
-      smoothingHistory.push(
-        faceSize
-      );
+      const gracePeriodSeconds =
+        Number(document.getElementById("gracePeriod").value);
 
       if (
-        smoothingHistory.length >
-        smoothingWindow
+        !targetDistance ||
+        targetDistance < 10 ||
+        targetDistance > 200
       ) {
-
-        smoothingHistory.shift();
-
+        alert("Please enter a valid target distance.");
+        return;
       }
 
-      smoothedFaceSize =
-        smoothingHistory.reduce(
-          (
-            sum,
-            value
-          ) =>
-            sum + value,
-          0
-        ) /
-        smoothingHistory.length;
+      if (
+        !sessionGoalMinutes ||
+        sessionGoalMinutes < 1 ||
+        sessionGoalMinutes > 180
+      ) {
+        alert("Please enter a valid session goal.");
+        return;
+      }
 
       if (
-        referenceFaceSize !== null
+        gracePeriodSeconds < 0 ||
+        gracePeriodSeconds > 120
       ) {
+        alert("Please enter a valid grace period.");
+        return;
+      }
 
-        const estimatedDistance =
-          therapyProfile.targetDistance *
-          (
-            referenceFaceSize /
-            smoothedFaceSize
+      therapyProfile = {
+        treatmentEye,
+        targetDistance,
+        sessionGoalMinutes,
+        gracePeriodSeconds
+      };
+
+      document.getElementById("summaryEye").textContent =
+        treatmentEye === "left"
+          ? "Left Eye"
+          : "Right Eye";
+
+      document.getElementById("summaryTarget").textContent =
+        `${targetDistance} cm`;
+
+      document.getElementById("summaryGoal").textContent =
+        `${sessionGoalMinutes} min`;
+
+      document.getElementById("summaryGrace").textContent =
+        `${gracePeriodSeconds} sec`;
+
+      document.getElementById("monitorTarget").textContent =
+        `${targetDistance} cm`;
+
+      document.getElementById("monitorGoal").textContent =
+        `${sessionGoalMinutes} min`;
+
+      profileCard.classList.add("hidden");
+      profileSummaryCard.classList.remove("hidden");
+      cameraCard.classList.remove("hidden");
+      calibrationCard.classList.remove("hidden");
+
+      await startCamera();
+    };
+
+
+    /* ================================
+       CAMERA
+    ================================= */
+
+    async function startCamera() {
+
+      try {
+
+        cameraStatus.textContent =
+          "Requesting camera access...";
+
+        stream =
+          await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: "user"
+            },
+            audio: false
+          });
+
+        video.srcObject = stream;
+
+        await video.play();
+
+        cameraStatus.textContent =
+          "Camera active.";
+
+        cameraStatus.className =
+          "status good";
+
+        await loadVision();
+
+      } catch (error) {
+
+        console.error(error);
+
+        cameraStatus.textContent =
+          "Camera access failed. Please allow camera access and reload.";
+
+        cameraStatus.className =
+          "status bad";
+      }
+    }
+
+
+    /* ================================
+       MEDIAPIPE
+    ================================= */
+
+    async function loadVision() {
+
+      try {
+
+        cameraStatus.textContent =
+          "Loading computer-vision model...";
+
+        const vision =
+          await import(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
           );
 
-        currentEstimatedDistance =
-          estimatedDistance;
+        const {
+          FaceLandmarker,
+          FilesetResolver
+        } = vision;
 
-        distanceDisplay.textContent =
-          `${Math.round(
-            estimatedDistance
-          )} cm`;
+        const filesetResolver =
+          await FilesetResolver.forVisionTasks(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+          );
 
-        updateDistanceStatus(
-          estimatedDistance
-        );
+        faceLandmarker =
+          await FaceLandmarker.createFromOptions(
+            filesetResolver,
+            {
+              baseOptions: {
+                modelAssetPath:
+                  "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+              },
+
+              runningMode: "VIDEO",
+
+              numFaces: 1
+            }
+          );
+
+        visionReady = true;
+
+        cameraStatus.textContent =
+          "Computer vision ready.";
+
+        cameraStatus.className =
+          "status good";
+
+        if (!detecting) {
+          detecting = true;
+          requestAnimationFrame(detectFace);
+        }
+
+      } catch (error) {
+
+        console.error(error);
+
+        cameraStatus.textContent =
+          "Could not load computer vision.";
+
+        cameraStatus.className =
+          "status bad";
+      }
+    }
+
+
+    /* ================================
+       FACE DETECTION
+    ================================= */
+
+    async function detectFace() {
+
+      if (!detecting) {
+        return;
+      }
+
+      requestAnimationFrame(detectFace);
+
+      if (
+        !visionReady ||
+        !faceLandmarker ||
+        video.readyState < 2
+      ) {
+        return;
+      }
+
+      const now = performance.now();
+
+      try {
+
+        const result =
+          faceLandmarker.detectForVideo(
+            video,
+            now
+          );
 
         if (
-          sessionRunning
+          !result.faceLandmarks ||
+          result.faceLandmarks.length === 0
         ) {
+
+          currentEstimatedDistance = null;
+          currentFacePosition = "unknown";
+
+          distanceDisplay.textContent =
+            "--";
+
+          positionStatus.textContent =
+            "No face detected";
+
+          positionStatus.parentElement.className =
+            "monitor-box";
+
+          updateMonitorStatus();
 
           updateSessionTracking();
 
-          updateCorrectionOverlay();
-
+          return;
         }
 
-      }
+        const landmarks =
+          result.faceLandmarks[0];
 
-    } else {
 
-      /* -----------------------------
-         NO FACE DETECTED
-      ----------------------------- */
+        /* ================================
+           FACE SIZE
+        ================================= */
 
-      currentFaceSize =
-        null;
+        const leftSide =
+          landmarks[234];
 
-      currentFaceCenterX =
-        null;
+        const rightSide =
+          landmarks[454];
 
-      currentFaceCenterY =
-        null;
+        const faceWidth =
+          Math.abs(
+            rightSide.x - leftSide.x
+          );
 
-      currentFacePosition =
-        "unknown";
+        faceSizeHistory.push(faceWidth);
 
-      /*
-       * Important:
-       * Clear the previous distance so the
-       * intervention system does not use
-       * stale distance information.
-       */
+        if (
+          faceSizeHistory.length >
+          smoothingFrames
+        ) {
+          faceSizeHistory.shift();
+        }
 
-      currentEstimatedDistance =
-        null;
+        smoothedFaceSize =
+          faceSizeHistory.reduce(
+            (sum, value) => sum + value,
+            0
+          ) / faceSizeHistory.length;
 
-      distanceDisplay.textContent =
-        "-- cm";
 
-      monitorStatus.textContent =
-        "No face detected";
+        /* ================================
+           DISTANCE ESTIMATION
+        ================================= */
 
-      monitorStatus.className =
-        "status warning";
+        if (referenceFaceSize !== null) {
 
-      positionStatus.textContent =
-        "Face position: No face detected";
+          currentEstimatedDistance =
+            therapyProfile.targetDistance *
+            (
+              referenceFaceSize /
+              smoothedFaceSize
+            );
 
-      positionStatus.className =
-        "status warning";
+          distanceDisplay.textContent =
+            `${Math.round(currentEstimatedDistance)} cm`;
 
-      if (
-        sessionRunning
-      ) {
+        } else {
+
+          currentEstimatedDistance =
+            null;
+
+          distanceDisplay.textContent =
+            "--";
+        }
+
+
+        /* ================================
+           FACE POSITION
+        ================================= */
+
+        const nose =
+          landmarks[1];
+
+        const chin =
+          landmarks[152];
+
+        const left =
+          landmarks[234];
+
+        const right =
+          landmarks[454];
+
+        const centerX =
+          (left.x + right.x) / 2;
+
+        const centerY =
+          (nose.y + chin.y) / 2;
+
+        const positionMinX = 0.25;
+        const positionMaxX = 0.75;
+
+        const positionMinY = 0.25;
+        const positionMaxY = 0.75;
+
+        if (centerX < positionMinX) {
+
+          currentFacePosition =
+            "too_far_left";
+
+        } else if (centerX > positionMaxX) {
+
+          currentFacePosition =
+            "too_far_right";
+
+        } else if (centerY < positionMinY) {
+
+          currentFacePosition =
+            "too_high";
+
+        } else if (centerY > positionMaxY) {
+
+          currentFacePosition =
+            "too_low";
+
+        } else {
+
+          currentFacePosition =
+            "center";
+        }
+
+
+        /* ================================
+           POSITION DISPLAY
+        ================================= */
+
+        if (currentFacePosition === "center") {
+
+          positionStatus.textContent =
+            "Good";
+
+          positionStatus.parentElement.className =
+            "monitor-box";
+
+        } else if (
+          currentFacePosition === "too_far_left"
+        ) {
+
+          positionStatus.textContent =
+            "Too far left";
+
+          positionStatus.parentElement.className =
+            "monitor-box";
+
+        } else if (
+          currentFacePosition === "too_far_right"
+        ) {
+
+          positionStatus.textContent =
+            "Too far right";
+
+          positionStatus.parentElement.className =
+            "monitor-box";
+
+        } else if (
+          currentFacePosition === "too_high"
+        ) {
+
+          positionStatus.textContent =
+            "Too high";
+
+          positionStatus.parentElement.className =
+            "monitor-box";
+
+        } else if (
+          currentFacePosition === "too_low"
+        ) {
+
+          positionStatus.textContent =
+            "Too low";
+
+          positionStatus.parentElement.className =
+            "monitor-box";
+
+        } else {
+
+          positionStatus.textContent =
+            "--";
+        }
+
+
+        updateMonitorStatus();
 
         updateSessionTracking();
 
-        updateCorrectionOverlay();
+      } catch (error) {
 
+        console.error(
+          "Face detection error:",
+          error
+        );
+      }
+    }
+
+
+    /* ================================
+       CALIBRATION
+    ================================= */
+
+    window.calibrate = function () {
+
+      if (
+        smoothedFaceSize === null ||
+        smoothedFaceSize <= 0
+      ) {
+
+        calibrationStatus.textContent =
+          "No stable face detected yet.";
+
+        calibrationStatus.className =
+          "status warning";
+
+        return;
       }
 
-    }
+      const physicalDistance =
+        Number(
+          document.getElementById(
+            "physicalDistance"
+          ).value
+        );
 
-  }
+      if (
+        !physicalDistance ||
+        physicalDistance < 10 ||
+        physicalDistance > 200
+      ) {
 
-  requestAnimationFrame(
-    detectFace
-  );
+        calibrationStatus.textContent =
+          "Please enter a valid physical distance.";
 
-}
+        calibrationStatus.className =
+          "status bad";
 
-/* =========================================================
-   CALIBRATION
-   ========================================================= */
+        return;
+      }
 
-let referenceFaceSize =
-  null;
+      referenceFaceSize =
+        smoothedFaceSize;
 
-let currentEstimatedDistance =
-  null;
+      therapyProfile.calibrationDistance =
+        physicalDistance;
 
-window.calibrateDistance = function() {
+      calibrationStatus.textContent =
+        `Calibration complete at ${physicalDistance} cm.`;
 
-  if (
-    smoothedFaceSize === null
-  ) {
+      calibrationStatus.className =
+        "status good";
 
-    calibrationStatus.textContent =
-      "No face detected. Please position your face in the camera.";
+      startButton.disabled = false;
+    };
 
-    calibrationStatus.className =
-      "status warning";
 
-    return;
+    /* ================================
+       MONITOR STATUS
+    ================================= */
 
-  }
+    function updateMonitorStatus() {
 
-  const physicalDistance =
-    Number(
-      document.getElementById(
-        "calibrationDistance"
-      ).value
-    );
+      if (!sessionRunning) {
+        return;
+      }
 
-  if (
-    !physicalDistance ||
-    physicalDistance < 10 ||
-    physicalDistance > 200
-  ) {
+      if (currentEstimatedDistance === null) {
 
-    calibrationStatus.textContent =
-      "Please enter a valid distance between 10 and 200 cm.";
+        monitorStatus.textContent =
+          "No face detected.";
 
-    calibrationStatus.className =
-      "status warning";
+        monitorStatus.className =
+          "status warning";
 
-    return;
+        return;
+      }
 
-  }
+      if (
+        currentEstimatedDistance <
+        therapyProfile.targetDistance * 0.90
+      ) {
 
-  referenceFaceSize =
-    smoothedFaceSize;
+        monitorStatus.textContent =
+          "Too close. Please move farther away.";
 
-  therapyProfile.calibrationDistance =
-    physicalDistance;
+        monitorStatus.className =
+          "status warning";
 
-  calibrationStatus.textContent =
-    `Calibration successful at ${physicalDistance} cm.`;
+        return;
+      }
 
-  calibrationStatus.className =
-    "status good";
+      if (
+        currentFacePosition !== "center"
+      ) {
 
-  startButton.classList.remove(
-    "hidden"
-  );
+        if (
+          currentFacePosition ===
+          "too_far_left"
+        ) {
 
-};
+          monitorStatus.textContent =
+            "Too far left.";
 
-/* =========================================================
-   DISTANCE STATUS
-   ========================================================= */
+        } else if (
+          currentFacePosition ===
+          "too_far_right"
+        ) {
 
-function updateDistanceStatus(
-  distance
-) {
+          monitorStatus.textContent =
+            "Too far right.";
 
-  if (
-    !sessionRunning
-  ) {
+        } else if (
+          currentFacePosition ===
+          "too_high"
+        ) {
 
-    return;
+          monitorStatus.textContent =
+            "Too high.";
 
-  }
+        } else if (
+          currentFacePosition ===
+          "too_low"
+        ) {
 
-  const target =
-    therapyProfile.targetDistance;
+          monitorStatus.textContent =
+            "Too low.";
 
-  if (
-    distance >=
-    target * 0.90
-  ) {
+        } else {
 
-    monitorStatus.textContent =
-      "Distance OK";
+          monitorStatus.textContent =
+            "Please reposition your face.";
+        }
 
-    monitorStatus.className =
-      "status good";
+        monitorStatus.className =
+          "status warning";
 
-  } else {
-
-    monitorStatus.textContent =
-      "Too close";
-
-    monitorStatus.className =
-      "status warning";
-
-  }
-
-}
-
-/* =========================================================
-   CORRECTION / INTERVENTION SYSTEM
-   ========================================================= */
-
-let invalidStartedAt =
-  null;
-
-let correctionActive =
-  false;
-
-function updateCorrectionOverlay() {
-
-  if (
-    !sessionRunning
-  ) {
-
-    correctionOverlay.classList.add(
-      "hidden"
-    );
-
-    correctionActive =
-      false;
-
-    invalidStartedAt =
-      null;
-
-    return;
-
-  }
-
-  const now =
-    performance.now();
-
-  let validState =
-    true;
-
-  let reason =
-    "";
-
-  /* -----------------------------
-     NO FACE
-     ----------------------------- */
-
-  if (
-    currentEstimatedDistance === null
-  ) {
-
-    validState =
-      false;
-
-    reason =
-      "Please place your face in view of the camera.";
-
-  }
-
-  /* -----------------------------
-     TOO CLOSE
-     ----------------------------- */
-
-  else if (
-    currentEstimatedDistance <
-    therapyProfile.targetDistance * 0.90
-  ) {
-
-    validState =
-      false;
-
-    reason =
-      "Please move farther away from the iPad.";
-
-  }
-
-  /* -----------------------------
-     FACE POSITION
-     ----------------------------- */
-
-  else if (
-    currentFacePosition !== "center"
-  ) {
-
-    validState =
-      false;
-
-    if (
-      currentFacePosition ===
-        "too far left" ||
-
-      currentFacePosition ===
-        "too far right"
-    ) {
-
-      reason =
-        "Please move your face toward the center.";
-
-    } else if (
-      currentFacePosition ===
-        "too high" ||
-
-      currentFacePosition ===
-        "too low"
-    ) {
-
-      reason =
-        "Please reposition your face.";
-
-    } else {
-
-      reason =
-        "Please center your face.";
-
-    }
-
-  }
-
-  /* -----------------------------
-     VALID STATE
-     ----------------------------- */
-
-  if (
-    validState
-  ) {
-
-    invalidStartedAt =
-      null;
-
-    correctionActive =
-      false;
-
-    correctionOverlay.classList.add(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-  /* -----------------------------
-     INVALID STATE
-     ----------------------------- */
-
-  if (
-    invalidStartedAt === null
-  ) {
-
-    invalidStartedAt =
-      now;
-
-  }
-
-  const invalidDuration =
-    (
-      now -
-      invalidStartedAt
-    ) / 1000;
-
-  if (
-    invalidDuration >=
-    therapyProfile.gracePeriodSeconds
-  ) {
-
-    correctionActive =
-      true;
-
-    correctionMessage.textContent =
-      reason;
-
-    correctionOverlay.classList.remove(
-      "hidden"
-    );
-
-  }
-
-}
-
-/* =========================================================
-   SESSION TRACKING
-   ========================================================= */
-
-let sessionRunning =
-  false;
-
-let sessionStartTime =
-  null;
-
-let lastTrackingTime =
-  null;
-
-let compliantTime =
-  0;
-
-let tooCloseTime =
-  0;
-
-let poorPositionTime =
-  0;
-
-let noFaceTime =
-  0;
-
-let tooCloseStartedAt =
-  null;
-
-function updateSessionTracking() {
-
-  if (
-    !sessionRunning
-  ) {
-
-    return;
-
-  }
-
-  const now =
-    performance.now();
-
-  if (
-    lastTrackingTime === null
-  ) {
-
-    lastTrackingTime =
-      now;
-
-    return;
-
-  }
-
-  const delta =
-    (
-      now -
-      lastTrackingTime
-    ) / 1000;
-
-  lastTrackingTime =
-    now;
-
-  if (
-    delta < 0 ||
-    delta > 2
-  ) {
-
-    return;
-
-  }
-
-  /* -----------------------------
-     NO FACE
-  ----------------------------- */
-
-  if (
-    currentEstimatedDistance === null
-  ) {
-
-    noFaceTime +=
-      delta;
-
-    return;
-
-  }
-
-  /* -----------------------------
-     TOO CLOSE
-  ----------------------------- */
-
-  const target =
-    therapyProfile.targetDistance;
-
-  if (
-    currentEstimatedDistance <
-    target * 0.90
-  ) {
-
-    tooCloseTime +=
-      delta;
-
-    if (
-      tooCloseStartedAt === null
-    ) {
-
-      tooCloseStartedAt =
-        performance.now();
-
-    }
-
-    const tooCloseDuration =
-      (
-        performance.now() -
-        tooCloseStartedAt
-      ) / 1000;
-
-    if (
-      tooCloseDuration >
-      therapyProfile.gracePeriodSeconds
-    ) {
+        return;
+      }
 
       monitorStatus.textContent =
-        "Too close — please move back.";
+        "Good position.";
 
       monitorStatus.className =
-        "status warning";
-
+        "status good";
     }
 
-    return;
 
-  }
+    /* ================================
+       SESSION START
+    ================================= */
 
-  /* -----------------------------
-     POOR FACE POSITION
-  ----------------------------- */
+    window.startSession = function () {
 
-  if (
-    currentFacePosition !== "center"
-  ) {
+      sessionRunning = true;
 
-    poorPositionTime +=
-      delta;
+      sessionStartTime =
+        performance.now();
 
-    tooCloseStartedAt =
-      null;
+      lastTrackingTime =
+        performance.now();
 
-    return;
+      compliantTime = 0;
+      tooCloseTime = 0;
+      poorPositionTime = 0;
+      noFaceTime = 0;
 
-  }
+      tooCloseStartedAt = null;
 
-  /* -----------------------------
-     COMPLIANT
-  ----------------------------- */
+      invalidStartedAt = null;
+      correctionActive = false;
 
-  compliantTime +=
-    delta;
+      correctionOverlay.classList.add(
+        "hidden"
+      );
 
-  tooCloseStartedAt =
-    null;
+      calibrationCard.classList.add(
+        "hidden"
+      );
 
-}
+      finalSummaryCard.classList.add(
+        "hidden"
+      );
 
-/* =========================================================
-   START SESSION
-   ========================================================= */
+      monitorCard.classList.remove(
+        "hidden"
+      );
 
-window.startSession = function() {
+      sessionTimer.textContent =
+        "00:00";
 
-  if (
-    referenceFaceSize === null
-  ) {
+      monitorStatus.textContent =
+        "Monitoring started.";
 
-    alert(
-      "Please calibrate before starting the session."
-    );
+      monitorStatus.className =
+        "status good";
 
-    return;
+      requestAnimationFrame(
+        updateSessionTimer
+      );
+    };
 
-  }
 
-  sessionRunning =
-    true;
+    /* ================================
+       SESSION TIMER
+    ================================= */
 
-  sessionStartTime =
-    performance.now();
+    function updateSessionTimer() {
 
-  lastTrackingTime =
-    null;
+      if (!sessionRunning) {
+        return;
+      }
 
-  compliantTime =
-    0;
+      const elapsed =
+        performance.now() -
+        sessionStartTime;
 
-  tooCloseTime =
-    0;
+      sessionTimer.textContent =
+        formatDuration(elapsed / 1000);
 
-  poorPositionTime =
-    0;
+      requestAnimationFrame(
+        updateSessionTimer
+      );
+    }
 
-  noFaceTime =
-    0;
 
-  tooCloseStartedAt =
-    null;
+    /* ================================
+       SESSION TRACKING
+    ================================= */
 
-  invalidStartedAt =
-    null;
+    function updateSessionTracking() {
 
-  correctionActive =
-    false;
+      if (!sessionRunning) {
+        return;
+      }
 
-  correctionOverlay.classList.add(
-    "hidden"
-  );
+      const now =
+        performance.now();
 
-  calibrationCard.classList.add(
-    "hidden"
-  );
+      if (lastTrackingTime === null) {
 
-  monitorCard.classList.remove(
-    "hidden"
-  );
+        lastTrackingTime = now;
 
-  monitorStatus.textContent =
-    "Session started.";
+        return;
+      }
 
-  monitorStatus.className =
-    "status good";
+      const delta =
+        (now - lastTrackingTime) / 1000;
 
-  if (
-    currentFacePosition ===
-    "center"
-  ) {
+      lastTrackingTime = now;
 
-    positionStatus.textContent =
-      "Face position: Good";
 
-    positionStatus.className =
-      "status good";
+      /* ================================
+         CLASSIFY CURRENT STATE
+      ================================= */
 
-  } else {
+      if (currentEstimatedDistance === null) {
 
-    positionStatus.textContent =
-      "Face position: Waiting...";
+        noFaceTime += delta;
 
-    positionStatus.className =
-      "status";
+        return;
+      }
 
-  }
+      const target =
+        therapyProfile.targetDistance;
 
-  updateTimer();
 
-};
+      if (
+        currentEstimatedDistance <
+        target * 0.90
+      ) {
 
-/* =========================================================
-   SESSION TIMER
-   ========================================================= */
+        tooCloseTime += delta;
 
-function updateTimer() {
+        if (tooCloseStartedAt === null) {
+          tooCloseStartedAt = now;
+        }
 
-  if (
-    !sessionRunning
-  ) {
+        handleCorrection(
+          "too_close",
+          now
+        );
 
-    return;
+        return;
+      }
 
-  }
 
-  const elapsed =
-    (
-      performance.now() -
-      sessionStartTime
-    ) / 1000;
+      if (
+        currentFacePosition !== "center"
+      ) {
 
-  const minutes =
-    Math.floor(
-      elapsed / 60
-    );
+        poorPositionTime += delta;
 
-  const seconds =
-    Math.floor(
-      elapsed % 60
-    );
+        tooCloseStartedAt = null;
 
-  sessionTimer.textContent =
-    `${String(minutes).padStart(2, "0")}:` +
-    `${String(seconds).padStart(2, "0")}`;
+        handleCorrection(
+          "poor_position",
+          now
+        );
 
-  const goalSeconds =
-    therapyProfile.sessionGoalMinutes *
-    60;
+        return;
+      }
 
-  if (
-    elapsed >=
-    goalSeconds
-  ) {
 
-    monitorStatus.textContent =
-      "Session goal reached.";
+      /* ================================
+         COMPLIANT
+      ================================= */
 
-    monitorStatus.className =
-      "status good";
+      compliantTime += delta;
 
-  }
+      tooCloseStartedAt = null;
 
-  requestAnimationFrame(
-    updateTimer
-  );
+      invalidStartedAt = null;
 
-}
+      if (correctionActive) {
 
-/* =========================================================
-   END SESSION
-   ========================================================= */
+        correctionActive = false;
 
-window.endSession = function() {
+        correctionOverlay.classList.add(
+          "hidden"
+        );
+      }
+    }
 
-  if (
-    !sessionRunning
-  ) {
 
-    return;
+    /* ================================
+       CORRECTION INTERVENTION
+    ================================= */
 
-  }
+    function handleCorrection(
+      reason,
+      now
+    ) {
 
-  updateSessionTracking();
+      if (invalidStartedAt === null) {
 
-  sessionRunning =
-    false;
+        invalidStartedAt = now;
+      }
 
-  correctionOverlay.classList.add(
-    "hidden"
-  );
+      const invalidDuration =
+        (
+          now -
+          invalidStartedAt
+        ) / 1000;
 
-  correctionActive =
-    false;
+      if (
+        invalidDuration <
+        therapyProfile.gracePeriodSeconds
+      ) {
 
-  invalidStartedAt =
-    null;
+        return;
+      }
 
-  const totalTracked =
-    compliantTime +
-    tooCloseTime +
-    poorPositionTime +
-    noFaceTime;
+      if (!correctionActive) {
 
-  const compliance =
-    totalTracked > 0
+        correctionActive = true;
 
-      ? (
+        if (reason === "too_close") {
+
+          correctionMessage.textContent =
+            "Please move farther away from the iPad.";
+
+        } else if (
+          currentFacePosition ===
+          "too_far_left" ||
+          currentFacePosition ===
+          "too_far_right"
+        ) {
+
+          correctionMessage.textContent =
+            "Please move your face toward the center.";
+
+        } else if (
+          currentFacePosition ===
+          "too_high" ||
+          currentFacePosition ===
+          "too_low"
+        ) {
+
+          correctionMessage.textContent =
+            "Please reposition your face.";
+
+        } else {
+
+          correctionMessage.textContent =
+            "Please adjust your position.";
+        }
+
+        correctionOverlay.classList.remove(
+          "hidden"
+        );
+      }
+    }
+
+
+    /* ================================
+       END SESSION
+    ================================= */
+
+    window.endSession = function () {
+
+      if (!sessionRunning) {
+        return;
+      }
+
+      sessionRunning = false;
+
+      correctionOverlay.classList.add(
+        "hidden"
+      );
+
+      correctionActive = false;
+      invalidStartedAt = null;
+
+      const totalTracked =
+        compliantTime +
+        tooCloseTime +
+        poorPositionTime +
+        noFaceTime;
+
+      const compliance =
+        totalTracked > 0
+          ? (
+              compliantTime /
+              totalTracked
+            ) * 100
+          : 0;
+
+      const totalSession =
+        sessionStartTime !== null
+          ? (
+              performance.now() -
+              sessionStartTime
+            ) / 1000
+          : totalTracked;
+
+      document.getElementById(
+        "finalTotal"
+      ).textContent =
+        formatDuration(totalSession);
+
+      document.getElementById(
+        "finalCompliance"
+      ).textContent =
+        `${Math.round(compliance)}%`;
+
+      document.getElementById(
+        "finalCompliant"
+      ).textContent =
+        formatDuration(compliantTime);
+
+      document.getElementById(
+        "finalTooClose"
+      ).textContent =
+        formatDuration(tooCloseTime);
+
+      document.getElementById(
+        "finalPoorPosition"
+      ).textContent =
+        formatDuration(poorPositionTime);
+
+      document.getElementById(
+        "finalNoFace"
+      ).textContent =
+        formatDuration(noFaceTime);
+
+
+      /* ================================
+         STEP 6 VISUAL ANALYTICS
+      ================================= */
+
+      const safeTotal =
+        totalTracked > 0
+          ? totalTracked
+          : 1;
+
+      const compliantPercent =
+        (
           compliantTime /
-          totalTracked
-        ) * 100
+          safeTotal
+        ) * 100;
+
+      const tooClosePercent =
+        (
+          tooCloseTime /
+          safeTotal
+        ) * 100;
 
-      : 0;
+      const poorPositionPercent =
+        (
+          poorPositionTime /
+          safeTotal
+        ) * 100;
 
-  const totalSession =
-    (
-      performance.now() -
-      sessionStartTime
-    ) / 1000;
+      const noFacePercent =
+        (
+          noFaceTime /
+          safeTotal
+        ) * 100;
 
-  const totalMinutes =
-    Math.floor(
-      totalSession / 60
-    );
 
-  const totalSeconds =
-    Math.floor(
-      totalSession % 60
-    );
+      document.getElementById(
+        "barCompliant"
+      ).style.width =
+        `${compliantPercent}%`;
 
-  monitorCard.classList.add(
-    "hidden"
-  );
+      document.getElementById(
+        "barTooClose"
+      ).style.width =
+        `${tooClosePercent}%`;
 
-  summaryCard.classList.remove(
-    "hidden"
-  );
+      document.getElementById(
+        "barPoorPosition"
+      ).style.width =
+        `${poorPositionPercent}%`;
 
-  document.getElementById(
-    "finalSummary"
-  ).innerHTML = `
+      document.getElementById(
+        "barNoFace"
+      ).style.width =
+        `${noFacePercent}%`;
 
-    <div class="summary-grid">
 
-      <div class="summary-item">
+      document.getElementById(
+        "legendCompliant"
+      ).textContent =
+        `Compliant: ${Math.round(compliantPercent)}%`;
 
-        <div class="summary-label">
-          Total session
-        </div>
+      document.getElementById(
+        "legendTooClose"
+      ).textContent =
+        `Too close: ${Math.round(tooClosePercent)}%`;
 
-        <div class="summary-value">
-          ${totalMinutes}m ${totalSeconds}s
-        </div>
+      document.getElementById(
+        "legendPoorPosition"
+      ).textContent =
+        `Poor position: ${Math.round(poorPositionPercent)}%`;
 
-      </div>
+      document.getElementById(
+        "legendNoFace"
+      ).textContent =
+        `Face not detected: ${Math.round(noFacePercent)}%`;
 
-      <div class="summary-item">
 
-        <div class="summary-label">
-          Compliance
-        </div>
+      /* ================================
+         SAVE SESSION TO HISTORY
+      ================================= */
 
-        <div class="summary-value">
-          ${Math.round(compliance)}%
-        </div>
+      saveSessionToHistory({
+        date: new Date().toISOString(),
+        totalSession,
+        compliance,
+        compliantTime,
+        tooCloseTime,
+        poorPositionTime,
+        noFaceTime
+      });
 
-      </div>
 
-      <div class="summary-item">
+      monitorCard.classList.add(
+        "hidden"
+      );
 
-        <div class="summary-label">
-          Compliant time
-        </div>
+      finalSummaryCard.classList.remove(
+        "hidden"
+      );
 
-        <div class="summary-value">
-          ${formatSeconds(
-            compliantTime
-          )}
-        </div>
+      renderHistory();
+    };
 
-      </div>
 
-      <div class="summary-item">
+    /* ================================
+       NEW SESSION
+    ================================= */
 
-        <div class="summary-label">
-          Too close
-        </div>
+    window.newSession = function () {
 
-        <div class="summary-value">
-          ${formatSeconds(
-            tooCloseTime
-          )}
-        </div>
+      sessionRunning = false;
 
-      </div>
+      compliantTime = 0;
+      tooCloseTime = 0;
+      poorPositionTime = 0;
+      noFaceTime = 0;
 
-      <div class="summary-item">
+      lastTrackingTime = null;
+      tooCloseStartedAt = null;
 
-        <div class="summary-label">
-          Poor position
-        </div>
+      invalidStartedAt = null;
+      correctionActive = false;
 
-        <div class="summary-value">
-          ${formatSeconds(
-            poorPositionTime
-          )}
-        </div>
+      referenceFaceSize = null;
+      smoothedFaceSize = null;
 
-      </div>
+      faceSizeHistory.length = 0;
 
-      <div class="summary-item">
+      currentEstimatedDistance = null;
+      currentFacePosition = "unknown";
 
-        <div class="summary-label">
-          Face not detected
-        </div>
+      correctionOverlay.classList.add(
+        "hidden"
+      );
 
-        <div class="summary-value">
-          ${formatSeconds(
-            noFaceTime
-          )}
-        </div>
+      finalSummaryCard.classList.add(
+        "hidden"
+      );
 
-      </div>
+      monitorCard.classList.add(
+        "hidden"
+      );
 
-    </div>
+      calibrationCard.classList.remove(
+        "hidden"
+      );
 
-    <div
-      class="profile-box"
-      style="margin-top:14px"
-    >
+      startButton.disabled = true;
 
-      <strong>
-        Therapy profile
-      </strong><br>
+      calibrationStatus.textContent =
+        "Waiting for a detected face...";
 
-      Treatment eye:
-      ${
-        therapyProfile.treatmentEye === "left"
-          ? "Left"
-          : "Right"
-      }<br>
+      calibrationStatus.className =
+        "status";
 
-      Target distance:
-      ${therapyProfile.targetDistance} cm<br>
+      distanceDisplay.textContent =
+        "--";
 
-      Session goal:
-      ${therapyProfile.sessionGoalMinutes} min<br>
+      positionStatus.textContent =
+        "--";
+    };
 
-      Grace period:
-      ${therapyProfile.gracePeriodSeconds} sec
 
-    </div>
+    /* ================================
+       HISTORY
+    ================================= */
 
-    <div class="note">
+    function loadHistory() {
 
-      Compliance is calculated from tracked time across
-      compliant, too-close, poor-position, and face-not-detected
-      states. This prototype is not a medical device and
-      does not establish clinical treatment effectiveness.
+      try {
 
-    </div>
+        const stored =
+          localStorage.getItem(
+            HISTORY_KEY
+          );
 
-  `;
+        if (!stored) {
 
-};
+          sessionHistory = [];
 
-/* =========================================================
-   NEW SESSION
-   ========================================================= */
+          return;
+        }
 
-window.newSession = function() {
+        sessionHistory =
+          JSON.parse(stored);
 
-  summaryCard.classList.add(
-    "hidden"
-  );
+        if (
+          !Array.isArray(sessionHistory)
+        ) {
 
-  calibrationCard.classList.remove(
-    "hidden"
-  );
+          sessionHistory = [];
+        }
 
-  referenceFaceSize =
-    null;
+      } catch (error) {
 
-  currentEstimatedDistance =
-    null;
+        console.error(
+          "Could not load history:",
+          error
+        );
 
-  smoothingHistory.length =
-    0;
+        sessionHistory = [];
+      }
+    }
 
-  compliantTime =
-    0;
 
-  tooCloseTime =
-    0;
+    function saveSessionToHistory(
+      session
+    ) {
 
-  poorPositionTime =
-    0;
+      sessionHistory.unshift(
+        session
+      );
 
-  noFaceTime =
-    0;
+      /*
+       * Keep the most recent 20 sessions.
+       * This prevents the browser's local storage
+       * from growing unnecessarily.
+       */
 
-  lastTrackingTime =
-    null;
+      sessionHistory =
+        sessionHistory.slice(0, 20);
 
-  tooCloseStartedAt =
-    null;
+      try {
 
-  invalidStartedAt =
-    null;
+        localStorage.setItem(
+          HISTORY_KEY,
+          JSON.stringify(
+            sessionHistory
+          )
+        );
 
-  correctionActive =
-    false;
+      } catch (error) {
 
-  correctionOverlay.classList.add(
-    "hidden"
-  );
+        console.error(
+          "Could not save session:",
+          error
+        );
+      }
+    }
 
-  distanceDisplay.textContent =
-    "-- cm";
 
-  calibrationStatus.textContent =
-    "Waiting for calibration...";
+    function renderHistory() {
 
-  calibrationStatus.className =
-    "status";
+      const container =
+        document.getElementById(
+          "historyContainer"
+        );
 
-  positionStatus.textContent =
-    "Face position: Waiting...";
+      const clearButton =
+        document.getElementById(
+          "clearHistoryButton"
+        );
 
-  positionStatus.className =
-    "status";
+      if (
+        sessionHistory.length === 0
+      ) {
 
-  startButton.classList.add(
-    "hidden"
-  );
+        container.innerHTML =
+          `
+          <p class="analytics-note">
+            No completed sessions recorded yet.
+          </p>
+          `;
 
-};
+        clearButton.classList.add(
+          "hidden"
+        );
 
-/* =========================================================
-   HELPERS
-   ========================================================= */
+        return;
+      }
 
-function formatSeconds(
-  seconds
-) {
+      clearButton.classList.remove(
+        "hidden"
+      );
 
-  const rounded =
-    Math.round(
-      seconds
-    );
+      container.innerHTML = "";
 
-  const minutes =
-    Math.floor(
-      rounded / 60
-    );
+      sessionHistory.forEach(
+        (session) => {
 
-  const remaining =
-    rounded % 60;
+          const item =
+            document.createElement(
+              "div"
+            );
 
-  return `${minutes}m ${remaining}s`;
+          item.className =
+            "history-item";
 
-}
+          const date =
+            new Date(session.date);
 
-</script>
+          const formattedDate =
+            date.toLocaleDateString(
+              undefined,
+              {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+              }
+            );
+
+          const formattedTime =
+            date.toLocaleTimeString(
+              undefined,
+              {
+                hour: "numeric",
+                minute: "2-digit"
+              }
+            );
+
+          item.innerHTML =
+            `
+            <div class="history-top">
+
+              <div class="history-date">
+                ${formattedDate} · ${formattedTime}
+              </div>
+
+              <div class="history-compliance">
+                ${Math.round(session.compliance)}% compliant
+              </div>
+
+            </div>
+
+            <div class="history-details">
+
+              <div>
+                Session
+                <strong>
+                  ${formatDuration(session.totalSession)}
+                </strong>
+              </div>
+
+              <div>
+                Too close
+                <strong>
+                  ${formatDuration(session.tooCloseTime)}
+                </strong>
+              </div>
+
+              <div>
+                Poor position
+                <strong>
+                  ${formatDuration(session.poorPositionTime)}
+                </strong>
+              </div>
+
+              <div>
+                Compliant
+                <strong>
+                  ${formatDuration(session.compliantTime)}
+                </strong>
+              </div>
+
+              <div>
+                No face
+                <strong>
+                  ${formatDuration(session.noFaceTime)}
+                </strong>
+              </div>
+
+            </div>
+            `;
+
+          container.appendChild(
+            item
+          );
+        }
+      );
+    }
+
+
+    /* ================================
+       CLEAR HISTORY
+    ================================= */
+
+    window.clearHistory = function () {
+
+      const confirmed =
+        confirm(
+          "Clear all saved session history?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      sessionHistory = [];
+
+      localStorage.removeItem(
+        HISTORY_KEY
+      );
+
+      renderHistory();
+    };
+
+
+    /* ================================
+       TIME FORMAT
+    ================================= */
+
+    function formatDuration(
+      totalSeconds
+    ) {
+
+      totalSeconds =
+        Math.max(
+          0,
+          Math.round(totalSeconds)
+        );
+
+      const minutes =
+        Math.floor(
+          totalSeconds / 60
+        );
+
+      const seconds =
+        totalSeconds % 60;
+
+      return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")
+      );
+    }
+
+
+    /* ================================
+       INITIALIZE HISTORY
+    ================================= */
+
+    loadHistory();
+    renderHistory();
+
+  </script>
 
 </body>
 </html>
