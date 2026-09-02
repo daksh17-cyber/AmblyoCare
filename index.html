@@ -1713,7 +1713,7 @@ function updateCorrectionOverlay() {
 
 
 /* =========================================================
-   SESSION TRACKING
+   STEP 5 — MULTI-SIGNAL SESSION ANALYTICS
    ========================================================= */
 
 let sessionRunning =
@@ -1725,14 +1725,29 @@ let sessionStartTime =
 let lastTrackingTime =
   null;
 
+
+/*
+ * Every tracked interval belongs to exactly
+ * one of these four categories.
+ */
+
 let compliantTime =
   0;
 
 let tooCloseTime =
   0;
 
+let poorPositionTime =
+  0;
+
 let noFaceTime =
   0;
+
+
+/*
+ * Used only for the existing "Too close"
+ * grace-period status message.
+ */
 
 let tooCloseStartedAt =
   null;
@@ -1777,6 +1792,13 @@ function updateSessionTracking() {
     now;
 
 
+  /*
+   * Ignore unusually large timing gaps.
+   * This prevents backgrounding the page or
+   * a temporary browser pause from creating
+   * a large artificial time value.
+   */
+
   if (
     delta < 0 ||
     delta > 2
@@ -1787,12 +1809,19 @@ function updateSessionTracking() {
   }
 
 
+  /* =======================================================
+     CATEGORY 1 — NO FACE
+     ======================================================= */
+
   if (
     currentEstimatedDistance === null
   ) {
 
     noFaceTime +=
       delta;
+
+    tooCloseStartedAt =
+      null;
 
     return;
 
@@ -1802,6 +1831,10 @@ function updateSessionTracking() {
   const target =
     therapyProfile.targetDistance;
 
+
+  /* =======================================================
+     CATEGORY 2 — TOO CLOSE
+     ======================================================= */
 
   if (
     currentEstimatedDistance <
@@ -1843,15 +1876,43 @@ function updateSessionTracking() {
     }
 
 
-  } else {
-
-    compliantTime +=
-      delta;
-
-    tooCloseStartedAt =
-      null;
+    return;
 
   }
+
+
+  /*
+   * Distance is acceptable, so the
+   * too-close timer is reset.
+   */
+
+  tooCloseStartedAt =
+    null;
+
+
+  /* =======================================================
+     CATEGORY 3 — POOR FACE POSITION
+     ======================================================= */
+
+  if (
+    currentFacePosition !==
+    "center"
+  ) {
+
+    poorPositionTime +=
+      delta;
+
+    return;
+
+  }
+
+
+  /* =======================================================
+     CATEGORY 4 — COMPLIANT
+     ======================================================= */
+
+  compliantTime +=
+    delta;
 
 }
 
@@ -1888,10 +1949,17 @@ window.startSession = function() {
     null;
 
 
+  /*
+   * Reset all four analytics categories.
+   */
+
   compliantTime =
     0;
 
   tooCloseTime =
+    0;
+
+  poorPositionTime =
     0;
 
   noFaceTime =
@@ -2041,6 +2109,11 @@ window.endSession = function() {
   }
 
 
+  /*
+   * Capture the final interval before
+   * stopping the session.
+   */
+
   updateSessionTracking();
 
 
@@ -2061,9 +2134,16 @@ window.endSession = function() {
     null;
 
 
+  /*
+   * All four categories are included in
+   * the total session breakdown.
+   */
+
   const totalTracked =
     compliantTime +
-    tooCloseTime;
+    tooCloseTime +
+    poorPositionTime +
+    noFaceTime;
 
 
   const compliance =
@@ -2167,6 +2247,36 @@ window.endSession = function() {
 
       </div>
 
+
+      <div class="summary-item">
+
+        <div class="summary-label">
+          Poor position
+        </div>
+
+        <div class="summary-value">
+          ${formatSeconds(
+            poorPositionTime
+          )}
+        </div>
+
+      </div>
+
+
+      <div class="summary-item">
+
+        <div class="summary-label">
+          Face not detected
+        </div>
+
+        <div class="summary-value">
+          ${formatSeconds(
+            noFaceTime
+          )}
+        </div>
+
+      </div>
+
     </div>
 
 
@@ -2204,9 +2314,12 @@ window.endSession = function() {
 
     <div class="note">
 
-      Compliance is calculated from tracked time where a face
-      was detected. This prototype is not a medical device and
-      does not establish clinical treatment effectiveness.
+      Compliance represents the percentage of the recorded
+      session classified as compliant: face detected, target
+      distance acceptable, and face position centered.
+
+      This prototype is not a medical device and does not
+      establish clinical treatment effectiveness.
 
     </div>
 
@@ -2242,6 +2355,27 @@ window.newSession = function() {
 
   smoothingHistory.length =
     0;
+
+
+  /*
+   * Reset Step 5 analytics.
+   */
+
+  compliantTime =
+    0;
+
+  tooCloseTime =
+    0;
+
+  poorPositionTime =
+    0;
+
+  noFaceTime =
+    0;
+
+
+  tooCloseStartedAt =
+    null;
 
 
   invalidStartedAt =
