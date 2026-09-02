@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -597,7 +597,7 @@
     </p>
 
     <p>
-      Monitoring will continue automatically once your position is corrected.
+      Monitoring will continue automatically once the issue is corrected.
     </p>
   </div>
 </div>
@@ -946,26 +946,6 @@ let overlayVisible = false;
    EYE VISIBILITY VARIABLES
    ========================================================= */
 
-/*
-  The previous implementation tried to decide eye visibility
-  from MediaPipe landmarks alone.
-
-  That approach has an important limitation:
-  MediaPipe can continue producing plausible eye landmarks
-  even when an eye is physically covered.
-
-  The new system therefore uses:
-
-  1. MediaPipe -> locate the eye region.
-  2. Camera pixels -> inspect the actual appearance of that region.
-  3. Personalized baseline -> compare the live eye against
-     how the same eye looked when uncovered.
-  4. Temporal smoothing -> prevent one bad frame from
-     immediately becoming an occlusion result.
-
-  This remains experimental.
-*/
-
 let currentFaceLandmarks = null;
 
 let leftEyeHistory = [];
@@ -983,6 +963,45 @@ let eyeBaseline = {
 };
 
 let eyeBaselineCapturing = false;
+
+
+/*
+  IMPORTANT CAMERA MIRROR FIX
+
+  The video preview is mirrored with:
+
+      transform: scaleX(-1)
+
+  The pixel/MediaPipe eye regions themselves are still
+  associated with the opposite displayed side.
+
+  Therefore we explicitly map the detected regions to
+  anatomical left/right labels.
+
+  Detector "left" -> person's right eye
+  Detector "right" -> person's left eye
+*/
+
+function detectorSideForAnatomicalSide(
+  anatomicalSide
+) {
+
+  if (
+    anatomicalSide === "left"
+  ) {
+
+    return "right";
+  }
+
+  return "left";
+}
+
+
+/* =========================================================
+   EYE OCCLUSION OVERLAY VARIABLES
+   ========================================================= */
+
+let eyeOcclusionStartedAt = null;
 
 
 /* =========================================================
@@ -1004,6 +1023,8 @@ function resetSessionVariables() {
   currentState = "noFace";
 
   invalidStartedAt = null;
+
+  eyeOcclusionStartedAt = null;
 
   overlayVisible = false;
 
@@ -1104,6 +1125,8 @@ function endSession() {
   correctionOverlay.classList.add("hidden");
 
   overlayVisible = false;
+
+  eyeOcclusionStartedAt = null;
 
   monitorStatus.textContent =
     "Session ended.";
@@ -1318,17 +1341,6 @@ function distanceBetweenPoints(a, b) {
    EYE REGION DEFINITION
    ========================================================= */
 
-/*
-  MediaPipe landmark coordinates are normalized:
-
-    x = 0 ... 1
-    y = 0 ... 1
-
-  The ROI is deliberately larger than the exact eye
-  landmarks. This lets the camera-pixel comparison
-  capture changes from an occluding hand or patch.
-*/
-
 function getEyeRegion(
   landmarks,
   side
@@ -1417,15 +1429,6 @@ function getEyeRegion(
 
     return null;
   }
-
-  /*
-    Expand the ROI.
-
-    Horizontal expansion is moderate.
-    Vertical expansion is larger because a patch
-    or hand may cover an area slightly outside the
-    eye landmarks.
-  */
 
   const horizontalPadding =
     width * 0.35;
@@ -1586,16 +1589,6 @@ function getEyeGeometry(
    PIXEL FEATURE EXTRACTION
    ========================================================= */
 
-/*
-  Each eye ROI is resized to the same small resolution.
-
-  This makes the comparison less sensitive to the
-  person's distance from the screen.
-
-  We then normalize brightness and contrast so that
-  small lighting changes do not dominate the result.
-*/
-
 function extractEyeFeature(
   landmarks,
   side
@@ -1697,10 +1690,6 @@ function extractEyeFeature(
     const b =
       imageData.data[i + 2];
 
-    /*
-      Standard luminance approximation.
-    */
-
     const gray =
       (
         0.299 * r +
@@ -1738,11 +1727,6 @@ function extractEyeFeature(
       variance
     );
 
-  /*
-    Normalize the patch so brightness differences
-    between frames have less influence.
-  */
-
   const normalized =
     grayscale.map(
       value => {
@@ -1764,13 +1748,6 @@ function extractEyeFeature(
 
       }
     );
-
-  /*
-    Edge/texture measure.
-
-    Large structural changes in the ROI can produce
-    a noticeably different edge pattern.
-  */
 
   let edgeStrength = 0;
 
@@ -1880,10 +1857,6 @@ function compareEyeFeatures(
   pixelDifference /=
     length;
 
-  /*
-    Texture/edge difference is another signal.
-  */
-
   const edgeDifference =
     Math.abs(
       baseline.edgeStrength -
@@ -1893,13 +1866,6 @@ function compareEyeFeatures(
       baseline.edgeStrength,
       1
     );
-
-  /*
-    Combine the signals.
-
-    Pixel structure receives more weight because it
-    contains the actual visual appearance of the eye.
-  */
 
   const score =
     (
@@ -1934,16 +1900,6 @@ function isEyeLikelyClosed(
   if (!geometry) {
     return true;
   }
-
-  /*
-    This is intentionally conservative.
-
-    A very small eye-opening ratio is treated as
-    closed/uncertain rather than occluded.
-
-    This prevents normal blinking from becoming
-    "possible patch detection."
-  */
 
   return (
     geometry.ratio <
@@ -1993,13 +1949,6 @@ function evaluateEyeWithPixels(
     };
   }
 
-  /*
-    Do not classify a blink as an occlusion.
-
-    The user can close the eye normally and the
-    system should report it as uncertain.
-  */
-
   if (
     isEyeLikelyClosed(
       landmarks,
@@ -2034,17 +1983,6 @@ function evaluateEyeWithPixels(
         null
     };
   }
-
-  /*
-    Experimental threshold.
-
-    The baseline is personalized, so this does not
-    assume a particular skin tone, eye color, camera,
-    or room lighting.
-
-    It intentionally says "possible" rather than
-    "patch detected."
-  */
 
   const occlusionThreshold =
     0.62;
@@ -2085,15 +2023,6 @@ function smoothEyeState(
   state
 ) {
 
-  /*
-    Store the classification from each frame.
-
-    A short blink should not immediately become
-    persistent occlusion.
-
-    We only count "possibleOcclusion" as positive.
-  */
-
   history.push(
     state
   );
@@ -2133,13 +2062,6 @@ function smoothEyeState(
   const total =
     history.length;
 
-  /*
-    Require roughly 60% of recent frames to indicate
-    occlusion before reporting it.
-
-    This is intentionally not instant.
-  */
-
   if (
     total >= 5 &&
     (
@@ -2150,11 +2072,6 @@ function smoothEyeState(
 
     return "possibleOcclusion";
   }
-
-  /*
-    If the eye is repeatedly closed, call it closed/
-    uncertain instead of occluded.
-  */
 
   if (
     total >= 5 &&
@@ -2230,6 +2147,63 @@ function eyeStateText(
 }
 
 
+/*
+  Returns the anatomical eye states.
+
+  This function is also where the camera mirror correction
+  is applied.
+
+  The detector regions are deliberately mapped:
+
+      anatomical LEFT  <- detector RIGHT
+      anatomical RIGHT <- detector LEFT
+*/
+
+function getAnatomicalEyeStates(
+  landmarks
+) {
+
+  const detectorForLeft =
+    detectorSideForAnatomicalSide(
+      "left"
+    );
+
+  const detectorForRight =
+    detectorSideForAnatomicalSide(
+      "right"
+    );
+
+  const leftResult =
+    evaluateEyeWithPixels(
+      landmarks,
+      detectorForLeft
+    );
+
+  const rightResult =
+    evaluateEyeWithPixels(
+      landmarks,
+      detectorForRight
+    );
+
+  const leftState =
+    smoothEyeState(
+      leftEyeHistory,
+      leftResult.state
+    );
+
+  const rightState =
+    smoothEyeState(
+      rightEyeHistory,
+      rightResult.state
+    );
+
+  return {
+    left: leftState,
+    right: rightState
+  };
+}
+
+
 function updateEyeDisplay(
   landmarks
 ) {
@@ -2251,34 +2225,20 @@ function updateEyeDisplay(
     eyeOverallStatus.className =
       "status warning";
 
-    return;
+    return null;
   }
 
 
-  const leftResult =
-    evaluateEyeWithPixels(
-      landmarks,
-      "left"
+  const states =
+    getAnatomicalEyeStates(
+      landmarks
     );
-
-  const rightResult =
-    evaluateEyeWithPixels(
-      landmarks,
-      "right"
-    );
-
 
   const leftState =
-    smoothEyeState(
-      leftEyeHistory,
-      leftResult.state
-    );
+    states.left;
 
   const rightState =
-    smoothEyeState(
-      rightEyeHistory,
-      rightResult.state
-    );
+    states.right;
 
 
   leftEyeStatus.textContent =
@@ -2347,24 +2307,78 @@ function updateEyeDisplay(
       "status warning";
   }
 
+  return states;
+}
+
+
+/* =========================================================
+   WRONG-EYE DETECTION
+   ========================================================= */
+
+/*
+  The treatment eye is the eye that should remain uncovered.
+
+  Therefore:
+
+      Treatment = Left
+      Correct patch location = Right
+
+  If the LEFT eye is detected as occluded, the patch is
+  probably on the wrong eye.
+
+      Treatment = Right
+      Correct patch location = Left
+
+  If the non-treatment eye is occluded, that is the expected
+  configuration and should NOT trigger the warning.
+*/
+
+function getWrongEyeOcclusion(
+  eyeStates
+) {
+
+  if (!eyeStates) {
+    return null;
+  }
+
+  const treatmentEye =
+    therapyProfile.treatmentEye;
+
+  const nonTreatmentEye =
+    treatmentEye === "left"
+      ? "right"
+      : "left";
+
+  /*
+    The treatment eye should be visible.
+
+    If the treatment eye is the one showing persistent
+    possible occlusion, this is the condition we want
+    to warn about.
+  */
+
+  if (
+    eyeStates[treatmentEye] ===
+    "possibleOcclusion"
+  ) {
+
+    return {
+
+      occludedEye:
+        treatmentEye,
+
+      correctPatchEye:
+        nonTreatmentEye
+    };
+  }
+
+  return null;
 }
 
 
 /* =========================================================
    CAPTURE PERSONALIZED EYE BASELINE
    ========================================================= */
-
-/*
-  The user should press this while:
-
-  - both eyes are uncovered
-  - face is comfortably positioned
-  - lighting is normal
-  - camera is stable
-
-  We collect multiple frames instead of relying on
-  one image. This makes the baseline more robust.
-*/
 
 captureEyeBaselineButton.addEventListener(
   "click",
@@ -2458,16 +2472,35 @@ captureEyeBaselineButton.addEventListener(
       }
 
 
+      /*
+        Capture detector regions, then store them
+        according to anatomical eye labels.
+
+        This is the same mirror correction used
+        during live detection.
+      */
+
+      const detectorLeft =
+        detectorSideForAnatomicalSide(
+          "left"
+        );
+
+      const detectorRight =
+        detectorSideForAnatomicalSide(
+          "right"
+        );
+
+
       const leftFeature =
         extractEyeFeature(
           currentFaceLandmarks,
-          "left"
+          detectorLeft
         );
 
       const rightFeature =
         extractEyeFeature(
           currentFaceLandmarks,
-          "right"
+          detectorRight
         );
 
 
@@ -2475,7 +2508,7 @@ captureEyeBaselineButton.addEventListener(
         leftFeature &&
         !isEyeLikelyClosed(
           currentFaceLandmarks,
-          "left"
+          detectorLeft
         )
       ) {
 
@@ -2489,7 +2522,7 @@ captureEyeBaselineButton.addEventListener(
         rightFeature &&
         !isEyeLikelyClosed(
           currentFaceLandmarks,
-          "right"
+          detectorRight
         )
       ) {
 
@@ -2532,14 +2565,6 @@ captureEyeBaselineButton.addEventListener(
         rightSamples
       );
 
-
-    /*
-      Save a small indicator that a baseline exists.
-
-      The actual pixel baseline is intentionally kept
-      in memory rather than localStorage because camera
-      appearance can change between sessions.
-    */
 
     localStorage.setItem(
       "amblyocare_eye_baseline_exists",
@@ -2670,13 +2695,6 @@ function calculateFacePosition(
   landmarks
 ) {
 
-  /*
-    Nose = 1
-    Chin = 152
-    Left cheek = 234
-    Right cheek = 454
-  */
-
   const nose =
     landmarks[1];
 
@@ -2788,11 +2806,6 @@ function estimateDistance(
     return null;
   }
 
-  /*
-    Same calibration relationship used in the
-    previously working prototype.
-  */
-
   return (
     therapyProfile.targetDistance *
     (
@@ -2818,12 +2831,6 @@ function determineState(
 
     return "noFace";
   }
-
-  /*
-    Distance threshold:
-    anything substantially closer than target
-    is treated as too close.
-  */
 
   const distanceThreshold =
     therapyProfile.targetDistance *
@@ -2853,79 +2860,210 @@ function determineState(
    ========================================================= */
 
 function updateCorrectionOverlay(
-  state
+  state,
+  wrongEyeOcclusion
 ) {
 
   const now =
     performance.now();
 
-  const invalid =
-    (
-      state === "tooClose" ||
-      state === "poorPosition"
-    );
 
-  if (!invalid) {
+  /*
+    PRIORITY 1:
+    Distance.
 
-    invalidStartedAt =
+    If the child is too close, distance correction
+    takes priority over eye messaging.
+  */
+
+  if (
+    state === "tooClose"
+  ) {
+
+    eyeOcclusionStartedAt =
       null;
 
-    if (overlayVisible) {
+    if (
+      invalidStartedAt === null
+    ) {
 
-      correctionOverlay.classList.add(
-        "hidden"
-      );
-
-      overlayVisible = false;
+      invalidStartedAt =
+        now;
     }
 
-    return;
-  }
-
-  if (
-    invalidStartedAt === null
-  ) {
-
-    invalidStartedAt =
-      now;
-  }
-
-  const invalidDuration =
-    (
-      now -
-      invalidStartedAt
-    ) / 1000;
-
-  if (
-    invalidDuration >=
-    therapyProfile.gracePeriodSeconds
-  ) {
-
-    if (!overlayVisible) {
-
-      overlayVisible = true;
-
-      correctionOverlay.classList.remove(
-        "hidden"
-      );
-
-    }
+    const invalidDuration =
+      (
+        now -
+        invalidStartedAt
+      ) / 1000;
 
     if (
-      state === "tooClose"
+      invalidDuration >=
+      therapyProfile.gracePeriodSeconds
     ) {
+
+      if (!overlayVisible) {
+
+        overlayVisible = true;
+
+        correctionOverlay.classList.remove(
+          "hidden"
+        );
+
+      }
 
       overlayMessage.textContent =
         "Please move farther away from the screen. Your target distance is approximately " +
         therapyProfile.targetDistance +
         " cm.";
 
-    } else {
+    }
+
+    return;
+  }
+
+
+  /*
+    PRIORITY 2:
+    Poor face position.
+  */
+
+  if (
+    state === "poorPosition"
+  ) {
+
+    eyeOcclusionStartedAt =
+      null;
+
+    if (
+      invalidStartedAt === null
+    ) {
+
+      invalidStartedAt =
+        now;
+    }
+
+    const invalidDuration =
+      (
+        now -
+        invalidStartedAt
+      ) / 1000;
+
+    if (
+      invalidDuration >=
+      therapyProfile.gracePeriodSeconds
+    ) {
+
+      if (!overlayVisible) {
+
+        overlayVisible = true;
+
+        correctionOverlay.classList.remove(
+          "hidden"
+        );
+
+      }
 
       overlayMessage.textContent =
         "Please reposition your face so it is centered and comfortably aligned with the screen.";
+
     }
 
+    return;
+  }
+
+
+  /*
+    Distance and position are now acceptable.
+
+    Reset the old position timer.
+  */
+
+  invalidStartedAt =
+    null;
+
+
+  /*
+    PRIORITY 3:
+    Wrong-eye occlusion.
+
+    This is separate from compliance analytics.
+
+    Only the treatment eye being occluded triggers
+    this warning.
+  */
+
+  if (
+    wrongEyeOcclusion
+  ) {
+
+    if (
+      eyeOcclusionStartedAt === null
+    ) {
+
+      eyeOcclusionStartedAt =
+        now;
+    }
+
+    const occlusionDuration =
+      (
+        now -
+        eyeOcclusionStartedAt
+      ) / 1000;
+
+    if (
+      occlusionDuration >=
+      therapyProfile.gracePeriodSeconds
+    ) {
+
+      if (!overlayVisible) {
+
+        overlayVisible = true;
+
+        correctionOverlay.classList.remove(
+          "hidden"
+        );
+
+      }
+
+      const correctPatchEye =
+        wrongEyeOcclusion.correctPatchEye;
+
+      const capitalizedEye =
+        correctPatchEye === "left"
+          ? "left"
+          : "right";
+
+      overlayMessage.textContent =
+        "Possible wrong-eye occlusion detected. Please place the eye patch over your " +
+        capitalizedEye +
+        " eye.";
+
+    }
+
+    return;
+  }
+
+
+  /*
+    Nothing currently requires correction.
+
+    Reset all correction timers and hide the overlay.
+  */
+
+  invalidStartedAt =
+    null;
+
+  eyeOcclusionStartedAt =
+    null;
+
+  if (overlayVisible) {
+
+    correctionOverlay.classList.add(
+      "hidden"
+    );
+
+    overlayVisible = false;
   }
 
 }
@@ -3012,10 +3150,6 @@ async function processFrame(
 
   lastFrameTime =
     now;
-
-  /*
-    Keep analytics stable.
-  */
 
   addTimeToCurrentState(
     delta
@@ -3104,7 +3238,8 @@ async function processFrame(
     rightEyeHistory = [];
 
     updateCorrectionOverlay(
-      "noFace"
+      "noFace",
+      null
     );
 
     requestAnimationFrame(
@@ -3237,9 +3372,20 @@ async function processFrame(
      EYE VISIBILITY
      ======================================================= */
 
-  updateEyeDisplay(
-    landmarks
-  );
+  const eyeStates =
+    updateEyeDisplay(
+      landmarks
+    );
+
+
+  /* =======================================================
+     WRONG-EYE OCCLUSION
+     ======================================================= */
+
+  const wrongEyeOcclusion =
+    getWrongEyeOcclusion(
+      eyeStates
+    );
 
 
   /* =======================================================
@@ -3260,11 +3406,24 @@ async function processFrame(
     newState === "compliant"
   ) {
 
-    monitorStatus.textContent =
-      "Position and viewing distance are within the target range.";
+    if (
+      wrongEyeOcclusion
+    ) {
 
-    monitorStatus.className =
-      "status good";
+      monitorStatus.textContent =
+        "Position and viewing distance are within range. Possible wrong-eye occlusion detected.";
+
+      monitorStatus.className =
+        "status warning";
+
+    } else {
+
+      monitorStatus.textContent =
+        "Position and viewing distance are within the target range.";
+
+      monitorStatus.className =
+        "status good";
+    }
 
   } else if (
     newState === "tooClose"
@@ -3293,7 +3452,8 @@ async function processFrame(
      ======================================================= */
 
   updateCorrectionOverlay(
-    newState
+    newState,
+    wrongEyeOcclusion
   );
 
 
