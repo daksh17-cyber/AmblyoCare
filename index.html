@@ -322,8 +322,8 @@
     <div class="research-note">
       AmblyoCare is a computer-vision research prototype. It is not a
       medical device and does not replace clinical guidance from an eye-care
-      professional. Eye occlusion detection is experimental and has not been
-      clinically validated.
+      professional. Eye occlusion detection is experimental and has not
+      been clinically validated.
     </div>
   </section>
 
@@ -363,6 +363,14 @@
     <video id="video" autoplay playsinline muted></video>
 
     <button id="startCamera">Start Camera</button>
+
+    <button
+      id="startSession"
+      class="secondary"
+      disabled
+    >
+      Start Session
+    </button>
 
     <div id="cameraStatus" class="status">
       Camera not started.
@@ -655,6 +663,9 @@ const video =
 const startCameraButton =
   document.getElementById("startCamera");
 
+const startSessionButton =
+  document.getElementById("startSession");
+
 const calibrateButton =
   document.getElementById("calibrate");
 
@@ -882,14 +893,26 @@ startCameraButton.addEventListener(
       cameraStarted = true;
 
       cameraStatus.textContent =
-        "Camera active.";
+        "Camera active. Press Start Session when ready.";
 
       cameraStatus.className =
         "status good";
 
-      endSessionButton.disabled = false;
+      startCameraButton.disabled =
+        true;
 
-      startSession();
+      startSessionButton.disabled =
+        false;
+
+      monitorStatus.textContent =
+        "Camera ready. Press Start Session to begin monitoring.";
+
+      monitorStatus.className =
+        "status";
+
+      requestAnimationFrame(
+        processFrame
+      );
 
     } catch (error) {
 
@@ -902,6 +925,28 @@ startCameraButton.addEventListener(
         "status bad";
 
     }
+
+  }
+);
+
+
+/* =========================================================
+   START SESSION BUTTON
+   ========================================================= */
+
+startSessionButton.addEventListener(
+  "click",
+  () => {
+
+    if (!cameraStarted) {
+      return;
+    }
+
+    if (sessionActive) {
+      return;
+    }
+
+    startSession();
 
   }
 );
@@ -987,9 +1032,6 @@ let eyeBaselineCapturing = false;
 
   Detector region "left" corresponds to the person's RIGHT eye.
   Detector region "right" corresponds to the person's LEFT eye.
-
-  This keeps the previously working eye-analysis algorithm
-  unchanged while correcting the displayed direction.
 */
 
 
@@ -1029,6 +1071,8 @@ function resetSessionVariables() {
   rightEyeHistory = [];
 
   currentFaceLandmarks = null;
+
+  faceSizeHistory = [];
 
   correctionOverlay.classList.add("hidden");
 
@@ -1083,17 +1127,18 @@ function startSession() {
   lastFrameTime =
     performance.now();
 
+  startSessionButton.disabled =
+    true;
+
+  endSessionButton.disabled =
+    false;
+
   monitorStatus.textContent =
     "Monitoring active.";
 
   monitorStatus.className =
     "status good";
 
-  endSessionButton.disabled = false;
-
-  requestAnimationFrame(
-    processFrame
-  );
 }
 
 
@@ -1129,6 +1174,15 @@ function endSession() {
 
   monitorStatus.className =
     "status";
+
+  endSessionButton.disabled =
+    true;
+
+  if (cameraStarted) {
+
+    startSessionButton.disabled =
+      false;
+  }
 
   showFinalSummary();
 
@@ -2156,8 +2210,6 @@ function eyeStateText(
 
       displayed LEFT  = detector "right"
       displayed RIGHT = detector "left"
-
-  The actual eye-analysis algorithm itself is unchanged.
 */
 
 function getAnatomicalEyeStates(
@@ -2176,16 +2228,6 @@ function getAnatomicalEyeStates(
       "right"
     );
 
-
-  /*
-    IMPORTANT:
-
-    Keep the smoothing histories attached to the
-    detector-side streams exactly as before.
-
-    We only rename the final results anatomically.
-  */
-
   const detectorLeftState =
     smoothEyeState(
       leftEyeHistory,
@@ -2198,21 +2240,10 @@ function getAnatomicalEyeStates(
       detectorRightResult.state
     );
 
-
   return {
-
-    /*
-      Detector right corresponds to the person's
-      anatomical LEFT eye.
-    */
 
     left:
       detectorRightState,
-
-    /*
-      Detector left corresponds to the person's
-      anatomical RIGHT eye.
-    */
 
     right:
       detectorLeftState
@@ -2244,7 +2275,6 @@ function updateEyeDisplay(
     return null;
   }
 
-
   const states =
     getAnatomicalEyeStates(
       landmarks
@@ -2255,7 +2285,6 @@ function updateEyeDisplay(
 
   const rightState =
     states.right;
-
 
   leftEyeStatus.textContent =
     "Left Eye: " +
@@ -2268,7 +2297,6 @@ function updateEyeDisplay(
     eyeStateText(
       rightState
     );
-
 
   if (
     leftState === "visible" &&
@@ -2331,22 +2359,6 @@ function updateEyeDisplay(
    WRONG-EYE DETECTION
    ========================================================= */
 
-/*
-  The treatment eye is the eye that should remain uncovered.
-
-  Therefore:
-
-      Treatment = Left
-      Correct patch location = Right
-
-      Treatment = Right
-      Correct patch location = Left
-
-  The warning is based on the ANATOMICAL eye states returned
-  by getAnatomicalEyeStates(), so the mirror correction is
-  already accounted for.
-*/
-
 function getWrongEyeOcclusion(
   eyeStates
 ) {
@@ -2362,14 +2374,6 @@ function getWrongEyeOcclusion(
     treatmentEye === "left"
       ? "right"
       : "left";
-
-
-  /*
-    The treatment eye should remain visible.
-
-    If that eye is showing persistent possible occlusion,
-    trigger the experimental wrong-eye warning.
-  */
 
   if (
     eyeStates[treatmentEye] ===
@@ -2444,22 +2448,6 @@ captureEyeBaselineButton.addEventListener(
     eyeBaselineStatus.className =
       "status warning";
 
-
-    /*
-      IMPORTANT:
-
-      The baseline capture is restored to the original
-      detector-side configuration.
-
-      We do NOT swap the detector regions here.
-
-      Detector "left" gets baseline "left".
-      Detector "right" gets baseline "right".
-
-      The anatomical label correction happens later,
-      when displaying/using the results.
-    */
-
     const leftSamples = [];
 
     const rightSamples = [];
@@ -2469,7 +2457,6 @@ captureEyeBaselineButton.addEventListener(
     let attempts = 0;
 
     const maximumAttempts = 80;
-
 
     while (
       (
@@ -2492,14 +2479,12 @@ captureEyeBaselineButton.addEventListener(
           )
       );
 
-
       if (
         !currentFaceLandmarks
       ) {
 
         continue;
       }
-
 
       const leftFeature =
         extractEyeFeature(
@@ -2513,7 +2498,6 @@ captureEyeBaselineButton.addEventListener(
           "right"
         );
 
-
       if (
         leftFeature &&
         !isEyeLikelyClosed(
@@ -2526,7 +2510,6 @@ captureEyeBaselineButton.addEventListener(
           leftFeature
         );
       }
-
 
       if (
         rightFeature &&
@@ -2542,7 +2525,6 @@ captureEyeBaselineButton.addEventListener(
       }
 
     }
-
 
     if (
       leftSamples.length < 8 ||
@@ -2564,11 +2546,6 @@ captureEyeBaselineButton.addEventListener(
       return;
     }
 
-
-    /*
-      Keep the original detector-side baseline storage.
-    */
-
     eyeBaseline.left =
       averageEyeFeatures(
         leftSamples
@@ -2579,17 +2556,14 @@ captureEyeBaselineButton.addEventListener(
         rightSamples
       );
 
-
     localStorage.setItem(
       "amblyocare_eye_baseline_exists",
       "true"
     );
 
-
     leftEyeHistory = [];
 
     rightEyeHistory = [];
-
 
     eyeBaselineCapturing =
       false;
@@ -2636,7 +2610,6 @@ function averageEyeFeatures(
 
   let averageEdgeStrength = 0;
 
-
   samples.forEach(
     sample => {
 
@@ -2662,7 +2635,6 @@ function averageEyeFeatures(
     }
   );
 
-
   for (
     let i = 0;
     i < pixelLength;
@@ -2673,7 +2645,6 @@ function averageEyeFeatures(
       samples.length;
   }
 
-
   averageMean /=
     samples.length;
 
@@ -2682,7 +2653,6 @@ function averageEyeFeatures(
 
   averageEdgeStrength /=
     samples.length;
-
 
   return {
 
@@ -2881,15 +2851,6 @@ function updateCorrectionOverlay(
   const now =
     performance.now();
 
-
-  /*
-    PRIORITY 1:
-    Distance.
-
-    If the child is too close, distance correction
-    takes priority over eye messaging.
-  */
-
   if (
     state === "tooClose"
   ) {
@@ -2940,11 +2901,6 @@ function updateCorrectionOverlay(
   }
 
 
-  /*
-    PRIORITY 2:
-    Poor face position.
-  */
-
   if (
     state === "poorPosition"
   ) {
@@ -2993,23 +2949,9 @@ function updateCorrectionOverlay(
   }
 
 
-  /*
-    Distance and face position are acceptable.
-
-    Reset the position correction timer.
-  */
-
   invalidStartedAt =
     null;
 
-
-  /*
-    PRIORITY 3:
-    Wrong-eye occlusion.
-
-    This does NOT affect the numerical compliance
-    analytics yet because eye detection is experimental.
-  */
 
   if (
     wrongEyeOcclusion
@@ -3067,12 +3009,6 @@ function updateCorrectionOverlay(
     return;
   }
 
-
-  /*
-    Nothing currently requires correction.
-
-    Reset correction timers and hide the overlay.
-  */
 
   invalidStartedAt =
     null;
@@ -3146,7 +3082,7 @@ async function processFrame(
   timestamp
 ) {
 
-  if (!sessionActive) {
+  if (!cameraStarted) {
     return;
   }
 
@@ -3165,20 +3101,31 @@ async function processFrame(
   const now =
     performance.now();
 
-  const delta =
-    (
-      now -
-      lastFrameTime
-    ) / 1000;
 
-  lastFrameTime =
-    now;
+  /*
+    Session timing and analytics only happen after
+    Start Session has been pressed.
+  */
 
-  addTimeToCurrentState(
-    delta
-  );
+  if (sessionActive) {
 
-  updateTimer();
+    const delta =
+      (
+        now -
+        lastFrameTime
+      ) / 1000;
+
+    lastFrameTime =
+      now;
+
+    addTimeToCurrentState(
+      delta
+    );
+
+    updateTimer();
+
+  }
+
 
   let results;
 
@@ -3214,8 +3161,12 @@ async function processFrame(
     results.faceLandmarks.length === 0
   ) {
 
-    currentState =
-      "noFace";
+    if (sessionActive) {
+
+      currentState =
+        "noFace";
+
+    }
 
     currentFaceLandmarks =
       null;
@@ -3234,12 +3185,6 @@ async function processFrame(
 
     distanceValue.textContent =
       "--";
-
-    monitorStatus.textContent =
-      "Move your face into the camera frame.";
-
-    monitorStatus.className =
-      "status warning";
 
     leftEyeStatus.textContent =
       "Left Eye: --";
@@ -3260,10 +3205,28 @@ async function processFrame(
 
     rightEyeHistory = [];
 
-    updateCorrectionOverlay(
-      "noFace",
-      null
-    );
+    if (sessionActive) {
+
+      monitorStatus.textContent =
+        "Move your face into the camera frame.";
+
+      monitorStatus.className =
+        "status warning";
+
+      updateCorrectionOverlay(
+        "noFace",
+        null
+      );
+
+    } else {
+
+      monitorStatus.textContent =
+        "Camera ready. Press Start Session to begin monitoring.";
+
+      monitorStatus.className =
+        "status";
+
+    }
 
     requestAnimationFrame(
       processFrame
@@ -3411,6 +3374,28 @@ async function processFrame(
     );
 
 
+  /*
+    Before Start Session, the camera is only being used
+    for preview, face tracking, calibration and baseline
+    capture. No session correction overlay is triggered.
+  */
+
+  if (!sessionActive) {
+
+    monitorStatus.textContent =
+      "Camera ready. Press Start Session to begin monitoring.";
+
+    monitorStatus.className =
+      "status";
+
+    requestAnimationFrame(
+      processFrame
+    );
+
+    return;
+  }
+
+
   /* =======================================================
      CURRENT BEHAVIOUR
      ======================================================= */
@@ -3504,31 +3489,43 @@ function showFinalSummary() {
       total
     ) * 100;
 
-  finalTotal.textContent =
+  document.getElementById(
+    "finalTotal"
+  ).textContent =
     formatDuration(total);
 
-  finalCompliance.textContent =
+  document.getElementById(
+    "finalCompliance"
+  ).textContent =
     Math.round(
       compliance
     ) +
     "%";
 
-  finalCompliant.textContent =
+  document.getElementById(
+    "finalCompliant"
+  ).textContent =
     formatDuration(
       compliantSeconds
     );
 
-  finalTooClose.textContent =
+  document.getElementById(
+    "finalTooClose"
+  ).textContent =
     formatDuration(
       tooCloseSeconds
     );
 
-  finalPoorPosition.textContent =
+  document.getElementById(
+    "finalPoorPosition"
+  ).textContent =
     formatDuration(
       poorPositionSeconds
     );
 
-  finalNoFace.textContent =
+  document.getElementById(
+    "finalNoFace"
+  ).textContent =
     formatDuration(
       noFaceSeconds
     );
