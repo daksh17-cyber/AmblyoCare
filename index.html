@@ -7,6 +7,7 @@
     <title>AmblyoCare</title>
 
     <style>
+
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -33,6 +34,8 @@
             font-size: 18px;
             border: none;
             border-radius: 10px;
+            background: #222;
+            color: white;
         }
 
         #status,
@@ -40,7 +43,15 @@
             margin-top: 20px;
             font-size: 18px;
         }
+
+        #faceStatus {
+            margin-top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
     </style>
+
 </head>
 
 <body>
@@ -54,51 +65,91 @@
         could support amblyopia therapy compliance.
     </p>
 
-    <button id="startButton">Start Session</button>
+    <button id="startButton">
+        Start Session
+    </button>
 
-    <p id="status">Session not started.</p>
+    <p id="status">
+        Session not started.
+    </p>
 
-    <p id="visionStatus">Vision system waiting.</p>
+    <p id="visionStatus">
+        Vision system waiting.
+    </p>
+
+    <p id="faceStatus">
+        Face detection waiting.
+    </p>
 
     <video id="camera" autoplay playsinline></video>
 
+
     <script>
 
-        const button = document.getElementById("startButton");
-        const video = document.getElementById("camera");
-        const status = document.getElementById("status");
-        const visionStatus = document.getElementById("visionStatus");
+        const button =
+            document.getElementById("startButton");
+
+        const video =
+            document.getElementById("camera");
+
+        const status =
+            document.getElementById("status");
+
+        const visionStatus =
+            document.getElementById("visionStatus");
+
+        const faceStatus =
+            document.getElementById("faceStatus");
 
 
-        button.addEventListener("click", startSession);
+        let faceLandmarker = null;
 
+        let lastVideoTime = -1;
+
+
+        button.addEventListener(
+            "click",
+            startSession
+        );
+
+
+        // ==========================================
+        // START CAMERA
+        // ==========================================
 
         async function startSession() {
 
-            status.textContent = "Starting camera...";
-            visionStatus.textContent =
-                "Computer vision waiting...";
+            status.textContent =
+                "Starting camera...";
 
             try {
 
                 const stream =
                     await navigator.mediaDevices.getUserMedia({
+
                         video: {
                             facingMode: "user"
                         },
+
                         audio: false
+
                     });
 
+
                 video.srcObject = stream;
+
                 video.style.display = "block";
+
 
                 status.textContent =
                     "Camera active. Session started.";
 
-                // Camera is now independent.
-                // We can safely attempt to load the AI system.
 
-                loadComputerVision();
+                // Camera is confirmed.
+                // Now start computer vision.
+
+                loadFaceLandmarker();
+
 
             } catch (error) {
 
@@ -107,48 +158,162 @@
                 status.textContent =
                     "Camera access was not granted.";
 
-                visionStatus.textContent =
-                    "Camera error: " + error.message;
+                faceStatus.textContent =
+                    "Camera error.";
+
             }
+
         }
 
 
-        async function loadComputerVision() {
+        // ==========================================
+        // LOAD MEDIAPIPE
+        // ==========================================
+
+        async function loadFaceLandmarker() {
 
             visionStatus.textContent =
-                "Loading computer vision...";
+                "Loading face detection model...";
+
 
             try {
 
-                /*
-                 * Load MediaPipe only after
-                 * the camera has successfully started.
-                 */
-
-                const module =
+                const vision =
                     await import(
                         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
                     );
 
-                console.log(
-                    "MediaPipe loaded:",
-                    module
-                );
+
+                const FilesetResolver =
+                    vision.FilesetResolver;
+
+                const FaceLandmarker =
+                    vision.FaceLandmarker;
+
+
+                const filesetResolver =
+                    await FilesetResolver.forVisionTasks(
+
+                        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+
+                    );
+
+
+                faceLandmarker =
+                    await FaceLandmarker.createFromOptions(
+
+                        filesetResolver,
+
+                        {
+
+                            baseOptions: {
+
+                                modelAssetPath:
+                                    "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+
+                            },
+
+                            runningMode: "VIDEO",
+
+                            numFaces: 1
+
+                        }
+
+                    );
+
 
                 visionStatus.textContent =
-                    "Computer vision library loaded successfully.";
+                    "Computer vision ready.";
+
+                faceStatus.textContent =
+                    "Face detection starting...";
+
+
+                detectFace();
+
 
             } catch (error) {
 
                 console.error(
-                    "MediaPipe loading error:",
+                    "Face model error:",
                     error
                 );
 
+
                 visionStatus.textContent =
-                    "Computer vision failed to load.";
+                    "Computer vision model failed.";
+
+                faceStatus.textContent =
+                    "Error loading face detection.";
 
             }
+
+        }
+
+
+        // ==========================================
+        // FACE DETECTION LOOP
+        // ==========================================
+
+        function detectFace() {
+
+            if (!faceLandmarker) {
+                return;
+            }
+
+
+            if (
+                video.readyState >= 2 &&
+                video.currentTime !== lastVideoTime
+            ) {
+
+                lastVideoTime =
+                    video.currentTime;
+
+
+                try {
+
+                    const results =
+                        faceLandmarker.detectForVideo(
+
+                            video,
+
+                            performance.now()
+
+                        );
+
+
+                    if (
+                        results.faceLandmarks &&
+                        results.faceLandmarks.length > 0
+                    ) {
+
+                        faceStatus.textContent =
+                            "🟢 Face detected";
+
+                    } else {
+
+                        faceStatus.textContent =
+                            "🔴 No face detected";
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        "Detection error:",
+                        error
+                    );
+
+                }
+
+            }
+
+
+            requestAnimationFrame(
+                detectFace
+            );
+
         }
 
     </script>
