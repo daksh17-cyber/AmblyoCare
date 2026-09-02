@@ -4,19 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AmblyoCare</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 30px;
+            background: #f5f7fa;
+        }
+
+        h1 {
+            font-size: 40px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 
 <body>
+
     <h1>AmblyoCare</h1>
 
     <h2>Computer Vision for Amblyopia Therapy Support</h2>
 
     <p>
         A research prototype exploring how computer vision
-        could help children follow prescribed amblyopia therapy
-        more consistently.
+        could help support amblyopia therapy compliance.
     </p>
 
-    <button>Start Session</button>
+    <button onclick="startCamera()">Start Session</button>
+
+    <p id="status">Session not started.</p>
+
+    <video id="camera" autoplay playsinline></video>
+
+    <script>
+        async function startCamera() {
+            const video = document.getElementById("camera");
+            const status = document.getElementById("status");
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "user"
+                    },
+                    audio: false
+                });
+
+                video.srcObject = stream;
+                video.style.display = "block";
+
+                status.textContent = "Camera active. Session started.";
+            } catch (error) {
+                status.textContent =
+                    "Camera access was not granted.";
+                console.error(error);
+            }
+        }
+    </script>
+
 </body>
 </html>
