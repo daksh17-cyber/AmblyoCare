@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>AmblyoCare</title>
 
     <style>
@@ -38,6 +39,11 @@
             margin-top: 20px;
             font-size: 18px;
         }
+
+        #visionStatus {
+            margin-top: 10px;
+            font-size: 18px;
+        }
     </style>
 </head>
 
@@ -52,19 +58,37 @@
         could support amblyopia therapy compliance.
     </p>
 
-    <button onclick="startCamera()">Start Session</button>
+    <button id="startButton">Start Session</button>
 
     <p id="status">Session not started.</p>
 
+    <p id="visionStatus">Vision system waiting.</p>
+
     <video id="camera" autoplay playsinline></video>
 
-    <script>
-        async function startCamera() {
 
-            const video = document.getElementById("camera");
-            const status = document.getElementById("status");
+    <script>
+
+        const button = document.getElementById("startButton");
+        const video = document.getElementById("camera");
+        const status = document.getElementById("status");
+        const visionStatus = document.getElementById("visionStatus");
+
+
+        button.addEventListener("click", startSession);
+
+
+        async function startSession() {
+
+            // Immediately show that the button worked.
+            status.textContent = "Starting camera...";
+            visionStatus.textContent = "Vision system waiting.";
+
 
             try {
+
+                // CAMERA ONLY.
+                // No AI library is loaded here.
 
                 const stream =
                     await navigator.mediaDevices.getUserMedia({
@@ -74,11 +98,27 @@
                         audio: false
                     });
 
+
                 video.srcObject = stream;
                 video.style.display = "block";
 
+
                 status.textContent =
                     "Camera active. Session started.";
+
+                visionStatus.textContent =
+                    "Camera confirmed. Ready for computer vision.";
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * We are deliberately NOT loading MediaPipe yet.
+                 *
+                 * This proves that our button + camera
+                 * remain independent from the AI system.
+                 */
+
 
             } catch (error) {
 
@@ -86,8 +126,14 @@
 
                 status.textContent =
                     "Camera access was not granted.";
+
+                visionStatus.textContent =
+                    "Camera error: " + error.message;
+
             }
+
         }
+
     </script>
 
 </body>
