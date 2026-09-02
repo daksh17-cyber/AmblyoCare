@@ -1587,6 +1587,9 @@ let compliantTime =
 let tooCloseTime =
   0;
 
+let poorPositionTime =
+  0;
+
 let noFaceTime =
   0;
 
@@ -1635,6 +1638,10 @@ function updateSessionTracking() {
 
   }
 
+  /* -----------------------------
+     NO FACE
+  ----------------------------- */
+
   if (
     currentEstimatedDistance === null
   ) {
@@ -1645,6 +1652,10 @@ function updateSessionTracking() {
     return;
 
   }
+
+  /* -----------------------------
+     TOO CLOSE
+  ----------------------------- */
 
   const target =
     therapyProfile.targetDistance;
@@ -1685,15 +1696,37 @@ function updateSessionTracking() {
 
     }
 
-  } else {
+    return;
 
-    compliantTime +=
+  }
+
+  /* -----------------------------
+     POOR FACE POSITION
+  ----------------------------- */
+
+  if (
+    currentFacePosition !== "center"
+  ) {
+
+    poorPositionTime +=
       delta;
 
     tooCloseStartedAt =
       null;
 
+    return;
+
   }
+
+  /* -----------------------------
+     COMPLIANT
+  ----------------------------- */
+
+  compliantTime +=
+    delta;
+
+  tooCloseStartedAt =
+    null;
 
 }
 
@@ -1728,6 +1761,9 @@ window.startSession = function() {
     0;
 
   tooCloseTime =
+    0;
+
+  poorPositionTime =
     0;
 
   noFaceTime =
@@ -1873,7 +1909,9 @@ window.endSession = function() {
 
   const totalTracked =
     compliantTime +
-    tooCloseTime;
+    tooCloseTime +
+    poorPositionTime +
+    noFaceTime;
 
   const compliance =
     totalTracked > 0
@@ -1967,6 +2005,34 @@ window.endSession = function() {
 
       </div>
 
+      <div class="summary-item">
+
+        <div class="summary-label">
+          Poor position
+        </div>
+
+        <div class="summary-value">
+          ${formatSeconds(
+            poorPositionTime
+          )}
+        </div>
+
+      </div>
+
+      <div class="summary-item">
+
+        <div class="summary-label">
+          Face not detected
+        </div>
+
+        <div class="summary-value">
+          ${formatSeconds(
+            noFaceTime
+          )}
+        </div>
+
+      </div>
+
     </div>
 
     <div
@@ -1998,8 +2064,9 @@ window.endSession = function() {
 
     <div class="note">
 
-      Compliance is calculated from tracked time where a face
-      was detected. This prototype is not a medical device and
+      Compliance is calculated from tracked time across
+      compliant, too-close, poor-position, and face-not-detected
+      states. This prototype is not a medical device and
       does not establish clinical treatment effectiveness.
 
     </div>
@@ -2030,6 +2097,24 @@ window.newSession = function() {
 
   smoothingHistory.length =
     0;
+
+  compliantTime =
+    0;
+
+  tooCloseTime =
+    0;
+
+  poorPositionTime =
+    0;
+
+  noFaceTime =
+    0;
+
+  lastTrackingTime =
+    null;
+
+  tooCloseStartedAt =
+    null;
 
   invalidStartedAt =
     null;
