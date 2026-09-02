@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>AmblyoCare</title>
-
     <style>
-
         body {
             font-family: Arial, sans-serif;
             text-align: center;
@@ -15,11 +12,9 @@
             padding: 30px;
             background: #f5f7fa;
         }
-
         h1 {
             font-size: 40px;
         }
-
         video {
             width: 100%;
             max-width: 700px;
@@ -28,7 +23,6 @@
             display: none;
             transform: scaleX(-1);
         }
-
         button {
             padding: 15px 25px;
             font-size: 18px;
@@ -38,7 +32,6 @@
             color: white;
             margin: 8px;
         }
-
         input {
             padding: 12px;
             font-size: 18px;
@@ -47,82 +40,58 @@
             border-radius: 8px;
             border: 1px solid #aaa;
         }
-
         #status,
         #visionStatus,
         #calibrationStatus {
             margin-top: 20px;
             font-size: 18px;
         }
-
         #faceStatus {
             margin-top: 15px;
             font-size: 24px;
             font-weight: bold;
         }
-
         #distance {
             margin-top: 20px;
             font-size: 30px;
             font-weight: bold;
         }
-
         #distanceStatus {
             margin-top: 10px;
             font-size: 22px;
             font-weight: bold;
         }
-
         #calibrationBox {
             margin-top: 25px;
         }
-
     </style>
-
 </head>
-
 <body>
-
     <h1>AmblyoCare</h1>
-
     <h2>Computer Vision for Amblyopia Therapy Support</h2>
-
     <p>
         A research prototype exploring how computer vision
         could support amblyopia therapy compliance.
     </p>
-
-
     <button id="startButton">
         Start Session
     </button>
-
-
     <p id="status">
         Session not started.
     </p>
-
-
     <p id="visionStatus">
         Vision system waiting.
     </p>
-
-
     <p id="faceStatus">
         Face detection waiting.
     </p>
-
-
     <!-- ============================= -->
     <!-- CALIBRATION -->
     <!-- ============================= -->
-
     <div id="calibrationBox">
-
         <p>
             Enter your current distance from the iPad:
         </p>
-
         <input
             id="calibrationDistance"
             type="number"
@@ -130,505 +99,316 @@
             min="10"
             max="200"
         >
-
         <span>cm</span>
-
         <br>
-
         <button id="calibrateButton">
             Calibrate Distance
         </button>
-
         <p id="calibrationStatus">
             Distance not calibrated.
         </p>
-
     </div>
-
-
     <!-- ============================= -->
     <!-- DISTANCE -->
     <!-- ============================= -->
-
     <div id="distance">
         Estimated distance: --
     </div>
-
     <div id="distanceStatus">
         Waiting for calibration...
     </div>
-
-
     <video
         id="camera"
         autoplay
         playsinline>
     </video>
-
-
     <script>
-
         const button =
             document.getElementById("startButton");
-
         const calibrateButton =
             document.getElementById("calibrateButton");
-
         const video =
             document.getElementById("camera");
-
         const status =
             document.getElementById("status");
-
         const visionStatus =
             document.getElementById("visionStatus");
-
         const faceStatus =
             document.getElementById("faceStatus");
-
         const distanceDisplay =
             document.getElementById("distance");
-
         const distanceStatus =
             document.getElementById("distanceStatus");
-
         const calibrationDistance =
             document.getElementById("calibrationDistance");
-
         const calibrationStatus =
             document.getElementById("calibrationStatus");
-
-
         let faceLandmarker = null;
-
         let lastVideoTime = -1;
-
         let calibrated = false;
-
         let referenceDistance = 40;
-
         let referenceFaceSize = 0;
-
-
+        // ==========================================
+        // DISTANCE SMOOTHING
+        // ==========================================
+        let faceSizeHistory = [];
+        const smoothingFrames = 15;
         button.addEventListener(
             "click",
             startSession
         );
-
-
         calibrateButton.addEventListener(
             "click",
             calibrateDistance
         );
-
-
         // ==========================================
         // START CAMERA
         // ==========================================
-
         async function startSession() {
-
             status.textContent =
                 "Starting camera...";
-
-
             try {
-
                 const stream =
                     await navigator.mediaDevices.getUserMedia({
-
                         video: {
                             facingMode: "user"
                         },
-
                         audio: false
-
                     });
-
-
                 video.srcObject = stream;
-
                 video.style.display = "block";
-
-
                 status.textContent =
                     "Camera active. Session started.";
-
-
                 loadFaceLandmarker();
-
-
             } catch (error) {
-
                 console.error(error);
-
                 status.textContent =
                     "Camera access was not granted.";
-
                 faceStatus.textContent =
                     "Camera error.";
-
             }
-
         }
-
-
         // ==========================================
         // LOAD MEDIAPIPE
         // ==========================================
-
         async function loadFaceLandmarker() {
-
             visionStatus.textContent =
                 "Loading face detection model...";
-
-
             try {
-
                 const vision =
                     await import(
                         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
                     );
-
-
                 const FilesetResolver =
                     vision.FilesetResolver;
-
                 const FaceLandmarker =
                     vision.FaceLandmarker;
-
-
                 const filesetResolver =
                     await FilesetResolver.forVisionTasks(
-
                         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-
                     );
-
-
                 faceLandmarker =
                     await FaceLandmarker.createFromOptions(
-
                         filesetResolver,
-
                         {
-
                             baseOptions: {
-
                                 modelAssetPath:
                                     "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
-
                             },
-
                             runningMode: "VIDEO",
-
                             numFaces: 1
-
                         }
-
                     );
-
-
                 visionStatus.textContent =
                     "Computer vision ready.";
-
                 faceStatus.textContent =
                     "Face detection starting...";
-
-
                 detectFace();
-
-
             } catch (error) {
-
                 console.error(
                     "Face model error:",
                     error
                 );
-
-
                 visionStatus.textContent =
                     "Computer vision model failed.";
-
                 faceStatus.textContent =
                     "Error loading face detection.";
-
             }
-
         }
-
-
         // ==========================================
         // GET FACE SIZE
         // ==========================================
-
         function getFaceSize(landmarks) {
-
-            /*
-             * We measure the distance between
-             * the left and right sides of the face.
-             *
-             * MediaPipe coordinates are normalized
-             * between 0 and 1.
-             */
-
             const left =
                 landmarks[234];
-
             const right =
                 landmarks[454];
-
-
             const dx =
                 right.x - left.x;
-
             const dy =
                 right.y - left.y;
-
-
             return Math.sqrt(
                 dx * dx +
                 dy * dy
             );
-
         }
-
-
         // ==========================================
         // CALIBRATION
         // ==========================================
-
         function calibrateDistance() {
-
             if (!faceLandmarker) {
-
                 calibrationStatus.textContent =
                     "Start the camera and wait for computer vision.";
-
                 return;
-
             }
-
-
             if (referenceFaceSize === 0) {
-
                 calibrationStatus.textContent =
                     "Face not detected yet. Look at the camera.";
-
                 return;
-
             }
-
-
             const enteredDistance =
                 Number(
                     calibrationDistance.value
                 );
-
-
             if (
                 !enteredDistance ||
                 enteredDistance < 10 ||
                 enteredDistance > 200
             ) {
-
                 calibrationStatus.textContent =
                     "Enter a distance between 10 and 200 cm.";
-
                 return;
-
             }
-
-
             referenceDistance =
                 enteredDistance;
-
-
             calibrated = true;
-
-
             calibrationStatus.textContent =
                 "Calibration complete at " +
                 referenceDistance +
                 " cm.";
-
-
             distanceStatus.textContent =
                 "Distance monitoring active.";
-
         }
-
-
         // ==========================================
         // FACE DETECTION LOOP
         // ==========================================
-
         function detectFace() {
-
             if (!faceLandmarker) {
-
                 return;
-
             }
-
-
             if (
                 video.readyState >= 2 &&
                 video.currentTime !== lastVideoTime
             ) {
-
                 lastVideoTime =
                     video.currentTime;
-
-
                 try {
-
                     const results =
                         faceLandmarker.detectForVideo(
-
                             video,
-
                             performance.now()
-
                         );
-
-
                     if (
                         results.faceLandmarks &&
                         results.faceLandmarks.length > 0
                     ) {
-
                         const landmarks =
                             results.faceLandmarks[0];
-
-
                         faceStatus.textContent =
                             "🟢 Face detected";
-
-
                         // ==========================
-                        // MEASURE FACE
+                        // RAW FACE MEASUREMENT
                         // ==========================
-
-                        const faceSize =
+                        const rawFaceSize =
                             getFaceSize(
                                 landmarks
                             );
-
-
-                        /*
-                         * Continuously update the
-                         * reference measurement.
-                         *
-                         * This makes calibration
-                         * more stable.
-                         */
-
+                        // ==========================
+                        // SMOOTH THE MEASUREMENT
+                        // ==========================
+                        faceSizeHistory.push(
+                            rawFaceSize
+                        );
+                        if (
+                            faceSizeHistory.length >
+                            smoothingFrames
+                        ) {
+                            faceSizeHistory.shift();
+                        }
+                        const faceSize =
+                            faceSizeHistory.reduce(
+                                (sum, value) =>
+                                    sum + value,
+                                0
+                            ) /
+                            faceSizeHistory.length;
+                        // ==========================
+                        // SET REFERENCE
+                        // ==========================
                         if (
                             !calibrated &&
                             faceSize > 0
                         ) {
-
                             referenceFaceSize =
                                 faceSize;
-
                         }
-
-
                         // ==========================
                         // ESTIMATE DISTANCE
                         // ==========================
-
                         if (
                             calibrated &&
                             faceSize > 0 &&
                             referenceFaceSize > 0
                         ) {
-
-                            /*
-                             * Approximate monocular
-                             * distance relationship:
-                             *
-                             * distance is inversely
-                             * proportional to apparent
-                             * face size.
-                             */
-
                             const estimatedDistance =
                                 referenceDistance *
                                 (
                                     referenceFaceSize /
                                     faceSize
                                 );
-
-
                             const roundedDistance =
                                 Math.round(
                                     estimatedDistance
                                 );
-
-
                             distanceDisplay.textContent =
                                 "Estimated distance: " +
                                 roundedDistance +
                                 " cm";
-
-
+                            // ==========================
+                            // DISTANCE WARNING
+                            // ==========================
                             if (
                                 estimatedDistance <
                                 referenceDistance * 0.9
                             ) {
-
                                 distanceStatus.textContent =
                                     "⚠️ You are closer than your calibrated distance.";
-
                             } else {
-
                                 distanceStatus.textContent =
                                     "✓ Distance near calibrated range.";
-
                             }
-
                         }
-
                     } else {
-
                         faceStatus.textContent =
                             "🔴 No face detected";
-
-
                         if (calibrated) {
-
                             distanceDisplay.textContent =
                                 "Estimated distance: --";
-
                             distanceStatus.textContent =
                                 "Face not detected.";
-
                         }
-
                     }
-
                 } catch (error) {
-
                     console.error(
                         "Detection error:",
                         error
                     );
-
                 }
-
             }
-
-
             requestAnimationFrame(
                 detectFace
             );
-
         }
-
     </script>
-
 </body>
-
 </html>
