@@ -171,6 +171,32 @@
       margin: 12px 0;
     }
 
+    .phase-banner {
+      text-align: center;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      background: #eef1f6;
+    }
+
+    .phase-banner strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .phase-banner span {
+      font-size: 13px;
+      color: #697386;
+    }
+
+    .experiment-note {
+      font-size: 13px;
+      color: #697386;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
     .monitor-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -252,6 +278,29 @@
       color: #697386;
       margin-top: 14px;
       line-height: 1.5;
+    }
+
+    .experiment-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 13px;
+    }
+
+    .experiment-table th,
+    .experiment-table td {
+      padding: 11px 8px;
+      border-bottom: 1px solid #e1e5ec;
+      text-align: left;
+    }
+
+    .experiment-table th {
+      font-size: 12px;
+      color: #697386;
+    }
+
+    .experiment-table td strong {
+      font-size: 15px;
     }
 
     .history-item {
@@ -360,6 +409,10 @@
       .timer {
         font-size: 36px;
       }
+
+      .experiment-table {
+        font-size: 12px;
+      }
     }
   </style>
 </head>
@@ -410,19 +463,79 @@
         value="20"
       />
 
+      <!-- STEP 7 EXPERIMENT SETTINGS -->
+      <h3 style="margin-top: 24px;">
+        Step 7 Experiment
+      </h3>
+
+      <p class="experiment-note">
+        The experiment measures behavior in three phases:
+        Baseline → Intervention → Final. Correction feedback is disabled
+        during Baseline and Final, and enabled during Intervention.
+      </p>
+
+      <label for="baselineDuration">
+        Baseline Duration (seconds)
+      </label>
+
+      <input
+        id="baselineDuration"
+        type="number"
+        min="10"
+        max="600"
+        value="30"
+      />
+
+      <label for="interventionDuration">
+        Intervention Duration (seconds)
+      </label>
+
+      <input
+        id="interventionDuration"
+        type="number"
+        min="10"
+        max="600"
+        value="30"
+      />
+
+      <label for="finalDuration">
+        Final Duration (seconds)
+      </label>
+
+      <input
+        id="finalDuration"
+        type="number"
+        min="10"
+        max="600"
+        value="30"
+      />
+
       <div class="disclaimer">
-        These are configurable monitoring values for this research prototype
-        and are not medical prescriptions.
+        These experiment durations are research-prototype settings.
+        They are not medical prescriptions.
       </div>
 
-      <button onclick="saveProfile()">Save Profile & Continue</button>
+      <div class="disclaimer">
+        The experiment evaluates measurable viewing behavior only. It does
+        not establish treatment effectiveness for amblyopia.
+      </div>
+
+      <div class="disclaimer">
+        These configurable monitoring values are not medical prescriptions.
+      </div>
+
+      <button onclick="saveProfile()">
+        Save Profile & Continue
+      </button>
     </section>
+
 
     <!-- PROFILE SUMMARY -->
     <section id="profileSummaryCard" class="card hidden">
       <h2>Profile Summary</h2>
 
       <div class="profile-grid">
+
         <div class="profile-item">
           <span>Treatment Eye</span>
           <strong id="summaryEye">-</strong>
@@ -442,8 +555,17 @@
           <span>Grace Period</span>
           <strong id="summaryGrace">-</strong>
         </div>
+
+        <div class="profile-item">
+          <span>Experiment</span>
+          <strong id="summaryExperiment">
+            30s / 30s / 30s
+          </strong>
+        </div>
+
       </div>
     </section>
+
 
     <!-- CAMERA -->
     <section id="cameraCard" class="card hidden">
@@ -455,6 +577,7 @@
         Starting camera...
       </div>
     </section>
+
 
     <!-- CALIBRATION -->
     <section id="calibrationCard" class="card hidden">
@@ -477,20 +600,40 @@
         value="40"
       />
 
-      <button onclick="calibrate()">Calibrate</button>
+      <button onclick="calibrate()">
+        Calibrate
+      </button>
 
       <div id="calibrationStatus" class="status">
         Waiting for a detected face...
       </div>
 
-      <button onclick="startSession()" id="startButton" disabled>
-        Start Therapy Session
+      <button
+        onclick="startSession()"
+        id="startButton"
+        disabled
+      >
+        Start Experiment
       </button>
     </section>
+
 
     <!-- MONITORING -->
     <section id="monitorCard" class="card hidden">
       <h2>Monitoring</h2>
+
+      <!-- STEP 7 PHASE -->
+      <div class="phase-banner">
+
+        <strong id="phaseName">
+          Baseline
+        </strong>
+
+        <span id="phaseDescription">
+          Measuring natural viewing behavior. Correction feedback is OFF.
+        </span>
+
+      </div>
 
       <div id="sessionTimer" class="timer">
         00:00
@@ -524,24 +667,34 @@
         Waiting...
       </div>
 
-      <button onclick="endSession()" class="danger">
-        End Session
+      <button
+        onclick="endSession()"
+        class="danger"
+      >
+        End Experiment
       </button>
+
+      <p class="experiment-note">
+        The experiment will automatically move through Baseline,
+        Intervention, and Final phases unless you end it early.
+      </p>
     </section>
+
 
     <!-- FINAL SUMMARY -->
     <section id="finalSummaryCard" class="card hidden">
-      <h2>Session Summary</h2>
+
+      <h2>Experiment Summary</h2>
 
       <div class="summary-grid">
 
         <div class="summary-item">
-          <span>Total Session</span>
+          <span>Total Experiment</span>
           <strong id="finalTotal">--</strong>
         </div>
 
         <div class="summary-item">
-          <span>Compliance</span>
+          <span>Overall Compliance</span>
           <strong id="finalCompliance">--</strong>
         </div>
 
@@ -567,12 +720,111 @@
 
       </div>
 
+
+      <!-- STEP 7 PHASE COMPARISON -->
+      <h3 style="margin-top: 24px;">
+        Phase Comparison
+      </h3>
+
+      <table class="experiment-table">
+
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Compliance</th>
+            <th>Too Close</th>
+            <th>Poor Position</th>
+            <th>No Face</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>
+              <strong>Baseline</strong>
+            </td>
+
+            <td id="baselineCompliance">
+              --
+            </td>
+
+            <td id="baselineClose">
+              --
+            </td>
+
+            <td id="baselinePosition">
+              --
+            </td>
+
+            <td id="baselineNoFace">
+              --
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Intervention</strong>
+            </td>
+
+            <td id="interventionCompliance">
+              --
+            </td>
+
+            <td id="interventionClose">
+              --
+            </td>
+
+            <td id="interventionPosition">
+              --
+            </td>
+
+            <td id="interventionNoFace">
+              --
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <strong>Final</strong>
+            </td>
+
+            <td id="finalPhaseCompliance">
+              --
+            </td>
+
+            <td id="finalPhaseClose">
+              --
+            </td>
+
+            <td id="finalPhasePosition">
+              --
+            </td>
+
+            <td id="finalPhaseNoFace">
+              --
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+
+      <p class="analytics-note">
+        The key comparison is whether compliance changes from Baseline to
+        Intervention, and whether any change remains during the Final phase
+        after corrective feedback is removed.
+      </p>
+
+
       <!-- STEP 6 VISUAL BREAKDOWN -->
       <h3 style="margin-top: 24px;">
-        Session Breakdown
+        Overall Session Breakdown
       </h3>
 
       <div class="bar-container">
+
         <div
           id="barCompliant"
           class="bar-segment bar-compliant"
@@ -596,50 +848,67 @@
           class="bar-segment bar-noface"
           style="width: 0%"
         ></div>
+
       </div>
+
 
       <div class="legend">
 
         <div class="legend-item">
           <div class="legend-dot bar-compliant"></div>
-          <span id="legendCompliant">Compliant: 0%</span>
+          <span id="legendCompliant">
+            Compliant: 0%
+          </span>
         </div>
 
         <div class="legend-item">
           <div class="legend-dot bar-close"></div>
-          <span id="legendTooClose">Too close: 0%</span>
+          <span id="legendTooClose">
+            Too close: 0%
+          </span>
         </div>
 
         <div class="legend-item">
           <div class="legend-dot bar-position"></div>
-          <span id="legendPoorPosition">Poor position: 0%</span>
+          <span id="legendPoorPosition">
+            Poor position: 0%
+          </span>
         </div>
 
         <div class="legend-item">
           <div class="legend-dot bar-noface"></div>
-          <span id="legendNoFace">Face not detected: 0%</span>
+          <span id="legendNoFace">
+            Face not detected: 0%
+          </span>
         </div>
 
       </div>
+
 
       <p class="analytics-note">
         Compliance is calculated across all tracked session states:
         compliant, too close, poor position, and face not detected.
       </p>
 
+
       <button onclick="newSession()">
-        Start New Session
+        Start New Experiment
       </button>
+
     </section>
+
 
     <!-- SESSION HISTORY -->
     <section id="historyCard" class="card">
+
       <h2>Session History</h2>
 
       <div id="historyContainer">
+
         <p class="analytics-note">
           No completed sessions recorded yet.
         </p>
+
       </div>
 
       <button
@@ -649,16 +918,24 @@
       >
         Clear Session History
       </button>
+
     </section>
 
   </main>
 
+
   <!-- CORRECTION OVERLAY -->
   <div id="correctionOverlay" class="hidden">
-    <div class="correction-box">
-      <div class="correction-icon">⚠️</div>
 
-      <h2>Correction Required</h2>
+    <div class="correction-box">
+
+      <div class="correction-icon">
+        ⚠️
+      </div>
+
+      <h2>
+        Correction Required
+      </h2>
 
       <p id="correctionMessage">
         Please adjust your position.
@@ -667,8 +944,11 @@
       <div class="correction-subtext">
         Monitoring will resume automatically when your position is corrected.
       </div>
+
     </div>
+
   </div>
+
 
   <script type="module">
 
@@ -676,7 +956,8 @@
        DOM REFERENCES
     ================================= */
 
-    const video = document.getElementById("video");
+    const video =
+      document.getElementById("video");
 
     const profileCard =
       document.getElementById("profileCard");
@@ -723,6 +1004,12 @@
     const correctionMessage =
       document.getElementById("correctionMessage");
 
+    const phaseName =
+      document.getElementById("phaseName");
+
+    const phaseDescription =
+      document.getElementById("phaseDescription");
+
 
     /* ================================
        THERAPY PROFILE
@@ -732,7 +1019,11 @@
       treatmentEye: "left",
       targetDistance: 40,
       sessionGoalMinutes: 20,
-      gracePeriodSeconds: 20
+      gracePeriodSeconds: 20,
+
+      baselineDurationSeconds: 30,
+      interventionDurationSeconds: 30,
+      finalDurationSeconds: 30
     };
 
 
@@ -775,10 +1066,39 @@
 
 
     /* ================================
+       STEP 7 EXPERIMENT VARIABLES
+    ================================= */
+
+    let experimentPhase = "baseline";
+
+    let phaseStartTime = null;
+    let phaseLastTrackingTime = null;
+
+    let phaseData = {
+      baseline: createEmptyPhaseData(),
+      intervention: createEmptyPhaseData(),
+      final: createEmptyPhaseData()
+    };
+
+
+    function createEmptyPhaseData() {
+
+      return {
+        compliantTime: 0,
+        tooCloseTime: 0,
+        poorPositionTime: 0,
+        noFaceTime: 0
+      };
+
+    }
+
+
+    /* ================================
        STEP 6 HISTORY
     ================================= */
 
-    const HISTORY_KEY = "amblyocare_session_history";
+    const HISTORY_KEY =
+      "amblyocare_session_history";
 
     let sessionHistory = [];
 
@@ -790,76 +1110,220 @@
     window.saveProfile = async function () {
 
       const treatmentEye =
-        document.getElementById("treatmentEye").value;
+        document.getElementById(
+          "treatmentEye"
+        ).value;
 
       const targetDistance =
-        Number(document.getElementById("targetDistance").value);
+        Number(
+          document.getElementById(
+            "targetDistance"
+          ).value
+        );
 
       const sessionGoalMinutes =
-        Number(document.getElementById("sessionGoal").value);
+        Number(
+          document.getElementById(
+            "sessionGoal"
+          ).value
+        );
 
       const gracePeriodSeconds =
-        Number(document.getElementById("gracePeriod").value);
+        Number(
+          document.getElementById(
+            "gracePeriod"
+          ).value
+        );
+
+      const baselineDurationSeconds =
+        Number(
+          document.getElementById(
+            "baselineDuration"
+          ).value
+        );
+
+      const interventionDurationSeconds =
+        Number(
+          document.getElementById(
+            "interventionDuration"
+          ).value
+        );
+
+      const finalDurationSeconds =
+        Number(
+          document.getElementById(
+            "finalDuration"
+          ).value
+        );
+
 
       if (
         !targetDistance ||
         targetDistance < 10 ||
         targetDistance > 200
       ) {
-        alert("Please enter a valid target distance.");
+
+        alert(
+          "Please enter a valid target distance."
+        );
+
         return;
       }
+
 
       if (
         !sessionGoalMinutes ||
         sessionGoalMinutes < 1 ||
         sessionGoalMinutes > 180
       ) {
-        alert("Please enter a valid session goal.");
+
+        alert(
+          "Please enter a valid session goal."
+        );
+
         return;
       }
+
 
       if (
         gracePeriodSeconds < 0 ||
         gracePeriodSeconds > 120
       ) {
-        alert("Please enter a valid grace period.");
+
+        alert(
+          "Please enter a valid grace period."
+        );
+
         return;
       }
 
+
+      if (
+        !baselineDurationSeconds ||
+        baselineDurationSeconds < 10 ||
+        baselineDurationSeconds > 600
+      ) {
+
+        alert(
+          "Baseline must be between 10 and 600 seconds."
+        );
+
+        return;
+      }
+
+
+      if (
+        !interventionDurationSeconds ||
+        interventionDurationSeconds < 10 ||
+        interventionDurationSeconds > 600
+      ) {
+
+        alert(
+          "Intervention must be between 10 and 600 seconds."
+        );
+
+        return;
+      }
+
+
+      if (
+        !finalDurationSeconds ||
+        finalDurationSeconds < 10 ||
+        finalDurationSeconds > 600
+      ) {
+
+        alert(
+          "Final phase must be between 10 and 600 seconds."
+        );
+
+        return;
+      }
+
+
       therapyProfile = {
+
         treatmentEye,
+
         targetDistance,
+
         sessionGoalMinutes,
-        gracePeriodSeconds
+
+        gracePeriodSeconds,
+
+        baselineDurationSeconds,
+
+        interventionDurationSeconds,
+
+        finalDurationSeconds
+
       };
 
-      document.getElementById("summaryEye").textContent =
+
+      document.getElementById(
+        "summaryEye"
+      ).textContent =
         treatmentEye === "left"
           ? "Left Eye"
           : "Right Eye";
 
-      document.getElementById("summaryTarget").textContent =
+
+      document.getElementById(
+        "summaryTarget"
+      ).textContent =
         `${targetDistance} cm`;
 
-      document.getElementById("summaryGoal").textContent =
+
+      document.getElementById(
+        "summaryGoal"
+      ).textContent =
         `${sessionGoalMinutes} min`;
 
-      document.getElementById("summaryGrace").textContent =
+
+      document.getElementById(
+        "summaryGrace"
+      ).textContent =
         `${gracePeriodSeconds} sec`;
 
-      document.getElementById("monitorTarget").textContent =
+
+      document.getElementById(
+        "summaryExperiment"
+      ).textContent =
+        `${baselineDurationSeconds}s / ` +
+        `${interventionDurationSeconds}s / ` +
+        `${finalDurationSeconds}s`;
+
+
+      document.getElementById(
+        "monitorTarget"
+      ).textContent =
         `${targetDistance} cm`;
 
-      document.getElementById("monitorGoal").textContent =
+
+      document.getElementById(
+        "monitorGoal"
+      ).textContent =
         `${sessionGoalMinutes} min`;
 
-      profileCard.classList.add("hidden");
-      profileSummaryCard.classList.remove("hidden");
-      cameraCard.classList.remove("hidden");
-      calibrationCard.classList.remove("hidden");
+
+      profileCard.classList.add(
+        "hidden"
+      );
+
+      profileSummaryCard.classList.remove(
+        "hidden"
+      );
+
+      cameraCard.classList.remove(
+        "hidden"
+      );
+
+      calibrationCard.classList.remove(
+        "hidden"
+      );
+
 
       await startCamera();
+
     };
 
 
@@ -874,17 +1338,25 @@
         cameraStatus.textContent =
           "Requesting camera access...";
 
+
         stream =
           await navigator.mediaDevices.getUserMedia({
+
             video: {
               facingMode: "user"
             },
+
             audio: false
+
           });
 
-        video.srcObject = stream;
+
+        video.srcObject =
+          stream;
+
 
         await video.play();
+
 
         cameraStatus.textContent =
           "Camera active.";
@@ -892,18 +1364,23 @@
         cameraStatus.className =
           "status good";
 
+
         await loadVision();
+
 
       } catch (error) {
 
         console.error(error);
+
 
         cameraStatus.textContent =
           "Camera access failed. Please allow camera access and reload.";
 
         cameraStatus.className =
           "status bad";
+
       }
+
     }
 
 
@@ -918,37 +1395,50 @@
         cameraStatus.textContent =
           "Loading computer-vision model...";
 
+
         const vision =
           await import(
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
           );
+
 
         const {
           FaceLandmarker,
           FilesetResolver
         } = vision;
 
+
         const filesetResolver =
           await FilesetResolver.forVisionTasks(
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
           );
 
+
         faceLandmarker =
           await FaceLandmarker.createFromOptions(
+
             filesetResolver,
+
             {
+
               baseOptions: {
+
                 modelAssetPath:
                   "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+
               },
 
               runningMode: "VIDEO",
 
               numFaces: 1
+
             }
+
           );
 
+
         visionReady = true;
+
 
         cameraStatus.textContent =
           "Computer vision ready.";
@@ -956,21 +1446,31 @@
         cameraStatus.className =
           "status good";
 
+
         if (!detecting) {
+
           detecting = true;
-          requestAnimationFrame(detectFace);
+
+          requestAnimationFrame(
+            detectFace
+          );
+
         }
+
 
       } catch (error) {
 
         console.error(error);
+
 
         cameraStatus.textContent =
           "Could not load computer vision.";
 
         cameraStatus.className =
           "status bad";
+
       }
+
     }
 
 
@@ -984,17 +1484,26 @@
         return;
       }
 
-      requestAnimationFrame(detectFace);
+
+      requestAnimationFrame(
+        detectFace
+      );
+
 
       if (
         !visionReady ||
         !faceLandmarker ||
         video.readyState < 2
       ) {
+
         return;
+
       }
 
-      const now = performance.now();
+
+      const now =
+        performance.now();
+
 
       try {
 
@@ -1004,29 +1513,39 @@
             now
           );
 
+
         if (
           !result.faceLandmarks ||
           result.faceLandmarks.length === 0
         ) {
 
-          currentEstimatedDistance = null;
-          currentFacePosition = "unknown";
+          currentEstimatedDistance =
+            null;
+
+          currentFacePosition =
+            "unknown";
+
 
           distanceDisplay.textContent =
             "--";
 
+
           positionStatus.textContent =
             "No face detected";
 
+
           positionStatus.parentElement.className =
             "monitor-box";
+
 
           updateMonitorStatus();
 
           updateSessionTracking();
 
           return;
+
         }
+
 
         const landmarks =
           result.faceLandmarks[0];
@@ -1042,32 +1561,45 @@
         const rightSide =
           landmarks[454];
 
+
         const faceWidth =
           Math.abs(
-            rightSide.x - leftSide.x
+            rightSide.x -
+            leftSide.x
           );
 
-        faceSizeHistory.push(faceWidth);
+
+        faceSizeHistory.push(
+          faceWidth
+        );
+
 
         if (
           faceSizeHistory.length >
           smoothingFrames
         ) {
+
           faceSizeHistory.shift();
+
         }
+
 
         smoothedFaceSize =
           faceSizeHistory.reduce(
-            (sum, value) => sum + value,
+            (sum, value) =>
+              sum + value,
             0
-          ) / faceSizeHistory.length;
+          ) /
+          faceSizeHistory.length;
 
 
         /* ================================
            DISTANCE ESTIMATION
         ================================= */
 
-        if (referenceFaceSize !== null) {
+        if (
+          referenceFaceSize !== null
+        ) {
 
           currentEstimatedDistance =
             therapyProfile.targetDistance *
@@ -1076,8 +1608,11 @@
               smoothedFaceSize
             );
 
+
           distanceDisplay.textContent =
-            `${Math.round(currentEstimatedDistance)} cm`;
+            `${Math.round(
+              currentEstimatedDistance
+            )} cm`;
 
         } else {
 
@@ -1086,6 +1621,7 @@
 
           distanceDisplay.textContent =
             "--";
+
         }
 
 
@@ -1105,34 +1641,52 @@
         const right =
           landmarks[454];
 
+
         const centerX =
           (left.x + right.x) / 2;
+
 
         const centerY =
           (nose.y + chin.y) / 2;
 
-        const positionMinX = 0.25;
-        const positionMaxX = 0.75;
 
-        const positionMinY = 0.25;
-        const positionMaxY = 0.75;
+        const positionMinX =
+          0.25;
 
-        if (centerX < positionMinX) {
+        const positionMaxX =
+          0.75;
+
+        const positionMinY =
+          0.25;
+
+        const positionMaxY =
+          0.75;
+
+
+        if (
+          centerX < positionMinX
+        ) {
 
           currentFacePosition =
             "too_far_left";
 
-        } else if (centerX > positionMaxX) {
+        } else if (
+          centerX > positionMaxX
+        ) {
 
           currentFacePosition =
             "too_far_right";
 
-        } else if (centerY < positionMinY) {
+        } else if (
+          centerY < positionMinY
+        ) {
 
           currentFacePosition =
             "too_high";
 
-        } else if (centerY > positionMaxY) {
+        } else if (
+          centerY > positionMaxY
+        ) {
 
           currentFacePosition =
             "too_low";
@@ -1141,6 +1695,7 @@
 
           currentFacePosition =
             "center";
+
         }
 
 
@@ -1148,7 +1703,10 @@
            POSITION DISPLAY
         ================================= */
 
-        if (currentFacePosition === "center") {
+        if (
+          currentFacePosition ===
+          "center"
+        ) {
 
           positionStatus.textContent =
             "Good";
@@ -1157,7 +1715,8 @@
             "monitor-box";
 
         } else if (
-          currentFacePosition === "too_far_left"
+          currentFacePosition ===
+          "too_far_left"
         ) {
 
           positionStatus.textContent =
@@ -1167,7 +1726,8 @@
             "monitor-box";
 
         } else if (
-          currentFacePosition === "too_far_right"
+          currentFacePosition ===
+          "too_far_right"
         ) {
 
           positionStatus.textContent =
@@ -1177,7 +1737,8 @@
             "monitor-box";
 
         } else if (
-          currentFacePosition === "too_high"
+          currentFacePosition ===
+          "too_high"
         ) {
 
           positionStatus.textContent =
@@ -1187,7 +1748,8 @@
             "monitor-box";
 
         } else if (
-          currentFacePosition === "too_low"
+          currentFacePosition ===
+          "too_low"
         ) {
 
           positionStatus.textContent =
@@ -1200,6 +1762,7 @@
 
           positionStatus.textContent =
             "--";
+
         }
 
 
@@ -1207,13 +1770,16 @@
 
         updateSessionTracking();
 
+
       } catch (error) {
 
         console.error(
           "Face detection error:",
           error
         );
+
       }
+
     }
 
 
@@ -1235,7 +1801,9 @@
           "status warning";
 
         return;
+
       }
+
 
       const physicalDistance =
         Number(
@@ -1243,6 +1811,7 @@
             "physicalDistance"
           ).value
         );
+
 
       if (
         !physicalDistance ||
@@ -1257,13 +1826,17 @@
           "status bad";
 
         return;
+
       }
+
 
       referenceFaceSize =
         smoothedFaceSize;
 
+
       therapyProfile.calibrationDistance =
         physicalDistance;
+
 
       calibrationStatus.textContent =
         `Calibration complete at ${physicalDistance} cm.`;
@@ -1271,7 +1844,10 @@
       calibrationStatus.className =
         "status good";
 
-      startButton.disabled = false;
+
+      startButton.disabled =
+        false;
+
     };
 
 
@@ -1285,7 +1861,11 @@
         return;
       }
 
-      if (currentEstimatedDistance === null) {
+
+      if (
+        currentEstimatedDistance ===
+        null
+      ) {
 
         monitorStatus.textContent =
           "No face detected.";
@@ -1294,11 +1874,14 @@
           "status warning";
 
         return;
+
       }
+
 
       if (
         currentEstimatedDistance <
-        therapyProfile.targetDistance * 0.90
+        therapyProfile.targetDistance *
+        0.90
       ) {
 
         monitorStatus.textContent =
@@ -1308,10 +1891,13 @@
           "status warning";
 
         return;
+
       }
 
+
       if (
-        currentFacePosition !== "center"
+        currentFacePosition !==
+        "center"
       ) {
 
         if (
@@ -1350,19 +1936,223 @@
 
           monitorStatus.textContent =
             "Please reposition your face.";
+
         }
+
 
         monitorStatus.className =
           "status warning";
 
         return;
+
       }
+
 
       monitorStatus.textContent =
         "Good position.";
 
       monitorStatus.className =
         "status good";
+
+    }
+
+
+    /* ================================
+       STEP 7 PHASE CONTROL
+    ================================= */
+
+    function setExperimentPhase(
+      phase
+    ) {
+
+      experimentPhase =
+        phase;
+
+      phaseStartTime =
+        performance.now();
+
+      phaseLastTrackingTime =
+        performance.now();
+
+
+      invalidStartedAt =
+        null;
+
+      correctionActive =
+        false;
+
+
+      correctionOverlay.classList.add(
+        "hidden"
+      );
+
+
+      if (
+        phase === "baseline"
+      ) {
+
+        phaseName.textContent =
+          "Baseline";
+
+        phaseDescription.textContent =
+          "Measuring natural viewing behavior. Correction feedback is OFF.";
+
+      } else if (
+        phase === "intervention"
+      ) {
+
+        phaseName.textContent =
+          "Intervention";
+
+        phaseDescription.textContent =
+          "Corrective feedback is ON. Measuring behavioral response.";
+
+      } else if (
+        phase === "final"
+      ) {
+
+        phaseName.textContent =
+          "Final";
+
+        phaseDescription.textContent =
+          "Feedback is OFF again. Measuring behavior after intervention.";
+
+      }
+
+    }
+
+
+    function getCurrentPhaseDuration() {
+
+      if (
+        experimentPhase ===
+        "baseline"
+      ) {
+
+        return (
+          therapyProfile
+            .baselineDurationSeconds
+        );
+
+      }
+
+
+      if (
+        experimentPhase ===
+        "intervention"
+      ) {
+
+        return (
+          therapyProfile
+            .interventionDurationSeconds
+        );
+
+      }
+
+
+      return (
+        therapyProfile
+          .finalDurationSeconds
+      );
+
+    }
+
+
+    function isInterventionPhase() {
+
+      return (
+        experimentPhase ===
+        "intervention"
+      );
+
+    }
+
+
+    function advanceExperimentPhase() {
+
+      if (
+        experimentPhase ===
+        "baseline"
+      ) {
+
+        setExperimentPhase(
+          "intervention"
+        );
+
+        monitorStatus.textContent =
+          "Intervention started. Corrective feedback is now active.";
+
+        monitorStatus.className =
+          "status good";
+
+        return;
+
+      }
+
+
+      if (
+        experimentPhase ===
+        "intervention"
+      ) {
+
+        setExperimentPhase(
+          "final"
+        );
+
+        monitorStatus.textContent =
+          "Final phase started. Corrective feedback is now OFF.";
+
+        monitorStatus.className =
+          "status good";
+
+        return;
+
+      }
+
+
+      if (
+        experimentPhase ===
+        "final"
+      ) {
+
+        endSession();
+
+      }
+
+    }
+
+
+    function updateExperimentPhase() {
+
+      if (
+        !sessionRunning ||
+        phaseStartTime === null
+      ) {
+
+        return;
+
+      }
+
+
+      const elapsed =
+        (
+          performance.now() -
+          phaseStartTime
+        ) / 1000;
+
+
+      const phaseDuration =
+        getCurrentPhaseDuration();
+
+
+      if (
+        elapsed >= phaseDuration
+      ) {
+
+        advanceExperimentPhase();
+
+      }
+
     }
 
 
@@ -1372,52 +2162,96 @@
 
     window.startSession = function () {
 
-      sessionRunning = true;
+      sessionRunning =
+        true;
+
 
       sessionStartTime =
         performance.now();
 
+
       lastTrackingTime =
         performance.now();
 
-      compliantTime = 0;
-      tooCloseTime = 0;
-      poorPositionTime = 0;
-      noFaceTime = 0;
 
-      tooCloseStartedAt = null;
+      compliantTime =
+        0;
 
-      invalidStartedAt = null;
-      correctionActive = false;
+      tooCloseTime =
+        0;
+
+      poorPositionTime =
+        0;
+
+      noFaceTime =
+        0;
+
+
+      tooCloseStartedAt =
+        null;
+
+
+      invalidStartedAt =
+        null;
+
+      correctionActive =
+        false;
+
+
+      phaseData = {
+
+        baseline:
+          createEmptyPhaseData(),
+
+        intervention:
+          createEmptyPhaseData(),
+
+        final:
+          createEmptyPhaseData()
+
+      };
+
 
       correctionOverlay.classList.add(
         "hidden"
       );
 
+
       calibrationCard.classList.add(
         "hidden"
       );
+
 
       finalSummaryCard.classList.add(
         "hidden"
       );
 
+
       monitorCard.classList.remove(
         "hidden"
       );
 
+
       sessionTimer.textContent =
         "00:00";
 
+
+      setExperimentPhase(
+        "baseline"
+      );
+
+
       monitorStatus.textContent =
-        "Monitoring started.";
+        "Baseline started. Measuring natural behavior.";
 
       monitorStatus.className =
         "status good";
 
+
       requestAnimationFrame(
         updateSessionTimer
       );
+
     };
 
 
@@ -1431,16 +2265,25 @@
         return;
       }
 
+
       const elapsed =
         performance.now() -
         sessionStartTime;
 
+
       sessionTimer.textContent =
-        formatDuration(elapsed / 1000);
+        formatDuration(
+          elapsed / 1000
+        );
+
+
+      updateExperimentPhase();
+
 
       requestAnimationFrame(
         updateSessionTimer
       );
+
     }
 
 
@@ -1454,32 +2297,74 @@
         return;
       }
 
+
       const now =
         performance.now();
 
-      if (lastTrackingTime === null) {
 
-        lastTrackingTime = now;
+      if (
+        lastTrackingTime ===
+        null
+      ) {
+
+        lastTrackingTime =
+          now;
 
         return;
+
       }
 
-      const delta =
-        (now - lastTrackingTime) / 1000;
 
-      lastTrackingTime = now;
+      const delta =
+        (
+          now -
+          lastTrackingTime
+        ) / 1000;
+
+
+      lastTrackingTime =
+        now;
+
+
+      /* ================================
+         CURRENT PHASE
+      ================================= */
+
+      const phase =
+        phaseData[
+          experimentPhase
+        ];
+
+
+      if (!phase) {
+        return;
+      }
 
 
       /* ================================
          CLASSIFY CURRENT STATE
       ================================= */
 
-      if (currentEstimatedDistance === null) {
+      if (
+        currentEstimatedDistance ===
+        null
+      ) {
 
-        noFaceTime += delta;
+        noFaceTime +=
+          delta;
+
+        phase.noFaceTime +=
+          delta;
+
+        handlePhaseIntervention(
+          "no_face",
+          now
+        );
 
         return;
+
       }
+
 
       const target =
         therapyProfile.targetDistance;
@@ -1490,35 +2375,57 @@
         target * 0.90
       ) {
 
-        tooCloseTime += delta;
+        tooCloseTime +=
+          delta;
 
-        if (tooCloseStartedAt === null) {
-          tooCloseStartedAt = now;
+        phase.tooCloseTime +=
+          delta;
+
+
+        if (
+          tooCloseStartedAt ===
+          null
+        ) {
+
+          tooCloseStartedAt =
+            now;
+
         }
 
-        handleCorrection(
+
+        handlePhaseIntervention(
           "too_close",
           now
         );
 
         return;
+
       }
 
 
       if (
-        currentFacePosition !== "center"
+        currentFacePosition !==
+        "center"
       ) {
 
-        poorPositionTime += delta;
+        poorPositionTime +=
+          delta;
 
-        tooCloseStartedAt = null;
+        phase.poorPositionTime +=
+          delta;
 
-        handleCorrection(
+
+        tooCloseStartedAt =
+          null;
+
+
+        handlePhaseIntervention(
           "poor_position",
           now
         );
 
         return;
+
       }
 
 
@@ -1526,36 +2433,81 @@
          COMPLIANT
       ================================= */
 
-      compliantTime += delta;
+      compliantTime +=
+        delta;
 
-      tooCloseStartedAt = null;
+      phase.compliantTime +=
+        delta;
 
-      invalidStartedAt = null;
 
-      if (correctionActive) {
+      tooCloseStartedAt =
+        null;
 
-        correctionActive = false;
+
+      invalidStartedAt =
+        null;
+
+
+      if (
+        correctionActive
+      ) {
+
+        correctionActive =
+          false;
+
 
         correctionOverlay.classList.add(
           "hidden"
         );
+
       }
+
     }
 
 
     /* ================================
-       CORRECTION INTERVENTION
+       STEP 7 INTERVENTION HANDLER
     ================================= */
 
-    function handleCorrection(
+    function handlePhaseIntervention(
       reason,
       now
     ) {
 
-      if (invalidStartedAt === null) {
+      /*
+       * Baseline and Final intentionally
+       * have no corrective intervention.
+       */
 
-        invalidStartedAt = now;
+      if (
+        !isInterventionPhase()
+      ) {
+
+        invalidStartedAt =
+          null;
+
+        correctionActive =
+          false;
+
+        correctionOverlay.classList.add(
+          "hidden"
+        );
+
+        return;
+
       }
+
+
+      if (
+        invalidStartedAt ===
+        null
+      ) {
+
+        invalidStartedAt =
+          now;
+
+      }
+
 
       const invalidDuration =
         (
@@ -1563,28 +2515,46 @@
           invalidStartedAt
         ) / 1000;
 
+
       if (
         invalidDuration <
         therapyProfile.gracePeriodSeconds
       ) {
 
         return;
+
       }
 
-      if (!correctionActive) {
 
-        correctionActive = true;
+      if (
+        !correctionActive
+      ) {
 
-        if (reason === "too_close") {
+        correctionActive =
+          true;
+
+
+        if (
+          reason ===
+          "no_face"
+        ) {
+
+          correctionMessage.textContent =
+            "Please place your face in view of the camera.";
+
+        } else if (
+          reason ===
+          "too_close"
+        ) {
 
           correctionMessage.textContent =
             "Please move farther away from the iPad.";
 
         } else if (
           currentFacePosition ===
-          "too_far_left" ||
+            "too_far_left" ||
           currentFacePosition ===
-          "too_far_right"
+            "too_far_right"
         ) {
 
           correctionMessage.textContent =
@@ -1592,9 +2562,9 @@
 
         } else if (
           currentFacePosition ===
-          "too_high" ||
+            "too_high" ||
           currentFacePosition ===
-          "too_low"
+            "too_low"
         ) {
 
           correctionMessage.textContent =
@@ -1604,12 +2574,16 @@
 
           correctionMessage.textContent =
             "Please adjust your position.";
+
         }
+
 
         correctionOverlay.classList.remove(
           "hidden"
         );
+
       }
+
     }
 
 
@@ -1623,20 +2597,29 @@
         return;
       }
 
-      sessionRunning = false;
+
+      sessionRunning =
+        false;
+
 
       correctionOverlay.classList.add(
         "hidden"
       );
 
-      correctionActive = false;
-      invalidStartedAt = null;
+
+      correctionActive =
+        false;
+
+      invalidStartedAt =
+        null;
+
 
       const totalTracked =
         compliantTime +
         tooCloseTime +
         poorPositionTime +
         noFaceTime;
+
 
       const compliance =
         totalTracked > 0
@@ -1646,6 +2629,7 @@
             ) * 100
           : 0;
 
+
       const totalSession =
         sessionStartTime !== null
           ? (
@@ -1654,39 +2638,61 @@
             ) / 1000
           : totalTracked;
 
+
+      /* ================================
+         OVERALL SUMMARY
+      ================================= */
+
       document.getElementById(
         "finalTotal"
       ).textContent =
-        formatDuration(totalSession);
+        formatDuration(
+          totalSession
+        );
+
 
       document.getElementById(
         "finalCompliance"
       ).textContent =
-        `${Math.round(compliance)}%`;
+        `${Math.round(
+          compliance
+        )}%`;
+
 
       document.getElementById(
         "finalCompliant"
       ).textContent =
-        formatDuration(compliantTime);
+        formatDuration(
+          compliantTime
+        );
+
 
       document.getElementById(
         "finalTooClose"
       ).textContent =
-        formatDuration(tooCloseTime);
+        formatDuration(
+          tooCloseTime
+        );
+
 
       document.getElementById(
         "finalPoorPosition"
       ).textContent =
-        formatDuration(poorPositionTime);
+        formatDuration(
+          poorPositionTime
+        );
+
 
       document.getElementById(
         "finalNoFace"
       ).textContent =
-        formatDuration(noFaceTime);
+        formatDuration(
+          noFaceTime
+        );
 
 
       /* ================================
-         STEP 6 VISUAL ANALYTICS
+         OVERALL VISUAL ANALYTICS
       ================================= */
 
       const safeTotal =
@@ -1694,11 +2700,13 @@
           ? totalTracked
           : 1;
 
+
       const compliantPercent =
         (
           compliantTime /
           safeTotal
         ) * 100;
+
 
       const tooClosePercent =
         (
@@ -1706,11 +2714,13 @@
           safeTotal
         ) * 100;
 
+
       const poorPositionPercent =
         (
           poorPositionTime /
           safeTotal
         ) * 100;
+
 
       const noFacePercent =
         (
@@ -1724,15 +2734,18 @@
       ).style.width =
         `${compliantPercent}%`;
 
+
       document.getElementById(
         "barTooClose"
       ).style.width =
         `${tooClosePercent}%`;
 
+
       document.getElementById(
         "barPoorPosition"
       ).style.width =
         `${poorPositionPercent}%`;
+
 
       document.getElementById(
         "barNoFace"
@@ -1743,36 +2756,102 @@
       document.getElementById(
         "legendCompliant"
       ).textContent =
-        `Compliant: ${Math.round(compliantPercent)}%`;
+        `Compliant: ${Math.round(
+          compliantPercent
+        )}%`;
+
 
       document.getElementById(
         "legendTooClose"
       ).textContent =
-        `Too close: ${Math.round(tooClosePercent)}%`;
+        `Too close: ${Math.round(
+          tooClosePercent
+        )}%`;
+
 
       document.getElementById(
         "legendPoorPosition"
       ).textContent =
-        `Poor position: ${Math.round(poorPositionPercent)}%`;
+        `Poor position: ${Math.round(
+          poorPositionPercent
+        )}%`;
+
 
       document.getElementById(
         "legendNoFace"
       ).textContent =
-        `Face not detected: ${Math.round(noFacePercent)}%`;
+        `Face not detected: ${Math.round(
+          noFacePercent
+        )}%`;
 
 
       /* ================================
-         SAVE SESSION TO HISTORY
+         PHASE SUMMARIES
+      ================================= */
+
+      updatePhaseSummary(
+        "baseline",
+        "baselineCompliance",
+        "baselineClose",
+        "baselinePosition",
+        "baselineNoFace"
+      );
+
+
+      updatePhaseSummary(
+        "intervention",
+        "interventionCompliance",
+        "interventionClose",
+        "interventionPosition",
+        "interventionNoFace"
+      );
+
+
+      updatePhaseSummary(
+        "final",
+        "finalPhaseCompliance",
+        "finalPhaseClose",
+        "finalPhasePosition",
+        "finalPhaseNoFace"
+      );
+
+
+      /* ================================
+         SAVE SESSION
       ================================= */
 
       saveSessionToHistory({
-        date: new Date().toISOString(),
+
+        date:
+          new Date().toISOString(),
+
         totalSession,
+
         compliance,
+
         compliantTime,
+
         tooCloseTime,
+
         poorPositionTime,
-        noFaceTime
+
+        noFaceTime,
+
+        experiment: true,
+
+        phaseData: {
+
+          baseline:
+            { ...phaseData.baseline },
+
+          intervention:
+            { ...phaseData.intervention },
+
+          final:
+            { ...phaseData.final }
+
+        }
+
       });
 
 
@@ -1780,12 +2859,83 @@
         "hidden"
       );
 
+
       finalSummaryCard.classList.remove(
         "hidden"
       );
 
+
       renderHistory();
+
     };
+
+
+    /* ================================
+       PHASE SUMMARY
+    ================================= */
+
+    function updatePhaseSummary(
+      phaseNameKey,
+      complianceId,
+      closeId,
+      positionId,
+      noFaceId
+    ) {
+
+      const data =
+        phaseData[
+          phaseNameKey
+        ];
+
+
+      const total =
+        data.compliantTime +
+        data.tooCloseTime +
+        data.poorPositionTime +
+        data.noFaceTime;
+
+
+      const compliance =
+        total > 0
+          ? (
+              data.compliantTime /
+              total
+            ) * 100
+          : 0;
+
+
+      document.getElementById(
+        complianceId
+      ).textContent =
+        `${Math.round(
+          compliance
+        )}%`;
+
+
+      document.getElementById(
+        closeId
+      ).textContent =
+        formatDuration(
+          data.tooCloseTime
+        );
+
+
+      document.getElementById(
+        positionId
+      ).textContent =
+        formatDuration(
+          data.poorPositionTime
+        );
+
+
+      document.getElementById(
+        noFaceId
+      ).textContent =
+        formatDuration(
+          data.noFaceTime
+        );
+
+    }
 
 
     /* ================================
@@ -1794,56 +2944,127 @@
 
     window.newSession = function () {
 
-      sessionRunning = false;
+      sessionRunning =
+        false;
 
-      compliantTime = 0;
-      tooCloseTime = 0;
-      poorPositionTime = 0;
-      noFaceTime = 0;
 
-      lastTrackingTime = null;
-      tooCloseStartedAt = null;
+      compliantTime =
+        0;
 
-      invalidStartedAt = null;
-      correctionActive = false;
+      tooCloseTime =
+        0;
 
-      referenceFaceSize = null;
-      smoothedFaceSize = null;
+      poorPositionTime =
+        0;
 
-      faceSizeHistory.length = 0;
+      noFaceTime =
+        0;
 
-      currentEstimatedDistance = null;
-      currentFacePosition = "unknown";
+
+      lastTrackingTime =
+        null;
+
+      tooCloseStartedAt =
+        null;
+
+
+      invalidStartedAt =
+        null;
+
+      correctionActive =
+        false;
+
+
+      phaseStartTime =
+        null;
+
+      phaseLastTrackingTime =
+        null;
+
+
+      phaseData = {
+
+        baseline:
+          createEmptyPhaseData(),
+
+        intervention:
+          createEmptyPhaseData(),
+
+        final:
+          createEmptyPhaseData()
+
+      };
+
+
+      experimentPhase =
+        "baseline";
+
+
+      referenceFaceSize =
+        null;
+
+      smoothedFaceSize =
+        null;
+
+
+      faceSizeHistory.length =
+        0;
+
+
+      currentEstimatedDistance =
+        null;
+
+      currentFacePosition =
+        "unknown";
+
 
       correctionOverlay.classList.add(
         "hidden"
       );
 
+
       finalSummaryCard.classList.add(
         "hidden"
       );
+
 
       monitorCard.classList.add(
         "hidden"
       );
 
+
       calibrationCard.classList.remove(
         "hidden"
       );
 
-      startButton.disabled = true;
+
+      startButton.disabled =
+        true;
+
 
       calibrationStatus.textContent =
         "Waiting for a detected face...";
 
+
       calibrationStatus.className =
         "status";
+
 
       distanceDisplay.textContent =
         "--";
 
+
       positionStatus.textContent =
         "--";
+
+
+      phaseName.textContent =
+        "Baseline";
+
+
+      phaseDescription.textContent =
+        "Measuring natural viewing behavior. Correction feedback is OFF.";
+
     };
 
 
@@ -1860,21 +3081,32 @@
             HISTORY_KEY
           );
 
+
         if (!stored) {
 
-          sessionHistory = [];
+          sessionHistory =
+            [];
 
           return;
+
         }
 
+
         sessionHistory =
-          JSON.parse(stored);
+          JSON.parse(
+            stored
+          );
+
 
         if (
-          !Array.isArray(sessionHistory)
+          !Array.isArray(
+            sessionHistory
+          )
         ) {
 
-          sessionHistory = [];
+          sessionHistory =
+            [];
+
         }
 
       } catch (error) {
@@ -1884,8 +3116,11 @@
           error
         );
 
-        sessionHistory = [];
+        sessionHistory =
+          [];
+
       }
+
     }
 
 
@@ -1897,14 +3132,17 @@
         session
       );
 
+
       /*
        * Keep the most recent 20 sessions.
-       * This prevents the browser's local storage
-       * from growing unnecessarily.
        */
 
       sessionHistory =
-        sessionHistory.slice(0, 20);
+        sessionHistory.slice(
+          0,
+          20
+        );
+
 
       try {
 
@@ -1921,7 +3159,9 @@
           "Could not save session:",
           error
         );
+
       }
+
     }
 
 
@@ -1932,13 +3172,16 @@
           "historyContainer"
         );
 
+
       const clearButton =
         document.getElementById(
           "clearHistoryButton"
         );
 
+
       if (
-        sessionHistory.length === 0
+        sessionHistory.length ===
+        0
       ) {
 
         container.innerHTML =
@@ -1948,18 +3191,25 @@
           </p>
           `;
 
+
         clearButton.classList.add(
           "hidden"
         );
 
+
         return;
+
       }
+
 
       clearButton.classList.remove(
         "hidden"
       );
 
-      container.innerHTML = "";
+
+      container.innerHTML =
+        "";
+
 
       sessionHistory.forEach(
         (session) => {
@@ -1969,11 +3219,16 @@
               "div"
             );
 
+
           item.className =
             "history-item";
 
+
           const date =
-            new Date(session.date);
+            new Date(
+              session.date
+            );
+
 
           const formattedDate =
             date.toLocaleDateString(
@@ -1985,6 +3240,7 @@
               }
             );
 
+
           const formattedTime =
             date.toLocaleTimeString(
               undefined,
@@ -1994,65 +3250,94 @@
               }
             );
 
+
+          const experimentLabel =
+            session.experiment
+              ? " · Experiment"
+              : "";
+
+
           item.innerHTML =
             `
+
             <div class="history-top">
 
               <div class="history-date">
-                ${formattedDate} · ${formattedTime}
+                ${formattedDate} · ${formattedTime}${experimentLabel}
               </div>
 
               <div class="history-compliance">
-                ${Math.round(session.compliance)}% compliant
+                ${Math.round(
+                  session.compliance
+                )}% compliant
               </div>
 
             </div>
+
 
             <div class="history-details">
 
               <div>
                 Session
                 <strong>
-                  ${formatDuration(session.totalSession)}
+                  ${formatDuration(
+                    session.totalSession
+                  )}
                 </strong>
               </div>
+
 
               <div>
                 Too close
                 <strong>
-                  ${formatDuration(session.tooCloseTime)}
+                  ${formatDuration(
+                    session.tooCloseTime
+                  )}
                 </strong>
               </div>
+
 
               <div>
                 Poor position
                 <strong>
-                  ${formatDuration(session.poorPositionTime)}
+                  ${formatDuration(
+                    session.poorPositionTime
+                  )}
                 </strong>
               </div>
+
 
               <div>
                 Compliant
                 <strong>
-                  ${formatDuration(session.compliantTime)}
+                  ${formatDuration(
+                    session.compliantTime
+                  )}
                 </strong>
               </div>
+
 
               <div>
                 No face
                 <strong>
-                  ${formatDuration(session.noFaceTime)}
+                  ${formatDuration(
+                    session.noFaceTime
+                  )}
                 </strong>
               </div>
 
             </div>
+
             `;
+
 
           container.appendChild(
             item
           );
+
         }
       );
+
     }
 
 
@@ -2067,17 +3352,23 @@
           "Clear all saved session history?"
         );
 
+
       if (!confirmed) {
         return;
       }
 
-      sessionHistory = [];
+
+      sessionHistory =
+        [];
+
 
       localStorage.removeItem(
         HISTORY_KEY
       );
 
+
       renderHistory();
+
     };
 
 
@@ -2092,22 +3383,38 @@
       totalSeconds =
         Math.max(
           0,
-          Math.round(totalSeconds)
+          Math.round(
+            totalSeconds
+          )
         );
+
 
       const minutes =
         Math.floor(
           totalSeconds / 60
         );
 
+
       const seconds =
         totalSeconds % 60;
 
+
       return (
-        String(minutes).padStart(2, "0") +
+        String(
+          minutes
+        ).padStart(
+          2,
+          "0"
+        ) +
         ":" +
-        String(seconds).padStart(2, "0")
+        String(
+          seconds
+        ).padStart(
+          2,
+          "0"
+        )
       );
+
     }
 
 
@@ -2116,6 +3423,7 @@
     ================================= */
 
     loadHistory();
+
     renderHistory();
 
   </script>
