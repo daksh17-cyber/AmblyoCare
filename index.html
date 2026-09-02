@@ -180,7 +180,6 @@
       margin-top: 10px;
     }
 
-
     /* =========================================================
        CORRECTION OVERLAY
        ========================================================= */
@@ -245,7 +244,6 @@
   </style>
 </head>
 
-
 <body>
 
 <header>
@@ -258,9 +256,7 @@
 
 </header>
 
-
 <div class="container">
-
 
   <!-- =========================================================
        THERAPY PROFILE
@@ -286,7 +282,6 @@
 
     </select>
 
-
     <label for="targetDistance">
       Target viewing distance (cm)
     </label>
@@ -298,7 +293,6 @@
       max="200"
       value="40"
     >
-
 
     <label for="sessionGoal">
       Session goal (minutes)
@@ -312,7 +306,6 @@
       value="20"
     >
 
-
     <label for="gracePeriod">
       Grace period (seconds)
     </label>
@@ -325,7 +318,6 @@
       value="20"
     >
 
-
     <div class="note">
 
       Target distance is a configurable monitoring value for this
@@ -333,7 +325,6 @@
       prescription or automatically determined from an eye prescription.
 
     </div>
-
 
     <button
       class="primary"
@@ -343,8 +334,6 @@
     </button>
 
   </section>
-
-
 
   <!-- =========================================================
        PROFILE SUMMARY
@@ -372,8 +361,6 @@
     </button>
 
   </section>
-
-
 
   <!-- =========================================================
        CAMERA
@@ -404,8 +391,6 @@
 
   </section>
 
-
-
   <!-- =========================================================
        CALIBRATION
        ========================================================= -->
@@ -424,7 +409,6 @@
       Enter the actual physical distance below.
     </p>
 
-
     <label for="calibrationDistance">
       Current physical distance (cm)
     </label>
@@ -437,7 +421,6 @@
       value="40"
     >
 
-
     <button
       id="calibrateButton"
       class="primary"
@@ -446,14 +429,12 @@
       Calibrate
     </button>
 
-
     <div
       id="calibrationStatus"
       class="status"
     >
       Waiting for calibration...
     </div>
-
 
     <button
       id="startButton"
@@ -464,8 +445,6 @@
     </button>
 
   </section>
-
-
 
   <!-- =========================================================
        MONITORING
@@ -480,14 +459,12 @@
       Live Monitoring
     </h2>
 
-
     <div
       id="sessionTimer"
       class="distance"
     >
       00:00
     </div>
-
 
     <div
       id="distanceDisplay"
@@ -496,14 +473,12 @@
       -- cm
     </div>
 
-
     <div
       id="monitorStatus"
       class="status"
     >
       Waiting for face...
     </div>
-
 
     <div
       id="positionStatus"
@@ -512,9 +487,7 @@
       Face position: Waiting...
     </div>
 
-
     <div class="summary-grid">
-
 
       <div class="summary-item">
 
@@ -531,7 +504,6 @@
 
       </div>
 
-
       <div class="summary-item">
 
         <div class="summary-label">
@@ -547,9 +519,7 @@
 
       </div>
 
-
     </div>
-
 
     <button
       class="danger"
@@ -559,8 +529,6 @@
     </button>
 
   </section>
-
-
 
   <!-- =========================================================
        FINAL SUMMARY
@@ -577,7 +545,6 @@
 
     <div id="finalSummary"></div>
 
-
     <button
       class="primary"
       onclick="newSession()"
@@ -587,10 +554,7 @@
 
   </section>
 
-
 </div>
-
-
 
 <!-- =========================================================
      CORRECTION OVERLAY
@@ -626,10 +590,7 @@
 
 </div>
 
-
-
 <script type="module">
-
 
 /* =========================================================
    DOM ELEMENTS
@@ -692,8 +653,6 @@ const correctionOverlay =
 const correctionMessage =
   document.getElementById("correctionMessage");
 
-
-
 /* =========================================================
    THERAPY PROFILE
    ========================================================= */
@@ -709,8 +668,6 @@ let therapyProfile = {
   gracePeriodSeconds: 20
 
 };
-
-
 
 window.saveProfile = function() {
 
@@ -740,7 +697,6 @@ window.saveProfile = function() {
       ).value
     );
 
-
   if (
     !target ||
     target < 10 ||
@@ -754,7 +710,6 @@ window.saveProfile = function() {
     return;
 
   }
-
 
   if (
     !goal ||
@@ -770,7 +725,6 @@ window.saveProfile = function() {
 
   }
 
-
   if (
     grace < 0 ||
     grace > 120
@@ -784,7 +738,6 @@ window.saveProfile = function() {
 
   }
 
-
   therapyProfile = {
 
     treatmentEye: eye,
@@ -796,7 +749,6 @@ window.saveProfile = function() {
     gracePeriodSeconds: grace
 
   };
-
 
   profileSummary.innerHTML = `
 
@@ -814,7 +766,6 @@ window.saveProfile = function() {
 
   `;
 
-
   profileCard.classList.add(
     "hidden"
   );
@@ -831,19 +782,15 @@ window.saveProfile = function() {
     "hidden"
   );
 
-
   targetDisplay.textContent =
     `${target} cm`;
 
   goalDisplay.textContent =
     `${goal} min`;
 
-
   startCamera();
 
 };
-
-
 
 window.editProfile = function() {
 
@@ -867,7 +814,6 @@ window.editProfile = function() {
   ).value =
     therapyProfile.gracePeriodSeconds;
 
-
   profileSummaryCard.classList.add(
     "hidden"
   );
@@ -878,15 +824,11 @@ window.editProfile = function() {
 
 };
 
-
-
 /* =========================================================
    CAMERA
    ========================================================= */
 
 let stream = null;
-
-
 
 async function startCamera() {
 
@@ -894,7 +836,6 @@ async function startCamera() {
 
     status.textContent =
       "Requesting camera permission...";
-
 
     stream =
       await navigator.mediaDevices.getUserMedia({
@@ -907,25 +848,19 @@ async function startCamera() {
 
       });
 
-
     video.srcObject =
       stream;
 
-
     await video.play();
-
 
     status.textContent =
       "Camera working. Loading computer vision...";
 
-
     await loadVision();
-
 
   } catch (error) {
 
     console.error(error);
-
 
     status.textContent =
       "Camera error: " +
@@ -934,8 +869,6 @@ async function startCamera() {
   }
 
 }
-
-
 
 /* =========================================================
    MEDIAPIPE
@@ -949,8 +882,6 @@ let faceLandmarker = null;
 
 let visionReady = false;
 
-
-
 async function loadVision() {
 
   try {
@@ -960,23 +891,19 @@ async function loadVision() {
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
       );
 
-
     FaceLandmarker =
       visionModule.FaceLandmarker;
 
     FilesetResolver =
       visionModule.FilesetResolver;
 
-
     status.textContent =
       "Computer vision library loaded successfully.";
-
 
     const vision =
       await FilesetResolver.forVisionTasks(
         "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
       );
-
 
     faceLandmarker =
       await FaceLandmarker.createFromOptions(
@@ -1002,24 +929,19 @@ async function loadVision() {
 
       );
 
-
     visionReady =
       true;
 
-
     status.textContent =
       "Face tracking ready.";
-
 
     requestAnimationFrame(
       detectFace
     );
 
-
   } catch (error) {
 
     console.error(error);
-
 
     status.textContent =
       "Computer vision error: " +
@@ -1028,8 +950,6 @@ async function loadVision() {
   }
 
 }
-
-
 
 /* =========================================================
    FACE SIZE / DISTANCE
@@ -1049,8 +969,6 @@ const smoothingHistory =
 
 const smoothingWindow =
   15;
-
-
 
 /* =========================================================
    FACE POSITION
@@ -1077,8 +995,6 @@ const positionMinY =
 const positionMaxY =
   0.75;
 
-
-
 function updateFacePosition(
   landmarks
 ) {
@@ -1095,7 +1011,6 @@ function updateFacePosition(
   const rightSide =
     landmarks[454];
 
-
   const centerX =
     (
       nose.x +
@@ -1103,7 +1018,6 @@ function updateFacePosition(
       leftSide.x +
       rightSide.x
     ) / 4;
-
 
   const centerY =
     (
@@ -1113,17 +1027,14 @@ function updateFacePosition(
       rightSide.y
     ) / 4;
 
-
   currentFaceCenterX =
     centerX;
 
   currentFaceCenterY =
     centerY;
 
-
   let position =
     "center";
-
 
   if (
     centerX <
@@ -1159,10 +1070,8 @@ function updateFacePosition(
 
   }
 
-
   currentFacePosition =
     position;
-
 
   if (
     position === "center"
@@ -1188,8 +1097,6 @@ function updateFacePosition(
 
 }
 
-
-
 /* =========================================================
    FACE DETECTION LOOP
    ========================================================= */
@@ -1207,13 +1114,11 @@ function detectFace(
     lastVideoTime =
       video.currentTime;
 
-
     const result =
       faceLandmarker.detectForVideo(
         video,
         timestamp
       );
-
 
     if (
       result.faceLandmarks &&
@@ -1223,7 +1128,6 @@ function detectFace(
       const landmarks =
         result.faceLandmarks[0];
 
-
       /* -----------------------------
          FACE POSITION
       ----------------------------- */
@@ -1231,7 +1135,6 @@ function detectFace(
       updateFacePosition(
         landmarks
       );
-
 
       /* -----------------------------
          FACE SIZE
@@ -1243,7 +1146,6 @@ function detectFace(
       const rightSide =
         landmarks[454];
 
-
       const dx =
         leftSide.x -
         rightSide.x;
@@ -1252,22 +1154,18 @@ function detectFace(
         leftSide.y -
         rightSide.y;
 
-
       const faceSize =
         Math.sqrt(
           dx * dx +
           dy * dy
         );
 
-
       currentFaceSize =
         faceSize;
-
 
       smoothingHistory.push(
         faceSize
       );
-
 
       if (
         smoothingHistory.length >
@@ -1277,7 +1175,6 @@ function detectFace(
         smoothingHistory.shift();
 
       }
-
 
       smoothedFaceSize =
         smoothingHistory.reduce(
@@ -1290,7 +1187,6 @@ function detectFace(
         ) /
         smoothingHistory.length;
 
-
       if (
         referenceFaceSize !== null
       ) {
@@ -1302,21 +1198,17 @@ function detectFace(
             smoothedFaceSize
           );
 
-
         currentEstimatedDistance =
           estimatedDistance;
-
 
         distanceDisplay.textContent =
           `${Math.round(
             estimatedDistance
           )} cm`;
 
-
         updateDistanceStatus(
           estimatedDistance
         );
-
 
         if (
           sessionRunning
@@ -1348,7 +1240,6 @@ function detectFace(
       currentFacePosition =
         "unknown";
 
-
       /*
        * Important:
        * Clear the previous distance so the
@@ -1359,10 +1250,8 @@ function detectFace(
       currentEstimatedDistance =
         null;
 
-
       distanceDisplay.textContent =
         "-- cm";
-
 
       monitorStatus.textContent =
         "No face detected";
@@ -1370,13 +1259,11 @@ function detectFace(
       monitorStatus.className =
         "status warning";
 
-
       positionStatus.textContent =
         "Face position: No face detected";
 
       positionStatus.className =
         "status warning";
-
 
       if (
         sessionRunning
@@ -1392,14 +1279,11 @@ function detectFace(
 
   }
 
-
   requestAnimationFrame(
     detectFace
   );
 
 }
-
-
 
 /* =========================================================
    CALIBRATION
@@ -1410,8 +1294,6 @@ let referenceFaceSize =
 
 let currentEstimatedDistance =
   null;
-
-
 
 window.calibrateDistance = function() {
 
@@ -1429,14 +1311,12 @@ window.calibrateDistance = function() {
 
   }
 
-
   const physicalDistance =
     Number(
       document.getElementById(
         "calibrationDistance"
       ).value
     );
-
 
   if (
     !physicalDistance ||
@@ -1454,14 +1334,11 @@ window.calibrateDistance = function() {
 
   }
 
-
   referenceFaceSize =
     smoothedFaceSize;
 
-
   therapyProfile.calibrationDistance =
     physicalDistance;
-
 
   calibrationStatus.textContent =
     `Calibration successful at ${physicalDistance} cm.`;
@@ -1469,14 +1346,11 @@ window.calibrateDistance = function() {
   calibrationStatus.className =
     "status good";
 
-
   startButton.classList.remove(
     "hidden"
   );
 
 };
-
-
 
 /* =========================================================
    DISTANCE STATUS
@@ -1494,10 +1368,8 @@ function updateDistanceStatus(
 
   }
 
-
   const target =
     therapyProfile.targetDistance;
-
 
   if (
     distance >=
@@ -1522,8 +1394,6 @@ function updateDistanceStatus(
 
 }
 
-
-
 /* =========================================================
    CORRECTION / INTERVENTION SYSTEM
    ========================================================= */
@@ -1533,8 +1403,6 @@ let invalidStartedAt =
 
 let correctionActive =
   false;
-
-
 
 function updateCorrectionOverlay() {
 
@@ -1556,17 +1424,14 @@ function updateCorrectionOverlay() {
 
   }
 
-
   const now =
     performance.now();
-
 
   let validState =
     true;
 
   let reason =
     "";
-
 
   /* -----------------------------
      NO FACE
@@ -1583,7 +1448,6 @@ function updateCorrectionOverlay() {
       "Please place your face in view of the camera.";
 
   }
-
 
   /* -----------------------------
      TOO CLOSE
@@ -1602,7 +1466,6 @@ function updateCorrectionOverlay() {
 
   }
 
-
   /* -----------------------------
      FACE POSITION
      ----------------------------- */
@@ -1613,7 +1476,6 @@ function updateCorrectionOverlay() {
 
     validState =
       false;
-
 
     if (
       currentFacePosition ===
@@ -1646,7 +1508,6 @@ function updateCorrectionOverlay() {
 
   }
 
-
   /* -----------------------------
      VALID STATE
      ----------------------------- */
@@ -1669,7 +1530,6 @@ function updateCorrectionOverlay() {
 
   }
 
-
   /* -----------------------------
      INVALID STATE
      ----------------------------- */
@@ -1683,13 +1543,11 @@ function updateCorrectionOverlay() {
 
   }
 
-
   const invalidDuration =
     (
       now -
       invalidStartedAt
     ) / 1000;
-
 
   if (
     invalidDuration >=
@@ -1710,10 +1568,8 @@ function updateCorrectionOverlay() {
 
 }
 
-
-
 /* =========================================================
-   STEP 5 — MULTI-SIGNAL SESSION ANALYTICS
+   SESSION TRACKING
    ========================================================= */
 
 let sessionRunning =
@@ -1725,34 +1581,17 @@ let sessionStartTime =
 let lastTrackingTime =
   null;
 
-
-/*
- * Every tracked interval belongs to exactly
- * one of these four categories.
- */
-
 let compliantTime =
   0;
 
 let tooCloseTime =
   0;
 
-let poorPositionTime =
-  0;
-
 let noFaceTime =
   0;
 
-
-/*
- * Used only for the existing "Too close"
- * grace-period status message.
- */
-
 let tooCloseStartedAt =
   null;
-
-
 
 function updateSessionTracking() {
 
@@ -1764,10 +1603,8 @@ function updateSessionTracking() {
 
   }
 
-
   const now =
     performance.now();
-
 
   if (
     lastTrackingTime === null
@@ -1780,24 +1617,14 @@ function updateSessionTracking() {
 
   }
 
-
   const delta =
     (
       now -
       lastTrackingTime
     ) / 1000;
 
-
   lastTrackingTime =
     now;
-
-
-  /*
-   * Ignore unusually large timing gaps.
-   * This prevents backgrounding the page or
-   * a temporary browser pause from creating
-   * a large artificial time value.
-   */
 
   if (
     delta < 0 ||
@@ -1808,11 +1635,6 @@ function updateSessionTracking() {
 
   }
 
-
-  /* =======================================================
-     CATEGORY 1 — NO FACE
-     ======================================================= */
-
   if (
     currentEstimatedDistance === null
   ) {
@@ -1820,21 +1642,12 @@ function updateSessionTracking() {
     noFaceTime +=
       delta;
 
-    tooCloseStartedAt =
-      null;
-
     return;
 
   }
 
-
   const target =
     therapyProfile.targetDistance;
-
-
-  /* =======================================================
-     CATEGORY 2 — TOO CLOSE
-     ======================================================= */
 
   if (
     currentEstimatedDistance <
@@ -1843,7 +1656,6 @@ function updateSessionTracking() {
 
     tooCloseTime +=
       delta;
-
 
     if (
       tooCloseStartedAt === null
@@ -1854,13 +1666,11 @@ function updateSessionTracking() {
 
     }
 
-
     const tooCloseDuration =
       (
         performance.now() -
         tooCloseStartedAt
       ) / 1000;
-
 
     if (
       tooCloseDuration >
@@ -1875,48 +1685,17 @@ function updateSessionTracking() {
 
     }
 
+  } else {
 
-    return;
-
-  }
-
-
-  /*
-   * Distance is acceptable, so the
-   * too-close timer is reset.
-   */
-
-  tooCloseStartedAt =
-    null;
-
-
-  /* =======================================================
-     CATEGORY 3 — POOR FACE POSITION
-     ======================================================= */
-
-  if (
-    currentFacePosition !==
-    "center"
-  ) {
-
-    poorPositionTime +=
+    compliantTime +=
       delta;
 
-    return;
+    tooCloseStartedAt =
+      null;
 
   }
 
-
-  /* =======================================================
-     CATEGORY 4 — COMPLIANT
-     ======================================================= */
-
-  compliantTime +=
-    delta;
-
 }
-
-
 
 /* =========================================================
    START SESSION
@@ -1936,22 +1715,14 @@ window.startSession = function() {
 
   }
 
-
   sessionRunning =
     true;
-
 
   sessionStartTime =
     performance.now();
 
-
   lastTrackingTime =
     null;
-
-
-  /*
-   * Reset all four analytics categories.
-   */
 
   compliantTime =
     0;
@@ -1959,46 +1730,35 @@ window.startSession = function() {
   tooCloseTime =
     0;
 
-  poorPositionTime =
-    0;
-
   noFaceTime =
     0;
-
 
   tooCloseStartedAt =
     null;
 
-
   invalidStartedAt =
     null;
 
-
   correctionActive =
     false;
-
 
   correctionOverlay.classList.add(
     "hidden"
   );
 
-
   calibrationCard.classList.add(
     "hidden"
   );
 
-
   monitorCard.classList.remove(
     "hidden"
   );
-
 
   monitorStatus.textContent =
     "Session started.";
 
   monitorStatus.className =
     "status good";
-
 
   if (
     currentFacePosition ===
@@ -2021,12 +1781,9 @@ window.startSession = function() {
 
   }
 
-
   updateTimer();
 
 };
-
-
 
 /* =========================================================
    SESSION TIMER
@@ -2042,35 +1799,29 @@ function updateTimer() {
 
   }
 
-
   const elapsed =
     (
       performance.now() -
       sessionStartTime
     ) / 1000;
 
-
   const minutes =
     Math.floor(
       elapsed / 60
     );
-
 
   const seconds =
     Math.floor(
       elapsed % 60
     );
 
-
   sessionTimer.textContent =
     `${String(minutes).padStart(2, "0")}:` +
     `${String(seconds).padStart(2, "0")}`;
 
-
   const goalSeconds =
     therapyProfile.sessionGoalMinutes *
     60;
-
 
   if (
     elapsed >=
@@ -2085,14 +1836,11 @@ function updateTimer() {
 
   }
 
-
   requestAnimationFrame(
     updateTimer
   );
 
 }
-
-
 
 /* =========================================================
    END SESSION
@@ -2108,43 +1856,24 @@ window.endSession = function() {
 
   }
 
-
-  /*
-   * Capture the final interval before
-   * stopping the session.
-   */
-
   updateSessionTracking();
-
 
   sessionRunning =
     false;
-
 
   correctionOverlay.classList.add(
     "hidden"
   );
 
-
   correctionActive =
     false;
-
 
   invalidStartedAt =
     null;
 
-
-  /*
-   * All four categories are included in
-   * the total session breakdown.
-   */
-
   const totalTracked =
     compliantTime +
-    tooCloseTime +
-    poorPositionTime +
-    noFaceTime;
-
+    tooCloseTime;
 
   const compliance =
     totalTracked > 0
@@ -2156,35 +1885,29 @@ window.endSession = function() {
 
       : 0;
 
-
   const totalSession =
     (
       performance.now() -
       sessionStartTime
     ) / 1000;
 
-
   const totalMinutes =
     Math.floor(
       totalSession / 60
     );
-
 
   const totalSeconds =
     Math.floor(
       totalSession % 60
     );
 
-
   monitorCard.classList.add(
     "hidden"
   );
 
-
   summaryCard.classList.remove(
     "hidden"
   );
-
 
   document.getElementById(
     "finalSummary"
@@ -2204,7 +1927,6 @@ window.endSession = function() {
 
       </div>
 
-
       <div class="summary-item">
 
         <div class="summary-label">
@@ -2216,7 +1938,6 @@ window.endSession = function() {
         </div>
 
       </div>
-
 
       <div class="summary-item">
 
@@ -2232,7 +1953,6 @@ window.endSession = function() {
 
       </div>
 
-
       <div class="summary-item">
 
         <div class="summary-label">
@@ -2247,38 +1967,7 @@ window.endSession = function() {
 
       </div>
 
-
-      <div class="summary-item">
-
-        <div class="summary-label">
-          Poor position
-        </div>
-
-        <div class="summary-value">
-          ${formatSeconds(
-            poorPositionTime
-          )}
-        </div>
-
-      </div>
-
-
-      <div class="summary-item">
-
-        <div class="summary-label">
-          Face not detected
-        </div>
-
-        <div class="summary-value">
-          ${formatSeconds(
-            noFaceTime
-          )}
-        </div>
-
-      </div>
-
     </div>
-
 
     <div
       class="profile-box"
@@ -2289,7 +1978,6 @@ window.endSession = function() {
         Therapy profile
       </strong><br>
 
-
       Treatment eye:
       ${
         therapyProfile.treatmentEye === "left"
@@ -2297,37 +1985,28 @@ window.endSession = function() {
           : "Right"
       }<br>
 
-
       Target distance:
       ${therapyProfile.targetDistance} cm<br>
 
-
       Session goal:
       ${therapyProfile.sessionGoalMinutes} min<br>
-
 
       Grace period:
       ${therapyProfile.gracePeriodSeconds} sec
 
     </div>
 
-
     <div class="note">
 
-      Compliance represents the percentage of the recorded
-      session classified as compliant: face detected, target
-      distance acceptable, and face position centered.
-
-      This prototype is not a medical device and does not
-      establish clinical treatment effectiveness.
+      Compliance is calculated from tracked time where a face
+      was detected. This prototype is not a medical device and
+      does not establish clinical treatment effectiveness.
 
     </div>
 
   `;
 
 };
-
-
 
 /* =========================================================
    NEW SESSION
@@ -2339,85 +2018,49 @@ window.newSession = function() {
     "hidden"
   );
 
-
   calibrationCard.classList.remove(
     "hidden"
   );
 
-
   referenceFaceSize =
     null;
-
 
   currentEstimatedDistance =
     null;
 
-
   smoothingHistory.length =
     0;
-
-
-  /*
-   * Reset Step 5 analytics.
-   */
-
-  compliantTime =
-    0;
-
-  tooCloseTime =
-    0;
-
-  poorPositionTime =
-    0;
-
-  noFaceTime =
-    0;
-
-
-  tooCloseStartedAt =
-    null;
-
 
   invalidStartedAt =
     null;
 
-
   correctionActive =
     false;
-
 
   correctionOverlay.classList.add(
     "hidden"
   );
 
-
   distanceDisplay.textContent =
     "-- cm";
-
 
   calibrationStatus.textContent =
     "Waiting for calibration...";
 
-
   calibrationStatus.className =
     "status";
-
 
   positionStatus.textContent =
     "Face position: Waiting...";
 
-
   positionStatus.className =
     "status";
-
 
   startButton.classList.add(
     "hidden"
   );
 
 };
-
-
 
 /* =========================================================
    HELPERS
@@ -2432,21 +2075,17 @@ function formatSeconds(
       seconds
     );
 
-
   const minutes =
     Math.floor(
       rounded / 60
     );
 
-
   const remaining =
     rounded % 60;
-
 
   return `${minutes}m ${remaining}s`;
 
 }
-
 
 </script>
 
