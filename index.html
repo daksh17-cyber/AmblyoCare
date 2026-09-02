@@ -10,13 +10,12 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            padding: 25px;
+            padding: 30px;
             background: #f5f7fa;
         }
 
         h1 {
             font-size: 40px;
-            margin-bottom: 5px;
         }
 
         video {
@@ -33,18 +32,11 @@
             font-size: 18px;
             border: none;
             border-radius: 10px;
-            cursor: pointer;
         }
 
         #status {
             margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        #details {
-            margin-top: 10px;
-            font-size: 15px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -60,60 +52,19 @@
         could support amblyopia therapy compliance.
     </p>
 
-    <button id="startButton">Start Session</button>
+    <button onclick="startCamera()">Start Session</button>
 
-    <div id="status">Session not started.</div>
-    <div id="details"></div>
+    <p id="status">Session not started.</p>
 
     <video id="camera" autoplay playsinline></video>
 
-    <!-- MediaPipe Tasks Vision -->
-    <script type="module">
-
-        import {
-            FaceLandmarker,
-            FilesetResolver
-        } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22";
-
-        const startButton = document.getElementById("startButton");
-        const video = document.getElementById("camera");
-        const status = document.getElementById("status");
-        const details = document.getElementById("details");
-
-        let faceLandmarker;
-        let lastVideoTime = -1;
-
-        async function createFaceLandmarker() {
-
-            status.textContent = "Loading computer vision model...";
-
-            const vision = await FilesetResolver.forVisionTasks(
-                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
-            );
-
-            faceLandmarker = await FaceLandmarker.createFromOptions(
-                vision,
-                {
-                    baseOptions: {
-                        modelAssetPath:
-                            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-                        delegate: "GPU"
-                    },
-
-                    runningMode: "VIDEO",
-
-                    numFaces: 1
-                }
-            );
-        }
-
+    <script>
         async function startCamera() {
 
+            const video = document.getElementById("camera");
+            const status = document.getElementById("status");
+
             try {
-
-                startButton.disabled = true;
-
-                await createFaceLandmarker();
 
                 const stream =
                     await navigator.mediaDevices.getUserMedia({
@@ -127,61 +78,16 @@
                 video.style.display = "block";
 
                 status.textContent =
-                    "Camera active — looking for your face.";
-
-                detectFace();
+                    "Camera active. Session started.";
 
             } catch (error) {
 
                 console.error(error);
 
                 status.textContent =
-                    "Something went wrong. Check camera permission.";
-
-                startButton.disabled = false;
+                    "Camera access was not granted.";
             }
         }
-
-        function detectFace() {
-
-            if (
-                video.readyState >= 2 &&
-                video.currentTime !== lastVideoTime
-            ) {
-
-                lastVideoTime = video.currentTime;
-
-                const results =
-                    faceLandmarker.detectForVideo(
-                        video,
-                        performance.now()
-                    );
-
-                if (
-                    results.faceLandmarks &&
-                    results.faceLandmarks.length > 0
-                ) {
-
-                    status.textContent = "🟢 Face detected";
-                    details.textContent =
-                        "Facial landmarks are being tracked.";
-
-                } else {
-
-                    status.textContent = "🔴 No face detected";
-                    details.textContent =
-                        "Move into the camera view.";
-                }
-            }
-
-            requestAnimationFrame(detectFace);
-        }
-
-        startButton.addEventListener(
-            "click",
-            startCamera
-        );
-
     </script>
 
 </body>
