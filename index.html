@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -251,6 +251,10 @@
       margin-top: 12px;
     }
 
+    #eyeBaselineCanvas {
+      display: none;
+    }
+
     @media (max-width: 600px) {
       .grid {
         grid-template-columns: 1fr;
@@ -444,10 +448,21 @@
       Eye visibility: --
     </div>
 
+    <button id="captureEyeBaseline" class="secondary">
+      Capture Eye Baseline
+    </button>
+
+    <div id="eyeBaselineStatus" class="status">
+      Eye baseline not captured.
+    </div>
+
     <div class="research-note">
-      Eye visibility is experimental. An eye becoming unclear may be caused
-      by an eye patch, hand, blink, head position, lighting, or a model error.
-      This should not be interpreted as reliable patch detection.
+      Eye visibility is experimental. The system compares the live camera
+      image around each eye with a personalized baseline captured while both
+      eyes are uncovered. A possible occlusion may be caused by an eye patch,
+      hand, blink, head movement, lighting, or a model error. This is not
+      reliable patch detection and should not be interpreted as a medical
+      measurement.
     </div>
 
     <div id="monitorStatus" class="status">
@@ -588,6 +603,10 @@
 </div>
 
 
+<!-- Hidden canvas used for eye-region pixel analysis -->
+<canvas id="eyeBaselineCanvas"></canvas>
+
+
 <script type="module">
 
 /* =========================================================
@@ -625,7 +644,8 @@ let faceLandmarker =
    DOM ELEMENTS
    ========================================================= */
 
-const video = document.getElementById("video");
+const video =
+  document.getElementById("video");
 
 const startCameraButton =
   document.getElementById("startCamera");
@@ -644,6 +664,9 @@ const startNewSessionButton =
 
 const exportCSVButton =
   document.getElementById("exportCSV");
+
+const captureEyeBaselineButton =
+  document.getElementById("captureEyeBaseline");
 
 const cameraStatus =
   document.getElementById("cameraStatus");
@@ -689,6 +712,17 @@ const rightEyeStatus =
 
 const eyeOverallStatus =
   document.getElementById("eyeOverallStatus");
+
+const eyeBaselineStatus =
+  document.getElementById("eyeBaselineStatus");
+
+const eyeBaselineCanvas =
+  document.getElementById("eyeBaselineCanvas");
+
+const eyeBaselineContext =
+  eyeBaselineCanvas.getContext("2d", {
+    willReadFrequently: true
+  });
 
 
 /* =========================================================
@@ -738,39 +772,42 @@ function updateProfileUI() {
 }
 
 
-saveProfileButton.addEventListener("click", () => {
+saveProfileButton.addEventListener(
+  "click",
+  () => {
 
-  therapyProfile.treatmentEye =
-    document.getElementById("treatmentEye").value;
+    therapyProfile.treatmentEye =
+      document.getElementById("treatmentEye").value;
 
-  therapyProfile.targetDistance =
-    Number(
-      document.getElementById("targetDistance").value
+    therapyProfile.targetDistance =
+      Number(
+        document.getElementById("targetDistance").value
+      );
+
+    therapyProfile.sessionGoalMinutes =
+      Number(
+        document.getElementById("sessionGoal").value
+      );
+
+    therapyProfile.gracePeriodSeconds =
+      Number(
+        document.getElementById("gracePeriod").value
+      );
+
+    therapyProfile.calibrationDistance =
+      therapyProfile.targetDistance;
+
+    localStorage.setItem(
+      "amblyocare_therapy_profile",
+      JSON.stringify(therapyProfile)
     );
 
-  therapyProfile.sessionGoalMinutes =
-    Number(
-      document.getElementById("sessionGoal").value
-    );
+    updateProfileUI();
 
-  therapyProfile.gracePeriodSeconds =
-    Number(
-      document.getElementById("gracePeriod").value
-    );
-
-  therapyProfile.calibrationDistance =
-    therapyProfile.targetDistance;
-
-  localStorage.setItem(
-    "amblyocare_therapy_profile",
-    JSON.stringify(therapyProfile)
-  );
-
-  updateProfileUI();
-
-  monitorStatus.textContent =
-    "Therapy profile saved.";
-});
+    monitorStatus.textContent =
+      "Therapy profile saved.";
+  }
+);
 
 
 const savedProfile =
@@ -909,11 +946,43 @@ let overlayVisible = false;
    EYE VISIBILITY VARIABLES
    ========================================================= */
 
+/*
+  The previous implementation tried to decide eye visibility
+  from MediaPipe landmarks alone.
+
+  That approach has an important limitation:
+  MediaPipe can continue producing plausible eye landmarks
+  even when an eye is physically covered.
+
+  The new system therefore uses:
+
+  1. MediaPipe -> locate the eye region.
+  2. Camera pixels -> inspect the actual appearance of that region.
+  3. Personalized baseline -> compare the live eye against
+     how the same eye looked when uncovered.
+  4. Temporal smoothing -> prevent one bad frame from
+     immediately becoming an occlusion result.
+
+  This remains experimental.
+*/
+
+let currentFaceLandmarks = null;
+
 let leftEyeHistory = [];
 
 let rightEyeHistory = [];
 
 const eyeHistoryLength = 12;
+
+let eyeBaseline = {
+
+  left: null,
+
+  right: null
+
+};
+
+let eyeBaselineCapturing = false;
 
 
 /* =========================================================
@@ -941,6 +1010,8 @@ function resetSessionVariables() {
   leftEyeHistory = [];
 
   rightEyeHistory = [];
+
+  currentFaceLandmarks = null;
 
   correctionOverlay.classList.add("hidden");
 
@@ -971,7 +1042,10 @@ function resetSessionVariables() {
     "Right Eye: --";
 
   eyeOverallStatus.textContent =
-    "Eye visibility: --";
+    eyeBaseline.left &&
+    eyeBaseline.right
+      ? "Eye visibility: Baseline ready"
+      : "Eye visibility: Baseline not captured";
 
 }
 
@@ -1241,26 +1315,21 @@ function distanceBetweenPoints(a, b) {
 
 
 /* =========================================================
-   EYE VISIBILITY
-   =========================================================
-
-   MediaPipe returns 478 face landmarks.
-
-   Left eye:
-     corners 33 and 133
-     upper/lower landmarks around 159/145
-     iris center 468
-
-   Right eye:
-     corners 362 and 263
-     upper/lower landmarks around 386/374
-     iris center 473
-
-   This is NOT direct patch detection.
-   It is an experimental eye-visibility proxy.
+   EYE REGION DEFINITION
    ========================================================= */
 
-function evaluateEye(
+/*
+  MediaPipe landmark coordinates are normalized:
+
+    x = 0 ... 1
+    y = 0 ... 1
+
+  The ROI is deliberately larger than the exact eye
+  landmarks. This lets the camera-pixel comparison
+  capture changes from an occluding hand or patch.
+*/
+
+function getEyeRegion(
   landmarks,
   side
 ) {
@@ -1271,7 +1340,6 @@ function evaluateEye(
   let lowerA;
   let upperB;
   let lowerB;
-  let irisIndex;
 
   if (side === "left") {
 
@@ -1284,7 +1352,151 @@ function evaluateEye(
     upperB = 160;
     lowerB = 144;
 
-    irisIndex = 468;
+  } else {
+
+    cornerA = 362;
+    cornerB = 263;
+
+    upperA = 386;
+    lowerA = 374;
+
+    upperB = 385;
+    lowerB = 380;
+  }
+
+  const points = [
+    landmarks[cornerA],
+    landmarks[cornerB],
+    landmarks[upperA],
+    landmarks[lowerA],
+    landmarks[upperB],
+    landmarks[lowerB]
+  ];
+
+  if (
+    points.some(
+      point => !point
+    )
+  ) {
+
+    return null;
+  }
+
+  const xs =
+    points.map(
+      point => point.x
+    );
+
+  const ys =
+    points.map(
+      point => point.y
+    );
+
+  const minX =
+    Math.min(...xs);
+
+  const maxX =
+    Math.max(...xs);
+
+  const minY =
+    Math.min(...ys);
+
+  const maxY =
+    Math.max(...ys);
+
+  const width =
+    maxX - minX;
+
+  const height =
+    maxY - minY;
+
+  if (
+    width < 0.01 ||
+    height < 0.005
+  ) {
+
+    return null;
+  }
+
+  /*
+    Expand the ROI.
+
+    Horizontal expansion is moderate.
+    Vertical expansion is larger because a patch
+    or hand may cover an area slightly outside the
+    eye landmarks.
+  */
+
+  const horizontalPadding =
+    width * 0.35;
+
+  const verticalPadding =
+    Math.max(
+      width * 0.28,
+      height * 1.4
+    );
+
+  return {
+
+    left:
+      Math.max(
+        0,
+        minX - horizontalPadding
+      ),
+
+    right:
+      Math.min(
+        1,
+        maxX + horizontalPadding
+      ),
+
+    top:
+      Math.max(
+        0,
+        minY - verticalPadding
+      ),
+
+    bottom:
+      Math.min(
+        1,
+        maxY + verticalPadding
+      ),
+
+    eyeWidth:
+      width,
+
+    eyeHeight:
+      height
+  };
+}
+
+
+/* =========================================================
+   EYE OPEN / CLOSED GEOMETRY
+   ========================================================= */
+
+function getEyeGeometry(
+  landmarks,
+  side
+) {
+
+  let cornerA;
+  let cornerB;
+  let upperA;
+  let lowerA;
+  let upperB;
+  let lowerB;
+
+  if (side === "left") {
+
+    cornerA = 33;
+    cornerB = 133;
+
+    upperA = 159;
+    lowerA = 145;
+
+    upperB = 160;
+    lowerB = 144;
 
   } else {
 
@@ -1296,9 +1508,6 @@ function evaluateEye(
 
     upperB = 385;
     lowerB = 380;
-
-    irisIndex = 473;
-
   }
 
   const a =
@@ -1319,118 +1528,575 @@ function evaluateEye(
   const lower2 =
     landmarks[lowerB];
 
-  const iris =
-    landmarks[irisIndex];
-
   if (
     !a ||
     !b ||
     !upper1 ||
     !lower1 ||
     !upper2 ||
-    !lower2 ||
-    !iris
+    !lower2
   ) {
 
-    return false;
+    return null;
   }
 
-  const eyeWidth =
+  const width =
     distanceBetweenPoints(
       a,
       b
     );
 
-  const eyeHeight1 =
+  const height1 =
     distanceBetweenPoints(
       upper1,
       lower1
     );
 
-  const eyeHeight2 =
+  const height2 =
     distanceBetweenPoints(
       upper2,
       lower2
     );
 
-  const eyeHeight =
+  const height =
     (
-      eyeHeight1 +
-      eyeHeight2
+      height1 +
+      height2
     ) / 2;
 
-  if (eyeWidth < 0.015) {
-    return false;
+  if (width < 0.01) {
+    return null;
   }
 
-  /*
-    Very small vertical eye geometry generally means
-    the eye is closed/uncertain or the landmarks are
-    unreliable.
-  */
+  return {
 
-  if (
-    eyeHeight <
-    eyeWidth * 0.035
-  ) {
+    width:
+      width,
 
-    return false;
-  }
+    height:
+      height,
 
-  /*
-    Check whether the iris remains reasonably close
-    to the eye region.
-  */
-
-  const eyeCenterX =
-    (a.x + b.x) / 2;
-
-  const eyeCenterY =
-    (
-      upper1.y +
-      lower1.y +
-      upper2.y +
-      lower2.y
-    ) / 4;
-
-  const horizontalOffset =
-    Math.abs(
-      iris.x -
-      eyeCenterX
-    );
-
-  const verticalOffset =
-    Math.abs(
-      iris.y -
-      eyeCenterY
-    );
-
-  if (
-    horizontalOffset >
-    eyeWidth * 0.75
-  ) {
-
-    return false;
-  }
-
-  if (
-    verticalOffset >
-    eyeWidth * 0.75
-  ) {
-
-    return false;
-  }
-
-  return true;
+    ratio:
+      height / width
+  };
 }
 
 
-function smoothEyeHistory(
-  history,
-  value
+/* =========================================================
+   PIXEL FEATURE EXTRACTION
+   ========================================================= */
+
+/*
+  Each eye ROI is resized to the same small resolution.
+
+  This makes the comparison less sensitive to the
+  person's distance from the screen.
+
+  We then normalize brightness and contrast so that
+  small lighting changes do not dominate the result.
+*/
+
+function extractEyeFeature(
+  landmarks,
+  side
 ) {
 
-  history.push(value);
+  if (
+    !video.videoWidth ||
+    !video.videoHeight
+  ) {
+
+    return null;
+  }
+
+  const region =
+    getEyeRegion(
+      landmarks,
+      side
+    );
+
+  if (!region) {
+    return null;
+  }
+
+  const sourceX =
+    region.left *
+    video.videoWidth;
+
+  const sourceY =
+    region.top *
+    video.videoHeight;
+
+  const sourceWidth =
+    (
+      region.right -
+      region.left
+    ) *
+    video.videoWidth;
+
+  const sourceHeight =
+    (
+      region.bottom -
+      region.top
+    ) *
+    video.videoHeight;
+
+  if (
+    sourceWidth < 5 ||
+    sourceHeight < 5
+  ) {
+
+    return null;
+  }
+
+  const outputWidth = 16;
+  const outputHeight = 12;
+
+  eyeBaselineCanvas.width =
+    outputWidth;
+
+  eyeBaselineCanvas.height =
+    outputHeight;
+
+  eyeBaselineContext.drawImage(
+    video,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    0,
+    0,
+    outputWidth,
+    outputHeight
+  );
+
+  const imageData =
+    eyeBaselineContext.getImageData(
+      0,
+      0,
+      outputWidth,
+      outputHeight
+    );
+
+  const grayscale = [];
+
+  let sum = 0;
+
+  for (
+    let i = 0;
+    i < imageData.data.length;
+    i += 4
+  ) {
+
+    const r =
+      imageData.data[i];
+
+    const g =
+      imageData.data[i + 1];
+
+    const b =
+      imageData.data[i + 2];
+
+    /*
+      Standard luminance approximation.
+    */
+
+    const gray =
+      (
+        0.299 * r +
+        0.587 * g +
+        0.114 * b
+      );
+
+    grayscale.push(gray);
+
+    sum += gray;
+  }
+
+  const mean =
+    sum /
+    grayscale.length;
+
+  let variance = 0;
+
+  for (
+    const value of grayscale
+  ) {
+
+    const difference =
+      value - mean;
+
+    variance +=
+      difference * difference;
+  }
+
+  variance /=
+    grayscale.length;
+
+  const standardDeviation =
+    Math.sqrt(
+      variance
+    );
+
+  /*
+    Normalize the patch so brightness differences
+    between frames have less influence.
+  */
+
+  const normalized =
+    grayscale.map(
+      value => {
+
+        if (
+          standardDeviation < 1
+        ) {
+
+          return 0;
+        }
+
+        return (
+          (
+            value -
+            mean
+          ) /
+          standardDeviation
+        );
+
+      }
+    );
+
+  /*
+    Edge/texture measure.
+
+    Large structural changes in the ROI can produce
+    a noticeably different edge pattern.
+  */
+
+  let edgeStrength = 0;
+
+  for (
+    let y = 0;
+    y < outputHeight;
+    y++
+  ) {
+
+    for (
+      let x = 1;
+      x < outputWidth;
+      x++
+    ) {
+
+      const current =
+        grayscale[
+          y * outputWidth + x
+        ];
+
+      const previous =
+        grayscale[
+          y * outputWidth + x - 1
+        ];
+
+      edgeStrength +=
+        Math.abs(
+          current -
+          previous
+        );
+    }
+  }
+
+  edgeStrength /=
+    (
+      outputHeight *
+      (outputWidth - 1)
+    );
+
+  return {
+
+    pixels:
+      normalized,
+
+    mean:
+      mean,
+
+    standardDeviation:
+      standardDeviation,
+
+    edgeStrength:
+      edgeStrength,
+
+    eyeGeometry:
+      getEyeGeometry(
+        landmarks,
+        side
+      )
+  };
+}
+
+
+/* =========================================================
+   FEATURE DISTANCE
+   ========================================================= */
+
+function compareEyeFeatures(
+  baseline,
+  current
+) {
+
+  if (
+    !baseline ||
+    !current ||
+    !baseline.pixels ||
+    !current.pixels
+  ) {
+
+    return null;
+  }
+
+  const length =
+    Math.min(
+      baseline.pixels.length,
+      current.pixels.length
+    );
+
+  if (!length) {
+    return null;
+  }
+
+  let pixelDifference = 0;
+
+  for (
+    let i = 0;
+    i < length;
+    i++
+  ) {
+
+    pixelDifference +=
+      Math.abs(
+        baseline.pixels[i] -
+        current.pixels[i]
+      );
+  }
+
+  pixelDifference /=
+    length;
+
+  /*
+    Texture/edge difference is another signal.
+  */
+
+  const edgeDifference =
+    Math.abs(
+      baseline.edgeStrength -
+      current.edgeStrength
+    ) /
+    Math.max(
+      baseline.edgeStrength,
+      1
+    );
+
+  /*
+    Combine the signals.
+
+    Pixel structure receives more weight because it
+    contains the actual visual appearance of the eye.
+  */
+
+  const score =
+    (
+      pixelDifference * 0.75
+    ) +
+    (
+      Math.min(
+        edgeDifference,
+        2
+      ) * 0.25
+    );
+
+  return score;
+}
+
+
+/* =========================================================
+   BLINK / EYE CLOSURE CHECK
+   ========================================================= */
+
+function isEyeLikelyClosed(
+  landmarks,
+  side
+) {
+
+  const geometry =
+    getEyeGeometry(
+      landmarks,
+      side
+    );
+
+  if (!geometry) {
+    return true;
+  }
+
+  /*
+    This is intentionally conservative.
+
+    A very small eye-opening ratio is treated as
+    closed/uncertain rather than occluded.
+
+    This prevents normal blinking from becoming
+    "possible patch detection."
+  */
+
+  return (
+    geometry.ratio <
+    0.08
+  );
+}
+
+
+/* =========================================================
+   EYE OCCLUSION DECISION
+   ========================================================= */
+
+function evaluateEyeWithPixels(
+  landmarks,
+  side
+) {
+
+  if (
+    !eyeBaseline[side]
+  ) {
+
+    return {
+
+      state:
+        "noBaseline",
+
+      score:
+        null
+    };
+  }
+
+  const currentFeature =
+    extractEyeFeature(
+      landmarks,
+      side
+    );
+
+  if (!currentFeature) {
+
+    return {
+
+      state:
+        "uncertain",
+
+      score:
+        null
+    };
+  }
+
+  /*
+    Do not classify a blink as an occlusion.
+
+    The user can close the eye normally and the
+    system should report it as uncertain.
+  */
+
+  if (
+    isEyeLikelyClosed(
+      landmarks,
+      side
+    )
+  ) {
+
+    return {
+
+      state:
+        "closed",
+
+      score:
+        null
+    };
+  }
+
+  const score =
+    compareEyeFeatures(
+      eyeBaseline[side],
+      currentFeature
+    );
+
+  if (score === null) {
+
+    return {
+
+      state:
+        "uncertain",
+
+      score:
+        null
+    };
+  }
+
+  /*
+    Experimental threshold.
+
+    The baseline is personalized, so this does not
+    assume a particular skin tone, eye color, camera,
+    or room lighting.
+
+    It intentionally says "possible" rather than
+    "patch detected."
+  */
+
+  const occlusionThreshold =
+    0.62;
+
+  if (
+    score >
+    occlusionThreshold
+  ) {
+
+    return {
+
+      state:
+        "possibleOcclusion",
+
+      score:
+        score
+    };
+
+  }
+
+  return {
+
+    state:
+      "visible",
+
+    score:
+      score
+  };
+}
+
+
+/* =========================================================
+   EYE TEMPORAL SMOOTHING
+   ========================================================= */
+
+function smoothEyeState(
+  history,
+  state
+) {
+
+  /*
+    Store the classification from each frame.
+
+    A short blink should not immediately become
+    persistent occlusion.
+
+    We only count "possibleOcclusion" as positive.
+  */
+
+  history.push(
+    state
+  );
 
   if (
     history.length >
@@ -1440,15 +2106,127 @@ function smoothEyeHistory(
     history.shift();
   }
 
-  const positive =
+  const occlusionCount =
     history.filter(
-      x => x === true
+      value =>
+        value === "possibleOcclusion"
     ).length;
 
-  return (
-    positive /
-    history.length
-  ) >= 0.60;
+  const visibleCount =
+    history.filter(
+      value =>
+        value === "visible"
+    ).length;
+
+  const closedCount =
+    history.filter(
+      value =>
+        value === "closed"
+    ).length;
+
+  const uncertainCount =
+    history.filter(
+      value =>
+        value === "uncertain"
+    ).length;
+
+  const total =
+    history.length;
+
+  /*
+    Require roughly 60% of recent frames to indicate
+    occlusion before reporting it.
+
+    This is intentionally not instant.
+  */
+
+  if (
+    total >= 5 &&
+    (
+      occlusionCount /
+      total
+    ) >= 0.60
+  ) {
+
+    return "possibleOcclusion";
+  }
+
+  /*
+    If the eye is repeatedly closed, call it closed/
+    uncertain instead of occluded.
+  */
+
+  if (
+    total >= 5 &&
+    (
+      closedCount /
+      total
+    ) >= 0.50
+  ) {
+
+    return "closed";
+  }
+
+  if (
+    total >= 5 &&
+    (
+      visibleCount /
+      total
+    ) >= 0.60
+  ) {
+
+    return "visible";
+  }
+
+  if (
+    uncertainCount >
+    visibleCount
+  ) {
+
+    return "uncertain";
+  }
+
+  return "uncertain";
+}
+
+
+/* =========================================================
+   EYE DISPLAY
+   ========================================================= */
+
+function eyeStateText(
+  state
+) {
+
+  if (
+    state === "visible"
+  ) {
+
+    return "Visible";
+  }
+
+  if (
+    state === "possibleOcclusion"
+  ) {
+
+    return "Possible occlusion";
+  }
+
+  if (
+    state === "closed"
+  ) {
+
+    return "Closed / uncertain";
+  }
+
+  if (
+    state === "noBaseline"
+  ) {
+
+    return "Baseline needed";
+  }
+
+  return "Uncertain";
 }
 
 
@@ -1456,60 +2234,80 @@ function updateEyeDisplay(
   landmarks
 ) {
 
-  const leftRaw =
-    evaluateEye(
+  if (
+    !eyeBaseline.left ||
+    !eyeBaseline.right
+  ) {
+
+    leftEyeStatus.textContent =
+      "Left Eye: Baseline needed";
+
+    rightEyeStatus.textContent =
+      "Right Eye: Baseline needed";
+
+    eyeOverallStatus.textContent =
+      "Eye visibility: Capture a baseline first";
+
+    eyeOverallStatus.className =
+      "status warning";
+
+    return;
+  }
+
+
+  const leftResult =
+    evaluateEyeWithPixels(
       landmarks,
       "left"
     );
 
-  const rightRaw =
-    evaluateEye(
+  const rightResult =
+    evaluateEyeWithPixels(
       landmarks,
       "right"
     );
 
-  const leftVisible =
-    smoothEyeHistory(
+
+  const leftState =
+    smoothEyeState(
       leftEyeHistory,
-      leftRaw
+      leftResult.state
     );
 
-  const rightVisible =
-    smoothEyeHistory(
+  const rightState =
+    smoothEyeState(
       rightEyeHistory,
-      rightRaw
+      rightResult.state
     );
+
 
   leftEyeStatus.textContent =
     "Left Eye: " +
-    (
-      leftVisible
-        ? "Visible"
-        : "Not clearly detected"
+    eyeStateText(
+      leftState
     );
 
   rightEyeStatus.textContent =
     "Right Eye: " +
-    (
-      rightVisible
-        ? "Visible"
-        : "Not clearly detected"
+    eyeStateText(
+      rightState
     );
 
+
   if (
-    leftVisible &&
-    rightVisible
+    leftState === "visible" &&
+    rightState === "visible"
   ) {
 
     eyeOverallStatus.textContent =
-      "Eye visibility: Both eyes detected";
+      "Eye visibility: Both eyes appear visible";
 
     eyeOverallStatus.className =
       "status good";
 
   } else if (
-    !leftVisible &&
-    rightVisible
+    leftState === "possibleOcclusion" &&
+    rightState === "visible"
   ) {
 
     eyeOverallStatus.textContent =
@@ -1519,8 +2317,8 @@ function updateEyeDisplay(
       "status warning";
 
   } else if (
-    leftVisible &&
-    !rightVisible
+    leftState === "visible" &&
+    rightState === "possibleOcclusion"
   ) {
 
     eyeOverallStatus.textContent =
@@ -1529,15 +2327,338 @@ function updateEyeDisplay(
     eyeOverallStatus.className =
       "status warning";
 
+  } else if (
+    leftState === "possibleOcclusion" &&
+    rightState === "possibleOcclusion"
+  ) {
+
+    eyeOverallStatus.textContent =
+      "Eye visibility: Possible occlusion of both eyes";
+
+    eyeOverallStatus.className =
+      "status warning";
+
   } else {
 
     eyeOverallStatus.textContent =
-      "Eye visibility: Both eyes uncertain";
+      "Eye visibility: One or both eyes uncertain";
 
     eyeOverallStatus.className =
       "status warning";
   }
 
+}
+
+
+/* =========================================================
+   CAPTURE PERSONALIZED EYE BASELINE
+   ========================================================= */
+
+/*
+  The user should press this while:
+
+  - both eyes are uncovered
+  - face is comfortably positioned
+  - lighting is normal
+  - camera is stable
+
+  We collect multiple frames instead of relying on
+  one image. This makes the baseline more robust.
+*/
+
+captureEyeBaselineButton.addEventListener(
+  "click",
+  async () => {
+
+    if (
+      !cameraStarted ||
+      !video.videoWidth ||
+      !video.videoHeight
+    ) {
+
+      eyeBaselineStatus.textContent =
+        "Start the camera first.";
+
+      eyeBaselineStatus.className =
+        "status bad";
+
+      return;
+    }
+
+    if (
+      !currentFaceLandmarks
+    ) {
+
+      eyeBaselineStatus.textContent =
+        "No face detected. Look at the camera first.";
+
+      eyeBaselineStatus.className =
+        "status bad";
+
+      return;
+    }
+
+    if (
+      eyeBaselineCapturing
+    ) {
+
+      return;
+    }
+
+    eyeBaselineCapturing = true;
+
+    captureEyeBaselineButton.disabled =
+      true;
+
+    eyeBaselineStatus.textContent =
+      "Capturing baseline... Keep both eyes uncovered and look normally at the screen.";
+
+    eyeBaselineStatus.className =
+      "status warning";
+
+
+    const leftSamples = [];
+
+    const rightSamples = [];
+
+    const samplesToCollect = 25;
+
+    let attempts = 0;
+
+    const maximumAttempts = 80;
+
+
+    while (
+      (
+        leftSamples.length <
+        samplesToCollect ||
+        rightSamples.length <
+        samplesToCollect
+      ) &&
+      attempts <
+      maximumAttempts
+    ) {
+
+      attempts++;
+
+      await new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            40
+          )
+      );
+
+
+      if (
+        !currentFaceLandmarks
+      ) {
+
+        continue;
+      }
+
+
+      const leftFeature =
+        extractEyeFeature(
+          currentFaceLandmarks,
+          "left"
+        );
+
+      const rightFeature =
+        extractEyeFeature(
+          currentFaceLandmarks,
+          "right"
+        );
+
+
+      if (
+        leftFeature &&
+        !isEyeLikelyClosed(
+          currentFaceLandmarks,
+          "left"
+        )
+      ) {
+
+        leftSamples.push(
+          leftFeature
+        );
+      }
+
+
+      if (
+        rightFeature &&
+        !isEyeLikelyClosed(
+          currentFaceLandmarks,
+          "right"
+        )
+      ) {
+
+        rightSamples.push(
+          rightFeature
+        );
+      }
+
+    }
+
+
+    if (
+      leftSamples.length < 8 ||
+      rightSamples.length < 8
+    ) {
+
+      eyeBaselineCapturing =
+        false;
+
+      captureEyeBaselineButton.disabled =
+        false;
+
+      eyeBaselineStatus.textContent =
+        "Baseline capture failed. Keep both eyes uncovered, face the camera, and try again.";
+
+      eyeBaselineStatus.className =
+        "status bad";
+
+      return;
+    }
+
+
+    eyeBaseline.left =
+      averageEyeFeatures(
+        leftSamples
+      );
+
+    eyeBaseline.right =
+      averageEyeFeatures(
+        rightSamples
+      );
+
+
+    /*
+      Save a small indicator that a baseline exists.
+
+      The actual pixel baseline is intentionally kept
+      in memory rather than localStorage because camera
+      appearance can change between sessions.
+    */
+
+    localStorage.setItem(
+      "amblyocare_eye_baseline_exists",
+      "true"
+    );
+
+
+    leftEyeHistory = [];
+
+    rightEyeHistory = [];
+
+
+    eyeBaselineCapturing =
+      false;
+
+    captureEyeBaselineButton.disabled =
+      false;
+
+    eyeBaselineStatus.textContent =
+      "Eye baseline captured successfully. You can now test eye occlusion.";
+
+    eyeBaselineStatus.className =
+      "status good";
+
+  }
+);
+
+
+/* =========================================================
+   AVERAGE BASELINE FEATURES
+   ========================================================= */
+
+function averageEyeFeatures(
+  samples
+) {
+
+  if (
+    !samples.length
+  ) {
+
+    return null;
+  }
+
+  const pixelLength =
+    samples[0].pixels.length;
+
+  const averagedPixels =
+    new Array(
+      pixelLength
+    ).fill(0);
+
+  let averageMean = 0;
+
+  let averageStandardDeviation = 0;
+
+  let averageEdgeStrength = 0;
+
+
+  samples.forEach(
+    sample => {
+
+      for (
+        let i = 0;
+        i < pixelLength;
+        i++
+      ) {
+
+        averagedPixels[i] +=
+          sample.pixels[i];
+      }
+
+      averageMean +=
+        sample.mean;
+
+      averageStandardDeviation +=
+        sample.standardDeviation;
+
+      averageEdgeStrength +=
+        sample.edgeStrength;
+
+    }
+  );
+
+
+  for (
+    let i = 0;
+    i < pixelLength;
+    i++
+  ) {
+
+    averagedPixels[i] /=
+      samples.length;
+  }
+
+
+  averageMean /=
+    samples.length;
+
+  averageStandardDeviation /=
+    samples.length;
+
+  averageEdgeStrength /=
+    samples.length;
+
+
+  return {
+
+    pixels:
+      averagedPixels,
+
+    mean:
+      averageMean,
+
+    standardDeviation:
+      averageStandardDeviation,
+
+    edgeStrength:
+      averageEdgeStrength
+  };
 }
 
 
@@ -1939,6 +3060,9 @@ async function processFrame(
     currentState =
       "noFace";
 
+    currentFaceLandmarks =
+      null;
+
     faceStatus.textContent =
       "No face detected";
 
@@ -1967,10 +3091,17 @@ async function processFrame(
       "Right Eye: --";
 
     eyeOverallStatus.textContent =
-      "Eye visibility: No face detected";
+      eyeBaseline.left &&
+      eyeBaseline.right
+        ? "Eye visibility: No face detected"
+        : "Eye visibility: Baseline needed";
 
     eyeOverallStatus.className =
       "status warning";
+
+    leftEyeHistory = [];
+
+    rightEyeHistory = [];
 
     updateCorrectionOverlay(
       "noFace"
@@ -1990,6 +3121,9 @@ async function processFrame(
 
   const landmarks =
     results.faceLandmarks[0];
+
+  currentFaceLandmarks =
+    landmarks;
 
   faceStatus.textContent =
     "Face detected";
