@@ -36,10 +36,21 @@
             border-radius: 10px;
             background: #222;
             color: white;
+            margin: 8px;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 18px;
+            width: 100px;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid #aaa;
         }
 
         #status,
-        #visionStatus {
+        #visionStatus,
+        #calibrationStatus {
             margin-top: 20px;
             font-size: 18px;
         }
@@ -48,6 +59,22 @@
             margin-top: 15px;
             font-size: 24px;
             font-weight: bold;
+        }
+
+        #distance {
+            margin-top: 20px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        #distanceStatus {
+            margin-top: 10px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #calibrationBox {
+            margin-top: 25px;
         }
 
     </style>
@@ -65,29 +92,87 @@
         could support amblyopia therapy compliance.
     </p>
 
+
     <button id="startButton">
         Start Session
     </button>
+
 
     <p id="status">
         Session not started.
     </p>
 
+
     <p id="visionStatus">
         Vision system waiting.
     </p>
+
 
     <p id="faceStatus">
         Face detection waiting.
     </p>
 
-    <video id="camera" autoplay playsinline></video>
+
+    <!-- ============================= -->
+    <!-- CALIBRATION -->
+    <!-- ============================= -->
+
+    <div id="calibrationBox">
+
+        <p>
+            Enter your current distance from the iPad:
+        </p>
+
+        <input
+            id="calibrationDistance"
+            type="number"
+            value="40"
+            min="10"
+            max="200"
+        >
+
+        <span>cm</span>
+
+        <br>
+
+        <button id="calibrateButton">
+            Calibrate Distance
+        </button>
+
+        <p id="calibrationStatus">
+            Distance not calibrated.
+        </p>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- DISTANCE -->
+    <!-- ============================= -->
+
+    <div id="distance">
+        Estimated distance: --
+    </div>
+
+    <div id="distanceStatus">
+        Waiting for calibration...
+    </div>
+
+
+    <video
+        id="camera"
+        autoplay
+        playsinline>
+    </video>
 
 
     <script>
 
         const button =
             document.getElementById("startButton");
+
+        const calibrateButton =
+            document.getElementById("calibrateButton");
 
         const video =
             document.getElementById("camera");
@@ -101,15 +186,39 @@
         const faceStatus =
             document.getElementById("faceStatus");
 
+        const distanceDisplay =
+            document.getElementById("distance");
+
+        const distanceStatus =
+            document.getElementById("distanceStatus");
+
+        const calibrationDistance =
+            document.getElementById("calibrationDistance");
+
+        const calibrationStatus =
+            document.getElementById("calibrationStatus");
+
 
         let faceLandmarker = null;
 
         let lastVideoTime = -1;
 
+        let calibrated = false;
+
+        let referenceDistance = 40;
+
+        let referenceFaceSize = 0;
+
 
         button.addEventListener(
             "click",
             startSession
+        );
+
+
+        calibrateButton.addEventListener(
+            "click",
+            calibrateDistance
         );
 
 
@@ -121,6 +230,7 @@
 
             status.textContent =
                 "Starting camera...";
+
 
             try {
 
@@ -144,9 +254,6 @@
                 status.textContent =
                     "Camera active. Session started.";
 
-
-                // Camera is confirmed.
-                // Now start computer vision.
 
                 loadFaceLandmarker();
 
@@ -252,13 +359,116 @@
 
 
         // ==========================================
+        // GET FACE SIZE
+        // ==========================================
+
+        function getFaceSize(landmarks) {
+
+            /*
+             * We measure the distance between
+             * the left and right sides of the face.
+             *
+             * MediaPipe coordinates are normalized
+             * between 0 and 1.
+             */
+
+            const left =
+                landmarks[234];
+
+            const right =
+                landmarks[454];
+
+
+            const dx =
+                right.x - left.x;
+
+            const dy =
+                right.y - left.y;
+
+
+            return Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+        }
+
+
+        // ==========================================
+        // CALIBRATION
+        // ==========================================
+
+        function calibrateDistance() {
+
+            if (!faceLandmarker) {
+
+                calibrationStatus.textContent =
+                    "Start the camera and wait for computer vision.";
+
+                return;
+
+            }
+
+
+            if (referenceFaceSize === 0) {
+
+                calibrationStatus.textContent =
+                    "Face not detected yet. Look at the camera.";
+
+                return;
+
+            }
+
+
+            const enteredDistance =
+                Number(
+                    calibrationDistance.value
+                );
+
+
+            if (
+                !enteredDistance ||
+                enteredDistance < 10 ||
+                enteredDistance > 200
+            ) {
+
+                calibrationStatus.textContent =
+                    "Enter a distance between 10 and 200 cm.";
+
+                return;
+
+            }
+
+
+            referenceDistance =
+                enteredDistance;
+
+
+            calibrated = true;
+
+
+            calibrationStatus.textContent =
+                "Calibration complete at " +
+                referenceDistance +
+                " cm.";
+
+
+            distanceStatus.textContent =
+                "Distance monitoring active.";
+
+        }
+
+
+        // ==========================================
         // FACE DETECTION LOOP
         // ==========================================
 
         function detectFace() {
 
             if (!faceLandmarker) {
+
                 return;
+
             }
 
 
@@ -288,13 +498,114 @@
                         results.faceLandmarks.length > 0
                     ) {
 
+                        const landmarks =
+                            results.faceLandmarks[0];
+
+
                         faceStatus.textContent =
                             "🟢 Face detected";
+
+
+                        // ==========================
+                        // MEASURE FACE
+                        // ==========================
+
+                        const faceSize =
+                            getFaceSize(
+                                landmarks
+                            );
+
+
+                        /*
+                         * Continuously update the
+                         * reference measurement.
+                         *
+                         * This makes calibration
+                         * more stable.
+                         */
+
+                        if (
+                            !calibrated &&
+                            faceSize > 0
+                        ) {
+
+                            referenceFaceSize =
+                                faceSize;
+
+                        }
+
+
+                        // ==========================
+                        // ESTIMATE DISTANCE
+                        // ==========================
+
+                        if (
+                            calibrated &&
+                            faceSize > 0 &&
+                            referenceFaceSize > 0
+                        ) {
+
+                            /*
+                             * Approximate monocular
+                             * distance relationship:
+                             *
+                             * distance is inversely
+                             * proportional to apparent
+                             * face size.
+                             */
+
+                            const estimatedDistance =
+                                referenceDistance *
+                                (
+                                    referenceFaceSize /
+                                    faceSize
+                                );
+
+
+                            const roundedDistance =
+                                Math.round(
+                                    estimatedDistance
+                                );
+
+
+                            distanceDisplay.textContent =
+                                "Estimated distance: " +
+                                roundedDistance +
+                                " cm";
+
+
+                            if (
+                                estimatedDistance <
+                                referenceDistance * 0.9
+                            ) {
+
+                                distanceStatus.textContent =
+                                    "⚠️ You are closer than your calibrated distance.";
+
+                            } else {
+
+                                distanceStatus.textContent =
+                                    "✓ Distance near calibrated range.";
+
+                            }
+
+                        }
 
                     } else {
 
                         faceStatus.textContent =
                             "🔴 No face detected";
+
+
+                        if (calibrated) {
+
+                            distanceDisplay.textContent =
+                                "Estimated distance: --";
+
+                            distanceStatus.textContent =
+                                "Face not detected.";
+
+                        }
 
                     }
 
@@ -319,4 +630,5 @@
     </script>
 
 </body>
+
 </html>
