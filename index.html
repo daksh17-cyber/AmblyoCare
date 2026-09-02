@@ -35,13 +35,9 @@
             border-radius: 10px;
         }
 
-        #status {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-
+        #status,
         #visionStatus {
-            margin-top: 10px;
+            margin-top: 20px;
             font-size: 18px;
         }
     </style>
@@ -66,7 +62,6 @@
 
     <video id="camera" autoplay playsinline></video>
 
-
     <script>
 
         const button = document.getElementById("startButton");
@@ -80,15 +75,11 @@
 
         async function startSession() {
 
-            // Immediately show that the button worked.
             status.textContent = "Starting camera...";
-            visionStatus.textContent = "Vision system waiting.";
-
+            visionStatus.textContent =
+                "Computer vision waiting...";
 
             try {
-
-                // CAMERA ONLY.
-                // No AI library is loaded here.
 
                 const stream =
                     await navigator.mediaDevices.getUserMedia({
@@ -98,27 +89,16 @@
                         audio: false
                     });
 
-
                 video.srcObject = stream;
                 video.style.display = "block";
-
 
                 status.textContent =
                     "Camera active. Session started.";
 
-                visionStatus.textContent =
-                    "Camera confirmed. Ready for computer vision.";
+                // Camera is now independent.
+                // We can safely attempt to load the AI system.
 
-
-                /*
-                 * IMPORTANT:
-                 *
-                 * We are deliberately NOT loading MediaPipe yet.
-                 *
-                 * This proves that our button + camera
-                 * remain independent from the AI system.
-                 */
-
+                loadComputerVision();
 
             } catch (error) {
 
@@ -129,9 +109,46 @@
 
                 visionStatus.textContent =
                     "Camera error: " + error.message;
+            }
+        }
+
+
+        async function loadComputerVision() {
+
+            visionStatus.textContent =
+                "Loading computer vision...";
+
+            try {
+
+                /*
+                 * Load MediaPipe only after
+                 * the camera has successfully started.
+                 */
+
+                const module =
+                    await import(
+                        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
+                    );
+
+                console.log(
+                    "MediaPipe loaded:",
+                    module
+                );
+
+                visionStatus.textContent =
+                    "Computer vision library loaded successfully.";
+
+            } catch (error) {
+
+                console.error(
+                    "MediaPipe loading error:",
+                    error
+                );
+
+                visionStatus.textContent =
+                    "Computer vision failed to load.";
 
             }
-
         }
 
     </script>
