@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>AmblyoCare</title>
 
     <style>
@@ -33,19 +32,11 @@
             font-size: 18px;
             border: none;
             border-radius: 10px;
-            background: #222;
-            color: white;
         }
 
         #status {
             margin-top: 20px;
             font-size: 18px;
-        }
-
-        #visionStatus {
-            margin-top: 10px;
-            font-size: 20px;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -61,35 +52,17 @@
         could support amblyopia therapy compliance.
     </p>
 
-    <button onclick="startSession()">Start Session</button>
+    <button onclick="startCamera()">Start Session</button>
 
     <p id="status">Session not started.</p>
 
-    <p id="visionStatus">Vision system not started.</p>
-
     <video id="camera" autoplay playsinline></video>
 
-    <script type="module">
-
-        import {
-            FaceLandmarker,
-            FilesetResolver
-        } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22";
-
-        const video = document.getElementById("camera");
-        const status = document.getElementById("status");
-        const visionStatus = document.getElementById("visionStatus");
-
-        let faceLandmarker = null;
-        let visionReady = false;
-        let lastVideoTime = -1;
-
-
-        // --------------------------------
-        // 1. START CAMERA FIRST
-        // --------------------------------
-
+    <script>
         async function startCamera() {
+
+            const video = document.getElementById("camera");
+            const status = document.getElementById("status");
 
             try {
 
@@ -107,120 +80,14 @@
                 status.textContent =
                     "Camera active. Session started.";
 
-                // Only AFTER camera works do we start AI.
-                loadVisionModel();
-
             } catch (error) {
 
                 console.error(error);
 
                 status.textContent =
                     "Camera access was not granted.";
-
             }
         }
-
-
-        // --------------------------------
-        // 2. LOAD FACE LANDMARKER
-        // --------------------------------
-
-        async function loadVisionModel() {
-
-            visionStatus.textContent =
-                "Loading computer vision...";
-
-            try {
-
-                const filesetResolver =
-                    await FilesetResolver.forVisionTasks(
-                        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
-                    );
-
-                faceLandmarker =
-                    await FaceLandmarker.createFromOptions(
-                        filesetResolver,
-                        {
-                            baseOptions: {
-                                modelAssetPath:
-                                    "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
-                            },
-
-                            runningMode: "VIDEO",
-
-                            numFaces: 1
-                        }
-                    );
-
-                visionReady = true;
-
-                visionStatus.textContent =
-                    "Computer vision ready.";
-
-                detectFaces();
-
-            } catch (error) {
-
-                console.error(error);
-
-                visionStatus.textContent =
-                    "Computer vision failed to load.";
-
-                console.error(
-                    "VISION ERROR:",
-                    error
-                );
-            }
-        }
-
-
-        // --------------------------------
-        // 3. DETECT FACE
-        // --------------------------------
-
-        function detectFaces() {
-
-            if (!visionReady) {
-                return;
-            }
-
-            if (video.readyState >= 2 &&
-                video.currentTime !== lastVideoTime) {
-
-                lastVideoTime = video.currentTime;
-
-                const results =
-                    faceLandmarker.detectForVideo(
-                        video,
-                        performance.now()
-                    );
-
-                if (
-                    results.faceLandmarks &&
-                    results.faceLandmarks.length > 0
-                ) {
-
-                    visionStatus.textContent =
-                        "🟢 Face detected";
-
-                } else {
-
-                    visionStatus.textContent =
-                        "🔴 No face detected";
-
-                }
-            }
-
-            requestAnimationFrame(detectFaces);
-        }
-
-
-        // --------------------------------
-        // START EVERYTHING
-        // --------------------------------
-
-        window.startSession = startCamera;
-
     </script>
 
 </body>
