@@ -139,16 +139,9 @@
       line-height: 1.5;
     }
 
-    #summary {
-      display: none;
-    }
-
+    #summary,
     #monitoring {
       display: none;
-    }
-
-    #cameraStatus {
-      margin-bottom: 12px;
     }
 
     .profile-grid {
@@ -179,7 +172,11 @@
     Computer-vision research prototype for amblyopia therapy support.
   </p>
 
-  <!-- THERAPY PROFILE -->
+
+  <!-- =========================
+       THERAPY PROFILE
+  ========================== -->
+
   <div class="card">
 
     <h2>Therapy Profile</h2>
@@ -188,6 +185,7 @@
 
       <div>
         <label for="childAge">Child Age</label>
+
         <input
           id="childAge"
           type="number"
@@ -199,6 +197,7 @@
 
       <div>
         <label for="amblyopicEye">Amblyopic Eye</label>
+
         <select id="amblyopicEye">
           <option value="left">Left Eye</option>
           <option value="right">Right Eye</option>
@@ -206,6 +205,7 @@
       </div>
 
     </div>
+
 
     <label for="targetDistance">
       Target Viewing Distance (cm)
@@ -219,6 +219,7 @@
       value="40"
     />
 
+
     <label for="gracePeriod">
       Warning Grace Period (seconds)
     </label>
@@ -231,6 +232,7 @@
       value="20"
     />
 
+
     <p class="small">
       The target distance is a configurable monitoring parameter.
       It is not intended to replace a clinician's recommendation.
@@ -239,14 +241,21 @@
   </div>
 
 
-  <!-- CAMERA -->
+  <!-- =========================
+       CAMERA
+  ========================== -->
+
   <div class="card">
 
     <h2>Camera</h2>
 
-    <div id="cameraStatus" class="status">
-      Camera: Waiting...
+    <div
+      id="cameraStatus"
+      class="status"
+    >
+      Camera: Ready to start.
     </div>
+
 
     <video
       id="video"
@@ -255,6 +264,7 @@
       muted
     ></video>
 
+
     <button id="startButton">
       Start Session
     </button>
@@ -262,34 +272,65 @@
   </div>
 
 
-  <!-- MONITORING -->
-  <div class="card" id="monitoring">
+  <!-- =========================
+       MONITORING
+  ========================== -->
+
+  <div
+    class="card"
+    id="monitoring"
+  >
 
     <h2>Live Monitoring</h2>
 
-    <div id="faceStatus" class="status">
+
+    <div
+      id="faceStatus"
+      class="status"
+    >
       Face: Waiting...
     </div>
 
-    <div id="distanceStatus" class="status">
+
+    <div
+      id="distanceStatus"
+      class="status"
+    >
       Viewing distance: Waiting...
     </div>
 
-    <div id="positionStatus" class="status">
+
+    <div
+      id="positionStatus"
+      class="status"
+    >
       Face position: Waiting...
     </div>
 
-    <div id="orientationStatus" class="status">
+
+    <div
+      id="orientationStatus"
+      class="status"
+    >
       Head orientation: Waiting...
     </div>
 
-    <div id="complianceStatus" class="status">
+
+    <div
+      id="complianceStatus"
+      class="status"
+    >
       Compliance: Waiting...
     </div>
 
-    <div id="sessionStatus" class="status">
+
+    <div
+      id="sessionStatus"
+      class="status"
+    >
       Session: 00:00
     </div>
+
 
     <button id="endButton">
       End Session
@@ -298,60 +339,115 @@
   </div>
 
 
-  <!-- SUMMARY -->
-  <div class="card" id="summary">
+  <!-- =========================
+       SUMMARY
+  ========================== -->
+
+  <div
+    class="card"
+    id="summary"
+  >
 
     <h2>Session Summary</h2>
 
+
     <div class="metric">
       <span>Total session</span>
-      <span id="summaryTotal" class="metric-value">--</span>
+      <span
+        id="summaryTotal"
+        class="metric-value"
+      >
+        --
+      </span>
     </div>
+
 
     <div class="metric">
       <span>Compliant time</span>
-      <span id="summaryCompliant" class="metric-value">--</span>
+      <span
+        id="summaryCompliant"
+        class="metric-value"
+      >
+        --
+      </span>
     </div>
+
 
     <div class="metric">
       <span>Too-close time</span>
-      <span id="summaryTooClose" class="metric-value">--</span>
+      <span
+        id="summaryTooClose"
+        class="metric-value"
+      >
+        --
+      </span>
     </div>
+
 
     <div class="metric">
       <span>No-face time</span>
-      <span id="summaryNoFace" class="metric-value">--</span>
+      <span
+        id="summaryNoFace"
+        class="metric-value"
+      >
+        --
+      </span>
     </div>
+
 
     <div class="metric">
       <span>Compliance</span>
-      <span id="summaryPercentage" class="metric-value">--</span>
+      <span
+        id="summaryPercentage"
+        class="metric-value"
+      >
+        --
+      </span>
     </div>
+
 
     <div class="metric">
       <span>Therapy eye</span>
-      <span id="summaryEye" class="metric-value">--</span>
+      <span
+        id="summaryEye"
+        class="metric-value"
+      >
+        --
+      </span>
     </div>
 
+
     <p class="small">
-      This prototype estimates viewing behavior using computer vision.
-      Results should not be interpreted as clinical measurements.
+      This prototype estimates viewing behavior using computer
+      vision. Results should not be interpreted as clinical
+      measurements.
     </p>
 
   </div>
 
 
-  <!-- DIAGNOSTICS -->
+  <!-- =========================
+       SYSTEM STATUS
+  ========================== -->
+
   <div class="card">
 
     <h2>System Status</h2>
 
-    <div id="libraryStatus" class="status">
-      Computer vision library: Waiting...
+
+    <div
+      id="libraryStatus"
+      class="status"
+    >
+      Computer vision library: Not loaded yet.
     </div>
 
-    <div id="modelStatus" class="status">
-      Face model: Waiting...
+
+    <div
+      id="modelStatus"
+      class="status"
+    >
+      Face model: Not loaded yet.
     </div>
 
   </div>
@@ -361,344 +457,469 @@
 
 <script type="module">
 
-/*
-=========================================================
-AMBLYOCARE
-Computer-Vision Research Prototype
-=========================================================
-*/
 
-
-/* ------------------------------------------------------
+/* =====================================================
    DOM ELEMENTS
------------------------------------------------------- */
+===================================================== */
 
-const video = document.getElementById("video");
+const video =
+  document.getElementById("video");
 
-const startButton = document.getElementById("startButton");
-const endButton = document.getElementById("endButton");
+const startButton =
+  document.getElementById("startButton");
 
-const cameraStatus = document.getElementById("cameraStatus");
+const endButton =
+  document.getElementById("endButton");
 
-const faceStatus = document.getElementById("faceStatus");
-const distanceStatus = document.getElementById("distanceStatus");
-const positionStatus = document.getElementById("positionStatus");
-const orientationStatus = document.getElementById("orientationStatus");
-const complianceStatus = document.getElementById("complianceStatus");
-const sessionStatus = document.getElementById("sessionStatus");
+const cameraStatus =
+  document.getElementById("cameraStatus");
 
-const monitoring = document.getElementById("monitoring");
-const summary = document.getElementById("summary");
+const faceStatus =
+  document.getElementById("faceStatus");
 
-const libraryStatus = document.getElementById("libraryStatus");
-const modelStatus = document.getElementById("modelStatus");
+const distanceStatus =
+  document.getElementById("distanceStatus");
 
-const childAgeInput = document.getElementById("childAge");
-const amblyopicEyeInput = document.getElementById("amblyopicEye");
-const targetDistanceInput = document.getElementById("targetDistance");
-const gracePeriodInput = document.getElementById("gracePeriod");
+const positionStatus =
+  document.getElementById("positionStatus");
 
-const summaryTotal = document.getElementById("summaryTotal");
-const summaryCompliant = document.getElementById("summaryCompliant");
-const summaryTooClose = document.getElementById("summaryTooClose");
-const summaryNoFace = document.getElementById("summaryNoFace");
-const summaryPercentage = document.getElementById("summaryPercentage");
-const summaryEye = document.getElementById("summaryEye");
+const orientationStatus =
+  document.getElementById("orientationStatus");
+
+const complianceStatus =
+  document.getElementById("complianceStatus");
+
+const sessionStatus =
+  document.getElementById("sessionStatus");
+
+const monitoring =
+  document.getElementById("monitoring");
+
+const summary =
+  document.getElementById("summary");
+
+const libraryStatus =
+  document.getElementById("libraryStatus");
+
+const modelStatus =
+  document.getElementById("modelStatus");
+
+const childAgeInput =
+  document.getElementById("childAge");
+
+const amblyopicEyeInput =
+  document.getElementById("amblyopicEye");
+
+const targetDistanceInput =
+  document.getElementById("targetDistance");
+
+const gracePeriodInput =
+  document.getElementById("gracePeriod");
+
+const summaryTotal =
+  document.getElementById("summaryTotal");
+
+const summaryCompliant =
+  document.getElementById("summaryCompliant");
+
+const summaryTooClose =
+  document.getElementById("summaryTooClose");
+
+const summaryNoFace =
+  document.getElementById("summaryNoFace");
+
+const summaryPercentage =
+  document.getElementById("summaryPercentage");
+
+const summaryEye =
+  document.getElementById("summaryEye");
 
 
-/* ------------------------------------------------------
+/* =====================================================
    MEDIAPIPE
------------------------------------------------------- */
+===================================================== */
 
 let FaceLandmarker = null;
+
 let FilesetResolver = null;
 
 let vision = null;
+
 let faceLandmarker = null;
 
 
-/* ------------------------------------------------------
+/* =====================================================
    CAMERA
------------------------------------------------------- */
+===================================================== */
 
 let cameraStream = null;
 
 
-/* ------------------------------------------------------
-   SESSION STATE
------------------------------------------------------- */
+/* =====================================================
+   SESSION
+===================================================== */
 
 let sessionRunning = false;
 
 let sessionStartTime = null;
+
 let lastTrackingTime = null;
 
 let compliantTime = 0;
+
 let tooCloseTime = 0;
+
 let noFaceTime = 0;
 
 let tooCloseStartedAt = null;
 
 
-/* ------------------------------------------------------
-   DISTANCE ESTIMATION
------------------------------------------------------- */
+/* =====================================================
+   DISTANCE
+===================================================== */
 
 const referenceFaceSize = 0.20;
 
-let faceSizeHistory = [];
-
 const historyLength = 15;
+
+let faceSizeHistory = [];
 
 let smoothedFaceSize = null;
 
 let currentDistance = null;
 
 
-/* ------------------------------------------------------
+/* =====================================================
    FACE POSITION
------------------------------------------------------- */
+===================================================== */
 
 let currentFacePosition = "unknown";
 
 let currentFaceCenterX = null;
+
 let currentFaceCenterY = null;
 
 const positionMinX = 0.25;
+
 const positionMaxX = 0.75;
 
 const positionMinY = 0.25;
+
 const positionMaxY = 0.75;
 
 
-/* ------------------------------------------------------
+/* =====================================================
    HEAD ORIENTATION
------------------------------------------------------- */
+===================================================== */
 
 let currentHeadOrientation = "unknown";
 
 let currentYaw = null;
+
 let currentPitch = null;
 
 
-/* ------------------------------------------------------
+/* =====================================================
    THERAPY PROFILE
------------------------------------------------------- */
+===================================================== */
 
 let therapyProfile = {
+
   age: 8,
+
   amblyopicEye: "left",
+
   targetDistance: 40,
+
   gracePeriod: 20
+
 };
 
 
-/* ------------------------------------------------------
+/* =====================================================
    LOAD COMPUTER VISION LIBRARY
------------------------------------------------------- */
+===================================================== */
 
 async function loadVisionLibrary() {
 
-  libraryStatus.className = "status warning";
+  libraryStatus.className =
+    "status warning";
+
   libraryStatus.innerText =
     "Computer vision library: Loading...";
 
+
   try {
 
-    const visionModule = await import(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
-    );
+    const visionModule =
+      await import(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
+      );
 
-    FaceLandmarker = visionModule.FaceLandmarker;
-    FilesetResolver = visionModule.FilesetResolver;
 
-    libraryStatus.className = "status good";
+    FaceLandmarker =
+      visionModule.FaceLandmarker;
+
+    FilesetResolver =
+      visionModule.FilesetResolver;
+
+
+    libraryStatus.className =
+      "status good";
+
     libraryStatus.innerText =
       "Computer vision library loaded successfully.";
 
+
     return true;
 
-  } catch (error) {
+  }
 
-    console.error(error);
+  catch (error) {
 
-    libraryStatus.className = "status danger";
+    console.error(
+      "Vision library error:",
+      error
+    );
+
+
+    libraryStatus.className =
+      "status danger";
 
     libraryStatus.innerText =
       "Computer vision library failed to load.";
+
 
     return false;
   }
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    LOAD FACE MODEL
------------------------------------------------------- */
+===================================================== */
 
 async function loadFaceModel() {
 
-  modelStatus.className = "status warning";
+  modelStatus.className =
+    "status warning";
+
   modelStatus.innerText =
     "Face model: Loading...";
 
+
   try {
 
-    vision = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
-    );
+    vision =
+      await FilesetResolver.forVisionTasks(
+        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
+      );
 
 
     /*
-      IMPORTANT:
-      These lower confidence thresholds make tracking
-      more tolerant of moderate head movement.
+      KEEPING THE PREVIOUSLY WORKING
+      MODEL CONFIGURATION.
+
+      Do NOT add confidence options here
+      until we have verified the model loads.
     */
 
     faceLandmarker =
       await FaceLandmarker.createFromOptions(
         vision,
         {
+
           baseOptions: {
+
             modelAssetPath:
               "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+
           },
 
           runningMode: "VIDEO",
 
-          numFaces: 1,
+          numFaces: 1
 
-          minFaceDetectionConfidence: 0.3,
-
-          minFacePresenceConfidence: 0.3,
-
-          minTrackingConfidence: 0.3
         }
       );
 
 
-    modelStatus.className = "status good";
+    modelStatus.className =
+      "status good";
 
     modelStatus.innerText =
       "Face model loaded successfully.";
 
+
     return true;
 
-  } catch (error) {
+  }
 
-    console.error(error);
+  catch (error) {
 
-    modelStatus.className = "status danger";
+    console.error(
+      "Face model error:",
+      error
+    );
+
+
+    modelStatus.className =
+      "status danger";
 
     modelStatus.innerText =
       "Face model failed to load.";
+
 
     return false;
   }
 }
 
 
-/* ------------------------------------------------------
-   CAMERA START
------------------------------------------------------- */
+/* =====================================================
+   START CAMERA
+===================================================== */
 
 async function startCamera() {
 
-  cameraStatus.className = "status warning";
+  cameraStatus.className =
+    "status warning";
 
   cameraStatus.innerText =
     "Camera: Requesting permission...";
+
 
   try {
 
     cameraStream =
       await navigator.mediaDevices.getUserMedia({
+
         video: {
+
           facingMode: "user"
+
         },
+
         audio: false
+
       });
 
 
-    video.srcObject = cameraStream;
+    video.srcObject =
+      cameraStream;
+
 
     await video.play();
 
 
-    cameraStatus.className = "status good";
+    cameraStatus.className =
+      "status good";
 
     cameraStatus.innerText =
       "Camera: Active.";
 
+
     return true;
 
-  } catch (error) {
+  }
 
-    console.error(error);
+  catch (error) {
 
-    cameraStatus.className = "status danger";
+    console.error(
+      "Camera error:",
+      error
+    );
+
+
+    cameraStatus.className =
+      "status danger";
 
     cameraStatus.innerText =
       "Camera: Permission or startup failed.";
+
 
     return false;
   }
 }
 
 
-/* ------------------------------------------------------
-   THERAPY PROFILE
------------------------------------------------------- */
+/* =====================================================
+   READ PROFILE
+===================================================== */
 
 function readTherapyProfile() {
 
   therapyProfile.age =
-    Number(childAgeInput.value) || 8;
+    Number(
+      childAgeInput.value
+    ) || 8;
+
 
   therapyProfile.amblyopicEye =
     amblyopicEyeInput.value;
 
+
   therapyProfile.targetDistance =
-    Number(targetDistanceInput.value) || 40;
+    Number(
+      targetDistanceInput.value
+    ) || 40;
+
 
   therapyProfile.gracePeriod =
-    Number(gracePeriodInput.value) || 20;
+    Number(
+      gracePeriodInput.value
+    ) || 20;
 }
 
 
-/* ------------------------------------------------------
-   DISTANCE ESTIMATION
------------------------------------------------------- */
+/* =====================================================
+   FACE SIZE
+===================================================== */
 
-function calculateFaceSize(landmarks) {
+function calculateFaceSize(
+  landmarks
+) {
 
-  const leftSide = landmarks[234];
+  const leftSide =
+    landmarks[234];
 
-  const rightSide = landmarks[454];
+  const rightSide =
+    landmarks[454];
+
 
   const dx =
-    rightSide.x - leftSide.x;
+    rightSide.x -
+    leftSide.x;
+
 
   const dy =
-    rightSide.y - leftSide.y;
+    rightSide.y -
+    leftSide.y;
+
 
   return Math.sqrt(
-    dx * dx + dy * dy
+    dx * dx +
+    dy * dy
   );
 }
 
 
-/* ------------------------------------------------------
-   SMOOTH DISTANCE
------------------------------------------------------- */
+/* =====================================================
+   DISTANCE
+===================================================== */
 
-function updateDistance(landmarks) {
+function updateDistance(
+  landmarks
+) {
 
   const faceSize =
-    calculateFaceSize(landmarks);
+    calculateFaceSize(
+      landmarks
+    );
 
 
-  faceSizeHistory.push(faceSize);
+  faceSizeHistory.push(
+    faceSize
+  );
 
 
   if (
@@ -707,30 +928,26 @@ function updateDistance(landmarks) {
   ) {
 
     faceSizeHistory.shift();
+
   }
 
 
   let sum = 0;
+
 
   for (
     const value of faceSizeHistory
   ) {
 
     sum += value;
+
   }
 
 
   smoothedFaceSize =
-    sum / faceSizeHistory.length;
+    sum /
+    faceSizeHistory.length;
 
-
-  /*
-    Relative calibration model.
-
-    Larger face = closer.
-
-    Smaller face = farther.
-  */
 
   currentDistance =
     therapyProfile.targetDistance *
@@ -741,10 +958,13 @@ function updateDistance(landmarks) {
 
 
   if (
-    !Number.isFinite(currentDistance)
+    !Number.isFinite(
+      currentDistance
+    )
   ) {
 
     return;
+
   }
 
 
@@ -760,37 +980,48 @@ function updateDistance(landmarks) {
     distanceStatus.className =
       "status warning";
 
+
     distanceStatus.innerText =
       "Viewing distance: Too close (" +
       currentDistance.toFixed(0) +
       " cm)";
 
-  } else {
+  }
+
+  else {
 
     distanceStatus.className =
       "status good";
+
 
     distanceStatus.innerText =
       "Viewing distance: Good (" +
       currentDistance.toFixed(0) +
       " cm)";
+
   }
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    FACE POSITION
------------------------------------------------------- */
+===================================================== */
 
-function updateFacePosition(landmarks) {
+function updateFacePosition(
+  landmarks
+) {
 
-  const nose = landmarks[1];
+  const nose =
+    landmarks[1];
 
-  const chin = landmarks[152];
+  const chin =
+    landmarks[152];
 
-  const leftSide = landmarks[234];
+  const leftSide =
+    landmarks[234];
 
-  const rightSide = landmarks[454];
+  const rightSide =
+    landmarks[454];
 
 
   const centerX =
@@ -823,32 +1054,43 @@ function updateFacePosition(landmarks) {
 
 
   if (
-    centerX < positionMinX
+    centerX <
+    positionMinX
   ) {
 
     position =
       "too far left";
 
-  } else if (
-    centerX > positionMaxX
+  }
+
+  else if (
+    centerX >
+    positionMaxX
   ) {
 
     position =
       "too far right";
 
-  } else if (
-    centerY < positionMinY
+  }
+
+  else if (
+    centerY <
+    positionMinY
   ) {
 
     position =
       "too high";
 
-  } else if (
-    centerY > positionMaxY
+  }
+
+  else if (
+    centerY >
+    positionMaxY
   ) {
 
     position =
       "too low";
+
   }
 
 
@@ -856,7 +1098,10 @@ function updateFacePosition(landmarks) {
     position;
 
 
-  if (position === "center") {
+  if (
+    position ===
+    "center"
+  ) {
 
     positionStatus.className =
       "status good";
@@ -864,7 +1109,9 @@ function updateFacePosition(landmarks) {
     positionStatus.innerText =
       "Face position: Good";
 
-  } else {
+  }
+
+  else {
 
     positionStatus.className =
       "status warning";
@@ -873,22 +1120,18 @@ function updateFacePosition(landmarks) {
       "Face position: " +
       position.charAt(0).toUpperCase() +
       position.slice(1);
+
   }
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    HEAD ORIENTATION
------------------------------------------------------- */
+===================================================== */
 
-function updateHeadOrientation(landmarks) {
-
-  /*
-    This is a rough prototype estimate.
-
-    It is NOT a clinical head-pose measurement.
-  */
-
+function updateHeadOrientation(
+  landmarks
+) {
 
   const nose =
     landmarks[1];
@@ -933,6 +1176,7 @@ function updateHeadOrientation(landmarks) {
   const yaw =
     horizontalOffset * 100;
 
+
   const pitch =
     verticalOffset * 100;
 
@@ -944,43 +1188,58 @@ function updateHeadOrientation(landmarks) {
     pitch;
 
 
-  const yawThreshold = 8;
+  const yawThreshold =
+    8;
 
-  const pitchThreshold = 10;
+  const pitchThreshold =
+    10;
 
 
   if (
-    yaw < -yawThreshold
+    yaw <
+    -yawThreshold
   ) {
 
     currentHeadOrientation =
       "turned left";
 
-  } else if (
-    yaw > yawThreshold
+  }
+
+  else if (
+    yaw >
+    yawThreshold
   ) {
 
     currentHeadOrientation =
       "turned right";
 
-  } else if (
-    pitch < -pitchThreshold
+  }
+
+  else if (
+    pitch <
+    -pitchThreshold
   ) {
 
     currentHeadOrientation =
       "looking up";
 
-  } else if (
-    pitch > pitchThreshold
+  }
+
+  else if (
+    pitch >
+    pitchThreshold
   ) {
 
     currentHeadOrientation =
       "looking down";
 
-  } else {
+  }
+
+  else {
 
     currentHeadOrientation =
       "facing screen";
+
   }
 
 
@@ -992,10 +1251,13 @@ function updateHeadOrientation(landmarks) {
     orientationStatus.className =
       "status good";
 
-  } else {
+  }
+
+  else {
 
     orientationStatus.className =
       "status warning";
+
   }
 
 
@@ -1005,40 +1267,51 @@ function updateHeadOrientation(landmarks) {
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    RESET FACE STATES
------------------------------------------------------- */
+===================================================== */
 
 function resetFaceStates() {
 
-  currentDistance = null;
+  currentDistance =
+    null;
+
 
   currentFacePosition =
     "unknown";
 
+
   currentFaceCenterX =
     null;
+
 
   currentFaceCenterY =
     null;
 
+
   currentHeadOrientation =
     "unknown";
 
+
   currentYaw =
     null;
+
 
   currentPitch =
     null;
 
 
-  faceSizeHistory = [];
+  faceSizeHistory =
+    [];
 
-  smoothedFaceSize = null;
+
+  smoothedFaceSize =
+    null;
 
 
   faceStatus.className =
     "status warning";
+
 
   faceStatus.innerText =
     "Face: No face detected";
@@ -1047,12 +1320,14 @@ function resetFaceStates() {
   distanceStatus.className =
     "status warning";
 
+
   distanceStatus.innerText =
     "Viewing distance: Waiting...";
 
 
   positionStatus.className =
     "status warning";
+
 
   positionStatus.innerText =
     "Face position: No face detected";
@@ -1061,22 +1336,28 @@ function resetFaceStates() {
   orientationStatus.className =
     "status warning";
 
+
   orientationStatus.innerText =
     "Head orientation: No face detected";
 }
 
 
-/* ------------------------------------------------------
-   FACE DETECTION
------------------------------------------------------- */
+/* =====================================================
+   FACE DETECTION LOOP
+===================================================== */
 
-let lastVideoTime = -1;
+let lastVideoTime =
+  -1;
 
 
 function detectFace() {
 
-  if (!sessionRunning) {
+  if (
+    !sessionRunning
+  ) {
+
     return;
+
   }
 
 
@@ -1090,16 +1371,13 @@ function detectFace() {
     );
 
     return;
+
   }
 
 
   const currentTime =
     performance.now();
 
-
-  /*
-    Only process a new video frame.
-  */
 
   if (
     video.currentTime ===
@@ -1111,6 +1389,7 @@ function detectFace() {
     );
 
     return;
+
   }
 
 
@@ -1140,6 +1419,7 @@ function detectFace() {
       faceStatus.className =
         "status good";
 
+
       faceStatus.innerText =
         "Face: Detected";
 
@@ -1163,18 +1443,22 @@ function detectFace() {
         true
       );
 
+    }
 
-    } else {
+    else {
 
       resetFaceStates();
+
 
       updateTrackingState(
         false
       );
+
     }
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
       "Face detection error:",
@@ -1190,11 +1474,13 @@ function detectFace() {
 }
 
 
-/* ------------------------------------------------------
-   SESSION TIME
------------------------------------------------------- */
+/* =====================================================
+   FORMAT TIME
+===================================================== */
 
-function formatTime(seconds) {
+function formatTime(
+  seconds
+) {
 
   seconds =
     Math.max(
@@ -1204,28 +1490,39 @@ function formatTime(seconds) {
 
 
   const minutes =
-    Math.floor(seconds / 60);
+    Math.floor(
+      seconds / 60
+    );
+
 
   const remainingSeconds =
     seconds % 60;
 
 
   return (
-    String(minutes).padStart(2, "0") +
+    String(minutes)
+      .padStart(2, "0") +
     ":" +
-    String(remainingSeconds).padStart(2, "0")
+    String(remainingSeconds)
+      .padStart(2, "0")
   );
 }
 
 
-/* ------------------------------------------------------
-   TRACKING / COMPLIANCE
------------------------------------------------------- */
+/* =====================================================
+   UPDATE COMPLIANCE
+===================================================== */
 
-function updateTrackingState(hasFace) {
+function updateTrackingState(
+  hasFace
+) {
 
-  if (!sessionRunning) {
+  if (
+    !sessionRunning
+  ) {
+
     return;
+
   }
 
 
@@ -1234,28 +1531,28 @@ function updateTrackingState(hasFace) {
 
 
   if (
-    lastTrackingTime === null
+    lastTrackingTime ===
+    null
   ) {
 
     lastTrackingTime =
       now;
 
     return;
+
   }
 
 
   const elapsed =
-    (now - lastTrackingTime) /
-    1000;
+    (
+      now -
+      lastTrackingTime
+    ) / 1000;
 
 
   lastTrackingTime =
     now;
 
-
-  /*
-    Too-close determination.
-  */
 
   const target =
     therapyProfile.targetDistance;
@@ -1268,23 +1565,30 @@ function updateTrackingState(hasFace) {
       target * 0.90;
 
 
-  if (!hasFace) {
+  if (
+    !hasFace
+  ) {
 
     noFaceTime +=
       elapsed;
 
+
     tooCloseStartedAt =
       null;
 
+
     complianceStatus.className =
       "status warning";
+
 
     complianceStatus.innerText =
       "Compliance: Face not detected";
 
   }
 
-  else if (isTooClose) {
+  else if (
+    isTooClose
+  ) {
 
     tooCloseTime +=
       elapsed;
@@ -1297,6 +1601,7 @@ function updateTrackingState(hasFace) {
 
       tooCloseStartedAt =
         now;
+
     }
 
 
@@ -1315,13 +1620,17 @@ function updateTrackingState(hasFace) {
       complianceStatus.className =
         "status warning";
 
+
       complianceStatus.innerText =
         "Compliance: Too close — please move farther away.";
 
-    } else {
+    }
+
+    else {
 
       complianceStatus.className =
         "status warning";
+
 
       complianceStatus.innerText =
         "Compliance: Too close — grace period " +
@@ -1330,6 +1639,7 @@ function updateTrackingState(hasFace) {
           tooCloseDuration
         ) +
         "s";
+
     }
 
   }
@@ -1339,6 +1649,7 @@ function updateTrackingState(hasFace) {
     compliantTime +=
       elapsed;
 
+
     tooCloseStartedAt =
       null;
 
@@ -1346,8 +1657,10 @@ function updateTrackingState(hasFace) {
     complianceStatus.className =
       "status good";
 
+
     complianceStatus.innerText =
       "Compliance: Good";
+
   }
 
 
@@ -1355,9 +1668,9 @@ function updateTrackingState(hasFace) {
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    SESSION DISPLAY
------------------------------------------------------- */
+===================================================== */
 
 function updateSessionDisplay() {
 
@@ -1366,6 +1679,7 @@ function updateSessionDisplay() {
   ) {
 
     return;
+
   }
 
 
@@ -1378,7 +1692,9 @@ function updateSessionDisplay() {
 
   sessionStatus.innerText =
     "Session: " +
-    formatTime(elapsed);
+    formatTime(
+      elapsed
+    );
 
 
   const totalTracked =
@@ -1386,7 +1702,8 @@ function updateSessionDisplay() {
     tooCloseTime;
 
 
-  let percentage = 0;
+  let percentage =
+    0;
 
 
   if (
@@ -1398,6 +1715,7 @@ function updateSessionDisplay() {
         compliantTime /
         totalTracked
       ) * 100;
+
   }
 
 
@@ -1411,14 +1729,18 @@ function updateSessionDisplay() {
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    START SESSION
------------------------------------------------------- */
+===================================================== */
 
 async function startSession() {
 
-  if (sessionRunning) {
+  if (
+    sessionRunning
+  ) {
+
     return;
+
   }
 
 
@@ -1426,49 +1748,71 @@ async function startSession() {
 
 
   /*
-    Make sure camera exists.
+    STEP 1:
+    Start camera.
   */
 
-  if (!cameraStream) {
+  if (
+    !cameraStream
+  ) {
 
     const cameraStarted =
       await startCamera();
 
 
-    if (!cameraStarted) {
+    if (
+      !cameraStarted
+    ) {
 
       return;
+
     }
   }
 
 
   /*
-    Load library if needed.
+    STEP 2:
+    Load library.
   */
 
-  if (!faceLandmarker) {
+  if (
+    !faceLandmarker
+  ) {
 
     const libraryLoaded =
       await loadVisionLibrary();
 
 
-    if (!libraryLoaded) {
+    if (
+      !libraryLoaded
+    ) {
+
       return;
+
     }
 
+
+    /*
+      STEP 3:
+      Load face model.
+    */
 
     const modelLoaded =
       await loadFaceModel();
 
 
-    if (!modelLoaded) {
+    if (
+      !modelLoaded
+    ) {
+
       return;
+
     }
   }
 
 
   /*
-    Reset session.
+    Reset session values.
   */
 
   compliantTime =
@@ -1485,6 +1829,7 @@ async function startSession() {
 
   lastTrackingTime =
     null;
+
 
   sessionStartTime =
     Date.now();
@@ -1513,12 +1858,14 @@ async function startSession() {
   faceStatus.className =
     "status warning";
 
+
   faceStatus.innerText =
     "Face: Searching...";
 
 
   distanceStatus.className =
     "status warning";
+
 
   distanceStatus.innerText =
     "Viewing distance: Searching...";
@@ -1527,12 +1874,14 @@ async function startSession() {
   positionStatus.className =
     "status warning";
 
+
   positionStatus.innerText =
     "Face position: Searching...";
 
 
   orientationStatus.className =
     "status warning";
+
 
   orientationStatus.innerText =
     "Head orientation: Searching...";
@@ -1541,16 +1890,14 @@ async function startSession() {
   complianceStatus.className =
     "status warning";
 
+
   complianceStatus.innerText =
     "Compliance: Waiting...";
 
 
-  /*
-    Begin detection loop.
-  */
-
   lastVideoTime =
     -1;
+
 
   requestAnimationFrame(
     detectFace
@@ -1558,42 +1905,18 @@ async function startSession() {
 }
 
 
-/* ------------------------------------------------------
+/* =====================================================
    END SESSION
------------------------------------------------------- */
+===================================================== */
 
 function endSession() {
 
-  if (!sessionRunning) {
-    return;
-  }
-
-
-  /*
-    Update final elapsed period.
-  */
-
   if (
-    lastTrackingTime !==
-    null
+    !sessionRunning
   ) {
 
-    const now =
-      Date.now();
+    return;
 
-
-    const elapsed =
-      (
-        now -
-        lastTrackingTime
-      ) / 1000;
-
-
-    /*
-      We don't know whether the
-      final interval was compliant,
-      so don't artificially assign it.
-    */
   }
 
 
@@ -1612,10 +1935,6 @@ function endSession() {
   monitoring.style.display =
     "none";
 
-
-  /*
-    Calculate total session.
-  */
 
   const totalSessionTime =
     sessionStartTime
@@ -1644,12 +1963,9 @@ function endSession() {
         compliantTime /
         totalTracked
       ) * 100;
+
   }
 
-
-  /*
-    Fill summary.
-  */
 
   summaryTotal.innerText =
     formatTime(
@@ -1699,9 +2015,9 @@ function endSession() {
 }
 
 
-/* ------------------------------------------------------
-   BUTTON EVENTS
------------------------------------------------------- */
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 startButton.addEventListener(
   "click",
@@ -1715,13 +2031,12 @@ endButton.addEventListener(
 );
 
 
-/* ------------------------------------------------------
+/* =====================================================
    INITIAL STATE
------------------------------------------------------- */
+===================================================== */
 
 endButton.disabled =
   true;
-
 
 cameraStatus.className =
   "status";
@@ -1729,31 +2044,17 @@ cameraStatus.className =
 cameraStatus.innerText =
   "Camera: Ready to start.";
 
-
 libraryStatus.className =
   "status";
 
 libraryStatus.innerText =
   "Computer vision library: Not loaded yet.";
 
-
 modelStatus.className =
   "status";
 
 modelStatus.innerText =
   "Face model: Not loaded yet.";
-
-
-/* ------------------------------------------------------
-   CAMERA PREVIEW
------------------------------------------------------- */
-
-/*
-   Camera starts when the user presses
-   Start Session, rather than immediately,
-   which makes the permission flow cleaner.
-*/
-
 
 </script>
 
