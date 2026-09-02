@@ -251,6 +251,17 @@
       margin-top: 12px;
     }
 
+    .session-mode-box {
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 13px;
+      background: #f3f5f7;
+    }
+
+    .session-mode-box label {
+      margin-top: 0;
+    }
+
     #eyeBaselineCanvas {
       display: none;
     }
@@ -308,7 +319,7 @@
       value="20"
     />
 
-    <label for="gracePeriod">Correction Grace Period (seconds)</label>
+    <label for="gracePeriod">Screen Correction Grace Period (seconds)</label>
     <input
       id="gracePeriod"
       type="number"
@@ -349,7 +360,7 @@
       </div>
 
       <div class="metric">
-        <div class="metric-title">Grace Period</div>
+        <div class="metric-title">Screen Grace Period</div>
         <div class="metric-value" id="summaryGrace">20 sec</div>
       </div>
     </div>
@@ -399,6 +410,51 @@
   </section>
 
 
+  <!-- SESSION START -->
+  <section class="card" id="sessionStartCard">
+    <h2>Start Session</h2>
+
+    <p class="muted">
+      Choose whether this session is being performed with the prescribed
+      eye patch or without a patch.
+    </p>
+
+    <div class="session-mode-box">
+
+      <label for="sessionMode">
+        Session Mode
+      </label>
+
+      <select id="sessionMode">
+
+        <option value="withoutPatch">
+          Without Patch — Screen Monitoring Only
+        </option>
+
+        <option value="withPatch">
+          With Patch — Patch Compliance Monitoring
+        </option>
+
+      </select>
+
+    </div>
+
+    <button id="startSessionButton">
+      Start Session
+    </button>
+
+    <div id="sessionStartStatus" class="status">
+      Camera must be started before beginning a session.
+    </div>
+
+    <div class="research-note">
+      In "With Patch" mode, the experimental eye-visibility system uses a
+      separate maximum 5-second warning period. Screen distance and face
+      position continue to use the normal screen correction grace period.
+    </div>
+  </section>
+
+
   <!-- MONITORING -->
   <section class="card" id="monitoringCard">
     <h2>Monitoring</h2>
@@ -428,7 +484,7 @@
     </div>
 
     <div id="faceStatus" class="status">
-      Waiting for camera...
+      Waiting for session...
     </div>
 
     <div id="positionStatus" class="status">
@@ -673,11 +729,20 @@ const exportCSVButton =
 const captureEyeBaselineButton =
   document.getElementById("captureEyeBaseline");
 
+const startSessionButton =
+  document.getElementById("startSessionButton");
+
+const sessionModeSelect =
+  document.getElementById("sessionMode");
+
 const cameraStatus =
   document.getElementById("cameraStatus");
 
 const calibrationStatus =
   document.getElementById("calibrationStatus");
+
+const sessionStartStatus =
+  document.getElementById("sessionStartStatus");
 
 const faceStatus =
   document.getElementById("faceStatus");
@@ -856,6 +921,43 @@ updateProfileUI();
 
 
 /* =========================================================
+   SESSION MODE
+   ========================================================= */
+
+let sessionMode = "withoutPatch";
+
+sessionModeSelect.addEventListener(
+  "change",
+  () => {
+
+    sessionMode =
+      sessionModeSelect.value;
+
+    if (
+      sessionMode === "withPatch"
+    ) {
+
+      sessionStartStatus.textContent =
+        "Patch mode selected. Capture a baseline with both eyes uncovered before starting.";
+
+      sessionStartStatus.className =
+        "status warning";
+
+    } else {
+
+      sessionStartStatus.textContent =
+        "Screen monitoring only. Eye-patch enforcement is disabled.";
+
+      sessionStartStatus.className =
+        "status";
+
+    }
+
+  }
+);
+
+
+/* =========================================================
    CAMERA
    ========================================================= */
 
@@ -887,9 +989,13 @@ startCameraButton.addEventListener(
       cameraStatus.className =
         "status good";
 
-      endSessionButton.disabled = false;
+      sessionStartStatus.textContent =
+        sessionMode === "withPatch"
+          ? "Camera ready. Capture an eye baseline, then start the patch session."
+          : "Camera ready. Choose a session mode and press Start Session.";
 
-      startSession();
+      sessionStartStatus.className =
+        "status good";
 
     } catch (error) {
 
@@ -976,20 +1082,18 @@ let eyeBaselineCapturing = false;
 /*
   IMPORTANT:
 
-  The actual eye-region detector below is intentionally kept
-  in its original detector-side configuration.
+  The actual eye-region detector remains in the original
+  detector-side configuration.
 
-  We do NOT change the MediaPipe/pixel regions themselves.
+  Detector region "left" corresponds to the person's
+  anatomical RIGHT eye.
 
-  Because the selfie camera preview is mirrored, the detector
-  result is translated into the person's anatomical eye only
-  when we display it or use it for the therapy warning.
+  Detector region "right" corresponds to the person's
+  anatomical LEFT eye.
 
-  Detector region "left" corresponds to the person's RIGHT eye.
-  Detector region "right" corresponds to the person's LEFT eye.
+  The baseline itself is NOT mirror-swapped.
 
-  This keeps the previously working eye-analysis algorithm
-  unchanged while correcting the displayed direction.
+  Only the final displayed/therapy labels are corrected.
 */
 
 
@@ -998,6 +1102,8 @@ let eyeBaselineCapturing = false;
    ========================================================= */
 
 let eyeOcclusionStartedAt = null;
+
+const patchGracePeriodSeconds = 5;
 
 
 /* =========================================================
@@ -1073,6 +1179,39 @@ function startSession() {
     return;
   }
 
+  if (!cameraStarted) {
+
+    sessionStartStatus.textContent =
+      "Start the camera first.";
+
+    sessionStartStatus.className =
+      "status bad";
+
+    return;
+  }
+
+  /*
+    Patch mode requires a personalized baseline.
+    Without patch mode does not.
+  */
+
+  if (
+    sessionMode === "withPatch" &&
+    (
+      !eyeBaseline.left ||
+      !eyeBaseline.right
+    )
+  ) {
+
+    sessionStartStatus.textContent =
+      "Capture the eye baseline with both eyes uncovered before starting a patch session.";
+
+    sessionStartStatus.className =
+      "status bad";
+
+    return;
+  }
+
   resetSessionVariables();
 
   sessionActive = true;
@@ -1084,17 +1223,76 @@ function startSession() {
     performance.now();
 
   monitorStatus.textContent =
-    "Monitoring active.";
+    sessionMode === "withPatch"
+      ? "Monitoring active — Patch Mode."
+      : "Monitoring active — Screen Monitoring Only.";
 
   monitorStatus.className =
     "status good";
 
   endSessionButton.disabled = false;
 
+  sessionStartButton.disabled = true;
+
+  sessionModeSelect.disabled = true;
+
+  sessionStartStatus.textContent =
+    sessionMode === "withPatch"
+      ? "Patch session started. Follow the eye-patch instruction on screen."
+      : "Screen-monitoring session started. Eye-patch enforcement is disabled.";
+
+  sessionStartStatus.className =
+    "status good";
+
+  /*
+    In patch mode, immediately tell the user where the
+    patch should be placed.
+
+    The treatment eye should remain uncovered, so the
+    patch belongs on the opposite eye.
+  */
+
+  if (
+    sessionMode === "withPatch"
+  ) {
+
+    const patchEye =
+      therapyProfile.treatmentEye === "left"
+        ? "right"
+        : "left";
+
+    overlayTitle.textContent =
+      "Place the Eye Patch";
+
+    overlayMessage.textContent =
+      "Please place the eye patch over your " +
+      patchEye +
+      " eye. Your " +
+      therapyProfile.treatmentEye +
+      " treatment eye should remain uncovered.";
+
+    correctionOverlay.classList.remove(
+      "hidden"
+    );
+
+    overlayVisible = true;
+
+  }
+
   requestAnimationFrame(
     processFrame
   );
 }
+
+
+/* =========================================================
+   START SESSION BUTTON
+   ========================================================= */
+
+startSessionButton.addEventListener(
+  "click",
+  startSession
+);
 
 
 /* =========================================================
@@ -1123,6 +1321,12 @@ function endSession() {
   overlayVisible = false;
 
   eyeOcclusionStartedAt = null;
+
+  sessionStartButton.disabled = false;
+
+  sessionModeSelect.disabled = false;
+
+  endSessionButton.disabled = true;
 
   monitorStatus.textContent =
     "Session ended.";
@@ -2144,20 +2348,10 @@ function eyeStateText(
 
 
 /*
-  This is the ONLY place where the mirror correction is
-  applied.
+  Mirror correction is applied ONLY to the final labels.
 
-  Original detector-side result:
-
-      detector "left"  = person's RIGHT eye
-      detector "right" = person's LEFT eye
-
-  Therefore:
-
-      displayed LEFT  = detector "right"
-      displayed RIGHT = detector "left"
-
-  The actual eye-analysis algorithm itself is unchanged.
+  Detector "left"  = anatomical RIGHT
+  Detector "right" = anatomical LEFT
 */
 
 function getAnatomicalEyeStates(
@@ -2176,16 +2370,6 @@ function getAnatomicalEyeStates(
       "right"
     );
 
-
-  /*
-    IMPORTANT:
-
-    Keep the smoothing histories attached to the
-    detector-side streams exactly as before.
-
-    We only rename the final results anatomically.
-  */
-
   const detectorLeftState =
     smoothEyeState(
       leftEyeHistory,
@@ -2198,21 +2382,10 @@ function getAnatomicalEyeStates(
       detectorRightResult.state
     );
 
-
   return {
-
-    /*
-      Detector right corresponds to the person's
-      anatomical LEFT eye.
-    */
 
     left:
       detectorRightState,
-
-    /*
-      Detector left corresponds to the person's
-      anatomical RIGHT eye.
-    */
 
     right:
       detectorLeftState
@@ -2331,25 +2504,23 @@ function updateEyeDisplay(
    WRONG-EYE DETECTION
    ========================================================= */
 
-/*
-  The treatment eye is the eye that should remain uncovered.
-
-  Therefore:
-
-      Treatment = Left
-      Correct patch location = Right
-
-      Treatment = Right
-      Correct patch location = Left
-
-  The warning is based on the ANATOMICAL eye states returned
-  by getAnatomicalEyeStates(), so the mirror correction is
-  already accounted for.
-*/
-
 function getWrongEyeOcclusion(
   eyeStates
 ) {
+
+  /*
+    Eye-patch monitoring only exists in With Patch mode.
+
+    Without Patch mode:
+    do not generate any patch warning.
+  */
+
+  if (
+    sessionMode !== "withPatch"
+  ) {
+
+    return null;
+  }
 
   if (!eyeStates) {
     return null;
@@ -2363,12 +2534,11 @@ function getWrongEyeOcclusion(
       ? "right"
       : "left";
 
-
   /*
-    The treatment eye should remain visible.
+    The treatment eye should remain uncovered.
 
-    If that eye is showing persistent possible occlusion,
-    trigger the experimental wrong-eye warning.
+    If the treatment eye becomes occluded, the prototype
+    interprets this as possible wrong-eye patch placement.
   */
 
   if (
@@ -2448,16 +2618,13 @@ captureEyeBaselineButton.addEventListener(
     /*
       IMPORTANT:
 
-      The baseline capture is restored to the original
-      detector-side configuration.
+      Baseline capture stays in the original detector-side
+      configuration.
 
-      We do NOT swap the detector regions here.
+      Detector "left" -> baseline.left
+      Detector "right" -> baseline.right
 
-      Detector "left" gets baseline "left".
-      Detector "right" gets baseline "right".
-
-      The anatomical label correction happens later,
-      when displaying/using the results.
+      No mirror mapping occurs here.
     */
 
     const leftSamples = [];
@@ -2565,10 +2732,6 @@ captureEyeBaselineButton.addEventListener(
     }
 
 
-    /*
-      Keep the original detector-side baseline storage.
-    */
-
     eyeBaseline.left =
       averageEyeFeatures(
         leftSamples
@@ -2598,10 +2761,68 @@ captureEyeBaselineButton.addEventListener(
       false;
 
     eyeBaselineStatus.textContent =
-      "Eye baseline captured successfully. You can now test eye occlusion.";
+      "Eye baseline captured successfully. Both eyes should appear visible.";
 
     eyeBaselineStatus.className =
       "status good";
+
+
+    /*
+      If the user selected Patch Mode before capturing
+      the baseline, give the patch-placement instruction
+      immediately after baseline capture.
+    */
+
+    if (
+      sessionMode === "withPatch" &&
+      !sessionActive
+    ) {
+
+      const patchEye =
+        therapyProfile.treatmentEye === "left"
+          ? "right"
+          : "left";
+
+      overlayTitle.textContent =
+        "Place the Eye Patch";
+
+      overlayMessage.textContent =
+        "Baseline captured. Please place the eye patch over your " +
+        patchEye +
+        " eye. Your " +
+        therapyProfile.treatmentEye +
+        " treatment eye should remain uncovered.";
+
+      correctionOverlay.classList.remove(
+        "hidden"
+      );
+
+      overlayVisible = true;
+
+
+      /*
+        This is only an instruction before the session.
+        The actual monitoring starts after Start Session.
+      */
+
+      setTimeout(
+        () => {
+
+          if (!sessionActive) {
+
+            correctionOverlay.classList.add(
+              "hidden"
+            );
+
+            overlayVisible = false;
+
+          }
+
+        },
+        4000
+      );
+
+    }
 
   }
 );
@@ -2886,8 +3107,7 @@ function updateCorrectionOverlay(
     PRIORITY 1:
     Distance.
 
-    If the child is too close, distance correction
-    takes priority over eye messaging.
+    Uses the user-configured screen grace period.
   */
 
   if (
@@ -2943,6 +3163,8 @@ function updateCorrectionOverlay(
   /*
     PRIORITY 2:
     Poor face position.
+
+    Uses the user-configured screen grace period.
   */
 
   if (
@@ -2996,7 +3218,7 @@ function updateCorrectionOverlay(
   /*
     Distance and face position are acceptable.
 
-    Reset the position correction timer.
+    Reset the screen-position correction timer.
   */
 
   invalidStartedAt =
@@ -3007,11 +3229,13 @@ function updateCorrectionOverlay(
     PRIORITY 3:
     Wrong-eye occlusion.
 
-    This does NOT affect the numerical compliance
-    analytics yet because eye detection is experimental.
+    This is ONLY active in With Patch mode.
+
+    It has its own fixed 5-second maximum grace period.
   */
 
   if (
+    sessionMode === "withPatch" &&
     wrongEyeOcclusion
   ) {
 
@@ -3031,7 +3255,7 @@ function updateCorrectionOverlay(
 
     if (
       occlusionDuration >=
-      therapyProfile.gracePeriodSeconds
+      patchGracePeriodSeconds
     ) {
 
       if (!overlayVisible) {
@@ -3044,10 +3268,20 @@ function updateCorrectionOverlay(
 
       }
 
-      const correctPatchEye =
-        wrongEyeOcclusion.correctPatchEye;
+      const treatmentEye =
+        therapyProfile.treatmentEye;
 
-      const eyeName =
+      const correctPatchEye =
+        treatmentEye === "left"
+          ? "right"
+          : "left";
+
+      const treatmentEyeName =
+        treatmentEye === "left"
+          ? "left"
+          : "right";
+
+      const patchEyeName =
         correctPatchEye === "left"
           ? "left"
           : "right";
@@ -3057,9 +3291,9 @@ function updateCorrectionOverlay(
 
       overlayMessage.textContent =
         "Please uncover your " +
-        therapyProfile.treatmentEye +
+        treatmentEyeName +
         " eye and place the eye patch over your " +
-        eyeName +
+        patchEyeName +
         " eye.";
 
     }
@@ -3069,9 +3303,9 @@ function updateCorrectionOverlay(
 
 
   /*
-    Nothing currently requires correction.
+    No current correction is required.
 
-    Reset correction timers and hide the overlay.
+    Reset both correction timers and hide the overlay.
   */
 
   invalidStartedAt =
@@ -3430,6 +3664,7 @@ async function processFrame(
   ) {
 
     if (
+      sessionMode === "withPatch" &&
       wrongEyeOcclusion
     ) {
 
@@ -3442,7 +3677,9 @@ async function processFrame(
     } else {
 
       monitorStatus.textContent =
-        "Position and viewing distance are within the target range.";
+        sessionMode === "withPatch"
+          ? "Position, viewing distance, and eye-patch monitoring are active."
+          : "Position and viewing distance are within the target range.";
 
       monitorStatus.className =
         "status good";
@@ -3927,12 +4164,24 @@ startNewSessionButton.addEventListener(
 
     resetSessionVariables();
 
-    if (
-      cameraStarted
-    ) {
+    sessionStartButton.disabled =
+      false;
 
-      startSession();
-    }
+    sessionModeSelect.disabled =
+      false;
+
+    endSessionButton.disabled =
+      true;
+
+    sessionStartStatus.textContent =
+      cameraStarted
+        ? "Choose a session mode and press Start Session."
+        : "Camera must be started before beginning a session.";
+
+    sessionStartStatus.className =
+      cameraStarted
+        ? "status good"
+        : "status";
 
     window.scrollTo({
       top: 0,
