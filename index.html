@@ -198,6 +198,11 @@ display:block;
 transform:scaleX(-1)
 }
 
+
+/* =========================================================
+   FULLSCREEN YOUTUBE SESSION
+   ========================================================= */
+
 #sessionView{
 position:fixed;
 inset:0;
@@ -205,7 +210,8 @@ width:100vw;
 height:100dvh;
 background:#000;
 z-index:5000;
-display:none
+display:none;
+overflow:hidden
 }
 
 #sessionView.active{
@@ -213,9 +219,23 @@ display:block
 }
 
 #youtubePlayer{
+position:absolute;
+inset:0;
 width:100%;
-height:100%
+height:100%;
+background:#000
 }
+
+#youtubePlayer iframe{
+position:absolute!important;
+inset:0!important;
+width:100%!important;
+height:100%!important;
+border:0!important
+}
+
+
+/* Results */
 
 .result{
 display:flex;
@@ -235,6 +255,9 @@ height:68px;
 object-fit:cover;
 border-radius:8px
 }
+
+
+/* Correction overlay */
 
 .overlay{
 position:fixed;
@@ -814,8 +837,6 @@ const overlayTitle=$("overlayTitle");
 
 const overlayMessage=$("overlayMessage");
 
-const finalSummary=$("summaryView");
-
 const leftEye=$("leftEye");
 
 const rightEye=$("rightEye");
@@ -1172,30 +1193,7 @@ view("youtubeSetupView");
 
 /* =========================================================
    EYE DETECTION
-   =========================================================
-
-   IMPORTANT FIX:
-
-   The previous version was too aggressive.
-
-   It treated normal changes in eye geometry as possible
-   occlusion.
-
-   This version:
-
-   1. Detects whether the eye is geometrically open.
-   2. Treats blinking separately as closed/uncertain.
-   3. Uses a personalized baseline.
-   4. Requires a LARGE change in several normalized
-      measurements before calling possible occlusion.
-   5. Requires sustained evidence over many frames.
-   6. Visible wins when evidence is mixed.
-
-   Therefore normal open eyes should remain Visible.
    ========================================================= */
-
-
-/* Eye landmark geometry */
 
 function eyeGeometry(
 landmarks,
@@ -1247,8 +1245,6 @@ ratio:height/width
 
 }
 
-
-/* Normalize eye dimensions by face width */
 
 function eyeFeature(
 landmarks,
@@ -1302,7 +1298,13 @@ geometry.height/faceWidth
 }
 
 
-/* Raw eye classification */
+/*
+Raw eye classifier.
+
+This version is more sensitive to a real obstruction
+than the previous version, but still requires multiple
+independent geometry changes.
+*/
 
 function rawEyeState(
 landmarks,
@@ -1320,10 +1322,8 @@ return"uncertain";
 
 
 /*
-Normal blink / closed eye.
-
-IMPORTANT:
-This is NOT possible occlusion.
+A very small eye opening is treated as closed.
+This prevents normal blinking from becoming occlusion.
 */
 
 if(
@@ -1344,10 +1344,6 @@ return"visible";
 
 }
 
-
-/*
-Calculate relative changes.
-*/
 
 const ratioDrop=
 1-
@@ -1381,18 +1377,17 @@ baseline.height,
 
 
 /*
-VERY conservative occlusion condition.
+Possible occlusion.
 
-All three signals must agree.
-
-This is intentionally biased toward avoiding
-false positives.
+The previous version required extremely large changes.
+These thresholds are deliberately lowered, while the
+temporal filter below still requires sustained evidence.
 */
 
 if(
-ratioDrop>0.70&&
-widthChange>0.18&&
-heightChange>0.20
+ratioDrop>0.45&&
+widthChange>0.12&&
+heightChange>0.12
 ){
 
 return"possibleOcclusion";
@@ -1417,8 +1412,6 @@ left:null,
 right:null
 };
 
-
-/* Smooth eye result */
 
 function smoothEye(
 history,
@@ -1452,8 +1445,7 @@ x=>x==="possibleOcclusion"
 
 
 /*
-If the majority of recent frames show the eye,
-keep it visible.
+Visible wins when the recent evidence is mixed.
 */
 
 if(
@@ -1467,7 +1459,7 @@ return"visible";
 
 
 /*
-Closed is separate from occlusion.
+Closed remains separate from occlusion.
 */
 
 if(
@@ -1481,12 +1473,12 @@ return"closed";
 
 
 /*
-Occlusion requires sustained evidence.
+Possible occlusion must remain sustained.
 */
 
 if(
-total>=14&&
-occluded/total>=0.80
+total>=12&&
+occluded/total>=0.75
 ){
 
 return"possibleOcclusion";
@@ -1499,12 +1491,12 @@ return"uncertain";
 
 
 /*
-MediaPipe detector-side mapping:
+IMPORTANT MAPPING
 
-Detector LEFT  = person's anatomical RIGHT
-Detector RIGHT = person's anatomical LEFT
+MediaPipe detector LEFT  = person's anatomical RIGHT
+MediaPipe detector RIGHT = person's anatomical LEFT
 
-Therefore the results are swapped here.
+So the results are swapped here.
 */
 
 function getEyeStates(
@@ -1565,8 +1557,6 @@ return"Uncertain";
 }
 
 
-/* Display */
-
 function showEyes(
 landmarks
 ){
@@ -1595,8 +1585,7 @@ states.left==="visible"
 ?"good"
 :
 states.left==="possibleOcclusion"
-?"warning"
-:""
+?"warning":""
 );
 
 rightEye.className=
@@ -1606,8 +1595,7 @@ states.right==="visible"
 ?"good"
 :
 states.right==="possibleOcclusion"
-?"warning"
-:""
+?"warning":""
 );
 
 
@@ -1689,11 +1677,6 @@ baselineStatus.className=
 const leftSamples=[];
 
 const rightSamples=[];
-
-
-/*
-40 samples at roughly 20 frames per second.
-*/
 
 for(
 let i=0;
@@ -1871,22 +1854,75 @@ savedBaseline;
    ========================================================= */
 
 
+/*
+IMPORTANT:
 
+Put your NEW restricted YouTube Data API key here.
 
+Do NOT use the old key that was exposed previously.
+*/
 
 const YOUTUBE_API_KEY=
-"AIzaSyBxMlc4j-O4R0J8fdUU5MBjaoF12y70WCk";
+"AIzaSyC-mrGKxeaEcPZLM-aD-IwaC6F82ZtSsZk";
 
 
 let youtubePlayer=null;
 
 let selectedVideo=null;
 
+let youtubeAPIReady=false;
 
-/* YouTube IFrame API */
+
+/* =========================================================
+   YOUTUBE PLAYER
+   ========================================================= */
+
+/*
+The old version created the player while #sessionView
+was display:none.
+
+On Safari/iPad this can result in a zero-sized or black
+YouTube iframe.
+
+We now wait until the session screen is visible.
+*/
 
 window.onYouTubeIframeAPIReady=
 ()=>{
+
+youtubeAPIReady=true;
+
+youtubeSearchStatus.textContent=
+"YouTube ready. Search for a video.";
+
+youtubeSearchStatus.className=
+"status good";
+
+};
+
+
+function createYouTubePlayer(){
+
+if(
+!youtubeAPIReady||
+!window.YT||
+!YT.Player
+)
+return false;
+
+
+if(youtubePlayer){
+
+try{
+
+youtubePlayer.destroy();
+
+}catch{}
+
+youtubePlayer=null;
+
+}
+
 
 youtubePlayer=
 new YT.Player(
@@ -1896,22 +1932,96 @@ new YT.Player(
 width:"100%",
 height:"100%",
 
-videoId:"",
+videoId:selectedVideo||"",
 
 playerVars:{
 playsinline:1,
-rel:0
+rel:0,
+controls:1,
+modestbranding:1
 },
 
 events:{
 
 onReady:()=>{
 
-youtubeSearchStatus.textContent=
-"YouTube ready. Search for a video.";
+if(selectedVideo){
 
-youtubeSearchStatus.className=
+youtubePlayer.loadVideoById(
+selectedVideo
+);
+
+}
+
+},
+
+onStateChange:event=>{
+
+if(
+event.data===YT.PlayerState.PLAYING
+){
+
+startStatus.textContent=
+"Video is playing.";
+
+startStatus.className=
 "status good";
+
+}
+
+if(
+event.data===YT.PlayerState.ENDED
+){
+
+if(sessionActive){
+
+endSession();
+
+}
+
+}
+
+},
+
+onError:event=>{
+
+let message=
+"YouTube could not play this video.";
+
+if(event.data===2)
+message=
+"YouTube reported an invalid video request.";
+
+if(event.data===5)
+message=
+"The YouTube player could not load this video.";
+
+if(event.data===100)
+message=
+"This video was not found or is unavailable.";
+
+if(
+event.data===101||
+event.data===150
+)
+message=
+"This video does not allow embedding. Please choose another video.";
+
+startStatus.textContent=
+message;
+
+startStatus.className=
+"status bad";
+
+if(sessionActive){
+
+monitorStatus.textContent=
+message;
+
+monitorStatus.className=
+"status bad";
+
+}
 
 }
 
@@ -1920,7 +2030,9 @@ youtubeSearchStatus.className=
 }
 );
 
-};
+return true;
+
+}
 
 
 /* Escape HTML */
@@ -1928,31 +2040,18 @@ youtubeSearchStatus.className=
 function esc(value){
 
 return String(value)
-.replaceAll(
-"&",
-"&amp;"
-)
-.replaceAll(
-"<",
-"&lt;"
-)
-.replaceAll(
-">",
-"&gt;"
-)
-.replaceAll(
-'"',
-"&quot;"
-)
-.replaceAll(
-"'",
-"&#039;"
-);
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
 
 }
 
 
-/* Search YouTube */
+/* =========================================================
+   YOUTUBE SEARCH
+   ========================================================= */
 
 async function searchYouTube(){
 
@@ -1965,9 +2064,7 @@ return;
 
 if(
 !YOUTUBE_API_KEY||
-YOUTUBE_API_KEY.includes(
-"PASTE_YOUR"
-)
+YOUTUBE_API_KEY.includes("PASTE_YOUR")
 ){
 
 youtubeSearchStatus.textContent=
@@ -2234,23 +2331,15 @@ Math.round(seconds)
 
 return(
 String(
-Math.floor(
-seconds/60
+Math.floor(seconds/60)
 )
-)
-.padStart(
-2,
-"0"
-)
+.padStart(2,"0")
 +
 ":"+
 String(
 seconds%60
 )
-.padStart(
-2,
-"0"
-)
+.padStart(2,"0")
 );
 
 }
@@ -2414,10 +2503,7 @@ invalidSince=null;
 
 
 /*
-Only the treatment eye is relevant.
-
-Possible occlusion requires the eye detector to have
-already produced sustained evidence.
+Only treatment-eye occlusion matters.
 */
 
 if(
@@ -2918,7 +3004,7 @@ processFrame
    ========================================================= */
 
 startSessionButton.onclick=
-()=>{
+async()=>{
 
 if(
 !cameraStarted
@@ -2968,6 +3054,21 @@ return;
 }
 
 
+if(
+!youtubeAPIReady
+){
+
+startStatus.textContent=
+"YouTube is still loading. Please wait a moment and try again.";
+
+startStatus.className=
+"status warning";
+
+return;
+
+}
+
+
 resetSession();
 
 sessionActive=true;
@@ -2984,35 +3085,62 @@ startSessionButton.disabled=true;
 
 
 /*
-Hide all normal AmblyoCare UI.
+IMPORTANT:
 
-Only YouTube is visible.
+First make the session view visible.
+Only THEN create the YouTube player.
+
+This fixes the black-player issue caused by creating
+the iframe while its parent was display:none.
 */
 
 view("sessionView");
 
 
-if(
-youtubePlayer&&
-youtubePlayer.loadVideoById
-){
-
-youtubePlayer.loadVideoById(
-selectedVideo
+await new Promise(
+resolve=>
+requestAnimationFrame(
+()=>resolve()
+)
 );
+
+
+const playerCreated=
+createYouTubePlayer();
+
+if(!playerCreated){
+
+sessionActive=false;
+
+endSessionButton.disabled=true;
+
+startSessionButton.disabled=false;
+
+view("startView");
+
+startStatus.textContent=
+"YouTube player is not ready yet. Please try again.";
+
+startStatus.className=
+"status bad";
+
+return;
 
 }
 
 
 /*
-Request full-screen where Safari allows it.
+Fullscreen after the player has been created.
 */
 
+const sessionElement=
+$("sessionView");
+
 if(
-$("sessionView").requestFullscreen
+sessionElement.requestFullscreen
 ){
 
-$("sessionView")
+sessionElement
 .requestFullscreen()
 .catch(
 ()=>{}
@@ -3051,7 +3179,11 @@ youtubePlayer&&
 youtubePlayer.pauseVideo
 ){
 
+try{
+
 youtubePlayer.pauseVideo();
+
+}catch{}
 
 }
 
@@ -3487,6 +3619,18 @@ $("newSession").onclick=
 resetSession();
 
 selectedVideo=null;
+
+if(youtubePlayer){
+
+try{
+
+youtubePlayer.destroy();
+
+}catch{}
+
+youtubePlayer=null;
+
+}
 
 startStatus.textContent=
 "Choose a video first.";
