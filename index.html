@@ -1,274 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
-  <title>AmblyoCare</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>AmblyoCare</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f7fa;
-      color: #17202a;
-    }
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f5f7fa;
+  color:#17202a;
+}
 
-    header {
-      padding: 24px 18px 12px;
-      text-align: center;
-    }
+header{
+  padding:18px 20px 12px;
+  text-align:center;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 30px;
-    }
+header h1{margin:0;font-size:30px}
+header p{margin:5px 0 0;color:#667085;font-size:14px}
 
-    header p {
-      margin: 6px 0 0;
-      color: #667085;
-      font-size: 14px;
-    }
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:10px 16px 40px;
+}
 
-    main {
-      max-width: 850px;
-      margin: auto;
-      padding: 12px 16px 40px;
-    }
+.view{display:none}
+.view.active{display:block}
 
-    .card {
-      background: white;
-      border-radius: 18px;
-      padding: 18px;
-      margin: 14px 0;
-      box-shadow: 0 3px 16px rgba(0,0,0,0.07);
-    }
+.card{
+  background:white;
+  border-radius:18px;
+  padding:20px;
+  margin:14px 0;
+  box-shadow:0 3px 16px rgba(0,0,0,.07);
+}
 
-    h2 {
-      margin-top: 0;
-      font-size: 21px;
-    }
+.center-card{
+  max-width:650px;
+  margin:30px auto;
+}
 
-    h3 {
-      margin-bottom: 8px;
-    }
+h2{margin-top:0;font-size:22px}
+h3{margin-bottom:8px}
 
-    label {
-      display: block;
-      font-weight: 600;
-      margin-top: 13px;
-      margin-bottom: 6px;
-    }
+label{
+  display:block;
+  font-weight:600;
+  margin-top:14px;
+  margin-bottom:6px;
+}
 
-    input,
-    select,
-    button {
-      width: 100%;
-      font: inherit;
-      border-radius: 11px;
-    }
+input,select,button{
+  width:100%;
+  font:inherit;
+  border-radius:11px;
+}
 
-    input,
-    select {
-      padding: 11px;
-      border: 1px solid #ccd3dc;
-      background: white;
-    }
+input,select{
+  padding:11px;
+  border:1px solid #ccd3dc;
+  background:white;
+}
 
-    button {
-      border: none;
-      padding: 13px;
-      margin-top: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      background: #17202a;
-      color: white;
-    }
+button{
+  border:none;
+  padding:13px;
+  margin-top:12px;
+  font-weight:700;
+  cursor:pointer;
+  background:#17202a;
+  color:white;
+}
 
-    button.secondary {
-      background: #e9edf2;
-      color: #17202a;
-    }
+button.secondary{
+  background:#e9edf2;
+  color:#17202a;
+}
 
-    button.danger {
-      background: #b42318;
-    }
+button.danger{background:#b42318}
 
-    button:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
+.button-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-    .metric {
-      padding: 13px;
-      border-radius: 13px;
-      background: #f3f5f7;
-    }
+.status{
+  padding:13px;
+  border-radius:12px;
+  background:#f3f5f7;
+  margin-top:10px;
+  font-weight:650;
+}
 
-    .metric-title {
-      font-size: 12px;
-      color: #667085;
-      margin-bottom: 5px;
-    }
+.good{color:#067647}
+.warning{color:#b54708}
+.bad{color:#b42318}
 
-    .metric-value {
-      font-size: 20px;
-      font-weight: 750;
-    }
+.muted{
+  color:#667085;
+  font-size:13px;
+  line-height:1.45;
+}
 
-    video {
-      width: 100%;
-      border-radius: 15px;
-      background: #111;
-      display: block;
-      transform: scaleX(-1);
-    }
+.research-note{
+  background:#fff8e7;
+  border-left:4px solid #d99b00;
+  padding:11px 13px;
+  border-radius:8px;
+  font-size:12px;
+  line-height:1.45;
+  margin-top:14px;
+}
 
-    .status {
-      padding: 13px;
-      border-radius: 12px;
-      background: #f3f5f7;
-      margin-top: 10px;
-      font-weight: 650;
-    }
+.progress{
+  height:13px;
+  background:#e5e7eb;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:8px;
+}
 
-    .good {
-      color: #067647;
-    }
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#17202a;
+  transition:width .25s;
+}
 
-    .warning {
-      color: #b54708;
-    }
+video{
+  width:100%;
+  border-radius:16px;
+  background:#111;
+  display:block;
+  transform:scaleX(-1);
+}
 
-    .bad {
-      color: #b42318;
-    }
+.setup-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr);
+  gap:16px;
+}
 
-    .muted {
-      color: #667085;
-      font-size: 13px;
-    }
+.monitor-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(300px,.8fr);
+  gap:16px;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.camera-panel{
+  position:sticky;
+  top:12px;
+  align-self:start;
+}
 
-    .progress {
-      height: 13px;
-      background: #e5e7eb;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
+.camera-panel h2{margin-bottom:12px}
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #17202a;
-      transition: width 0.25s;
-    }
+.metric-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
+.metric{
+  padding:13px;
+  border-radius:13px;
+  background:#f3f5f7;
+}
 
-    th,
-    td {
-      padding: 9px 5px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      font-size: 13px;
-    }
+.metric-title{
+  font-size:12px;
+  color:#667085;
+  margin-bottom:5px;
+}
 
-    .bar-row {
-      margin: 12px 0;
-    }
+.metric-value{
+  font-size:20px;
+  font-weight:750;
+}
 
-    .bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      margin-bottom: 5px;
-    }
+.eye-status{
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f3f5f7;
+  margin-top:7px;
+  font-size:14px;
+  font-weight:650;
+}
 
-    #correctionOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 15, 20, 0.94);
-      color: white;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 25px;
-    }
+.step-indicator{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  margin:8px auto 20px;
+}
 
-    #correctionOverlay .overlayBox {
-      max-width: 500px;
-    }
+.step{
+  height:7px;
+  width:45px;
+  border-radius:20px;
+  background:#d8dde3;
+}
 
-    #correctionOverlay h1 {
-      font-size: 42px;
-      margin: 0 0 15px;
-    }
+.step.active{background:#17202a}
 
-    #correctionOverlay p {
-      font-size: 20px;
-      line-height: 1.45;
-    }
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
 
-    .eye-status {
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: #f3f5f7;
-      margin-top: 7px;
-      font-size: 14px;
-      font-weight: 650;
-    }
+.topbar button{
+  width:auto;
+  margin:0;
+  padding:9px 13px;
+}
 
-    .research-note {
-      background: #fff8e7;
-      border-left: 4px solid #d99b00;
-      padding: 11px 13px;
-      border-radius: 8px;
-      font-size: 12px;
-      line-height: 1.45;
-      margin-top: 12px;
-    }
+.bar-row{margin:12px 0}
 
-    #eyeBaselineCanvas {
-      display: none;
-    }
+.bar-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin-bottom:5px;
+}
 
-    @media (max-width: 600px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
 
-      header h1 {
-        font-size: 26px;
-      }
+th,td{
+  padding:9px 5px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left;
+  font-size:13px;
+}
 
-      #correctionOverlay h1 {
-        font-size: 34px;
-      }
-    }
-  </style>
+.hidden{display:none!important}
+
+#correctionOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(10,15,20,.94);
+  color:white;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:25px;
+}
+
+#correctionOverlay .overlayBox{max-width:500px}
+#correctionOverlay h1{font-size:42px;margin:0 0 15px}
+#correctionOverlay p{font-size:20px;line-height:1.45}
+
+#eyeBaselineCanvas{display:none}
+
+@media(max-width:750px){
+  .setup-layout,
+  .monitor-layout{
+    grid-template-columns:1fr;
+  }
+
+  .camera-panel{
+    position:static;
+  }
+}
+
+@media(max-width:600px){
+  .metric-grid{grid-template-columns:1fr}
+  .button-row{grid-template-columns:1fr}
+  header h1{font-size:26px}
+  #correctionOverlay h1{font-size:34px}
+}
+</style>
 </head>
 
 <body>
@@ -280,246 +300,522 @@
 
 <main>
 
-  <!-- THERAPY PROFILE -->
-  <section class="card" id="profileCard">
+<!-- =====================================================
+     VIEW 1 — PROFILE
+====================================================== -->
+
+<section id="profileView" class="view active">
+
+  <div class="step-indicator">
+    <div class="step active"></div>
+    <div class="step"></div>
+    <div class="step"></div>
+    <div class="step"></div>
+  </div>
+
+  <div class="card center-card">
+
     <h2>Therapy Profile</h2>
 
+    <p class="muted">
+      Set the parameters for this AmblyoCare session before
+      activating the camera.
+    </p>
+
     <label for="treatmentEye">Treatment Eye</label>
+
     <select id="treatmentEye">
       <option value="left">Left Eye</option>
       <option value="right">Right Eye</option>
     </select>
 
-    <label for="targetDistance">Target Viewing Distance (cm)</label>
+    <label for="targetDistance">
+      Target Viewing Distance (cm)
+    </label>
+
     <input
       id="targetDistance"
       type="number"
       min="10"
       max="200"
       value="40"
-    />
+    >
 
-    <label for="sessionGoal">Session Goal (minutes)</label>
+    <label for="sessionGoal">
+      Session Goal (minutes)
+    </label>
+
     <input
       id="sessionGoal"
       type="number"
       min="1"
       max="180"
       value="20"
-    />
+    >
 
-    <label for="gracePeriod">Correction Grace Period (seconds)</label>
+    <label for="gracePeriod">
+      Correction Grace Period (seconds)
+    </label>
+
     <input
       id="gracePeriod"
       type="number"
       min="1"
       max="120"
       value="20"
-    />
+    >
 
-    <button id="saveProfile">Save Therapy Profile</button>
-
-    <div class="research-note">
-      AmblyoCare is a computer-vision research prototype. It is not a
-      medical device and does not replace clinical guidance from an eye-care
-      professional. Eye occlusion detection is experimental and has not been
-      clinically validated.
-    </div>
-  </section>
-
-
-  <!-- PROFILE SUMMARY -->
-  <section class="card">
-    <h2>Profile Summary</h2>
-
-    <div class="grid">
-      <div class="metric">
-        <div class="metric-title">Treatment Eye</div>
-        <div class="metric-value" id="summaryEye">Left</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-title">Target Distance</div>
-        <div class="metric-value" id="summaryDistance">40 cm</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-title">Session Goal</div>
-        <div class="metric-value" id="summaryGoal">20 min</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-title">Grace Period</div>
-        <div class="metric-value" id="summaryGrace">20 sec</div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- CAMERA -->
-  <section class="card">
-    <h2>Camera</h2>
-
-    <video id="video" autoplay playsinline muted></video>
-
-    <button id="startCamera">Start Camera</button>
-
-    <div id="cameraStatus" class="status">
-      Camera not started.
-    </div>
-  </section>
-
-
-  <!-- CALIBRATION -->
-  <section class="card">
-    <h2>Calibration</h2>
-
-    <p class="muted">
-      Sit at a comfortable known distance from the device and enter the
-      physical distance below.
-    </p>
-
-    <label for="calibrationDistance">
-      Actual Distance From Screen (cm)
-    </label>
-
-    <input
-      id="calibrationDistance"
-      type="number"
-      min="10"
-      max="200"
-      value="40"
-    />
-
-    <button id="calibrate">Calibrate Current Position</button>
-
-    <div id="calibrationStatus" class="status">
-      Not calibrated.
-    </div>
-  </section>
-
-
-  <!-- MONITORING -->
-  <section class="card" id="monitoringCard">
-    <h2>Monitoring</h2>
-
-    <div class="grid">
-
-      <div class="metric">
-        <div class="metric-title">Session Time</div>
-        <div class="metric-value" id="sessionTimer">00:00</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-title">Estimated Distance</div>
-        <div class="metric-value" id="distanceValue">--</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-title">Target Distance</div>
-        <div class="metric-value" id="targetValue">40 cm</div>
-      </div>
-
-      <div class="metric">
-        <div class="metric-title">Session Goal</div>
-        <div class="metric-value" id="goalValue">20 min</div>
-      </div>
-
-    </div>
-
-    <div id="faceStatus" class="status">
-      Waiting for camera...
-    </div>
-
-    <div id="positionStatus" class="status">
-      Face Position: --
-    </div>
-
-    <h3>Eye Visibility</h3>
-
-    <div id="leftEyeStatus" class="eye-status">
-      Left Eye: --
-    </div>
-
-    <div id="rightEyeStatus" class="eye-status">
-      Right Eye: --
-    </div>
-
-    <div id="eyeOverallStatus" class="status">
-      Eye visibility: --
-    </div>
-
-    <button id="captureEyeBaseline" class="secondary">
-      Capture Eye Baseline
+    <button id="saveProfile">
+      Save Therapy Profile
     </button>
 
-    <div id="eyeBaselineStatus" class="status">
-      Eye baseline not captured.
-    </div>
-
     <div class="research-note">
-      Eye visibility is experimental. The system compares the live camera
-      image around each eye with a personalized baseline captured while both
-      eyes are uncovered. A possible occlusion may be caused by an eye patch,
-      hand, blink, head movement, lighting, or a model error. This is not
-      reliable patch detection and should not be interpreted as a medical
-      measurement.
+      AmblyoCare is a computer-vision research prototype.
+      It is not a medical device and does not replace clinical
+      guidance from an eye-care professional. Eye occlusion
+      detection is experimental and has not been clinically
+      validated.
     </div>
 
-    <div id="monitorStatus" class="status">
-      Monitoring inactive.
-    </div>
+  </div>
 
-    <h3>Session Progress</h3>
+</section>
 
-    <div class="progress">
-      <div class="progress-bar" id="goalProgress"></div>
-    </div>
 
-    <p class="muted" id="progressText">
-      0 / 20 minutes
-    </p>
+<!-- =====================================================
+     VIEW 2 — CAMERA SETUP
+====================================================== -->
 
-    <button id="endSession" class="danger" disabled>
-      End Session
+<section id="setupView" class="view">
+
+  <div class="step-indicator">
+    <div class="step active"></div>
+    <div class="step active"></div>
+    <div class="step"></div>
+    <div class="step"></div>
+  </div>
+
+  <div class="topbar">
+    <h2>Camera Setup</h2>
+    <button id="backToProfile" class="secondary">
+      ← Profile
     </button>
-  </section>
+  </div>
+
+  <div class="setup-layout">
+
+    <div class="card camera-panel">
+
+      <h2>Live Camera</h2>
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <button id="startCamera">
+        Start Camera
+      </button>
+
+      <div id="cameraStatus" class="status">
+        Camera not started.
+      </div>
+
+      <div id="faceStatus" class="status">
+        Waiting for camera...
+      </div>
+
+    </div>
 
 
-  <!-- FINAL SUMMARY -->
-  <section class="card hidden" id="finalSummary">
-    <h2>Session Summary</h2>
+    <div>
 
-    <div class="grid">
+      <div class="card">
+
+        <h2>Calibration</h2>
+
+        <p class="muted">
+          Sit at a comfortable known distance from the device.
+          Enter that physical distance and calibrate your current
+          position.
+        </p>
+
+        <label for="calibrationDistance">
+          Actual Distance From Screen (cm)
+        </label>
+
+        <input
+          id="calibrationDistance"
+          type="number"
+          min="10"
+          max="200"
+          value="40"
+        >
+
+        <button id="calibrate">
+          Calibrate Current Position
+        </button>
+
+        <div id="calibrationStatus" class="status">
+          Not calibrated.
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Eye Baseline</h2>
+
+        <p class="muted">
+          Look normally at the camera with both eyes uncovered.
+          This creates the personalized baseline used by the
+          experimental eye-visibility feature.
+        </p>
+
+        <button
+          id="captureEyeBaseline"
+          class="secondary"
+          disabled
+        >
+          Capture Eye Baseline
+        </button>
+
+        <div id="eyeBaselineStatus" class="status">
+          Start the camera first.
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Profile</h2>
+
+        <div class="metric-grid">
+
+          <div class="metric">
+            <div class="metric-title">Treatment Eye</div>
+            <div class="metric-value" id="summaryEye">
+              Left
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-title">Target Distance</div>
+            <div class="metric-value" id="summaryDistance">
+              40 cm
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-title">Session Goal</div>
+            <div class="metric-value" id="summaryGoal">
+              20 min
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-title">Grace Period</div>
+            <div class="metric-value" id="summaryGrace">
+              20 sec
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <button id="continueToMonitoring" disabled>
+        Continue to Monitoring →
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     VIEW 3 — MONITORING
+====================================================== -->
+
+<section id="monitoringView" class="view">
+
+  <div class="step-indicator">
+    <div class="step active"></div>
+    <div class="step active"></div>
+    <div class="step active"></div>
+    <div class="step"></div>
+  </div>
+
+  <div class="topbar">
+    <h2>Live Monitoring</h2>
+
+    <button
+      id="backToSetup"
+      class="secondary"
+    >
+      ← Setup
+    </button>
+  </div>
+
+  <div class="monitor-layout">
+
+    <!-- CAMERA ALWAYS VISIBLE -->
+    <div class="card camera-panel">
+
+      <h2>Live Camera</h2>
+
+      <video
+        id="monitorVideo"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <div id="monitorStatus" class="status">
+        Monitoring inactive.
+      </div>
+
+    </div>
+
+
+    <!-- LIVE INFORMATION -->
+    <div>
+
+      <div class="card">
+
+        <h2>Session</h2>
+
+        <div class="metric-grid">
+
+          <div class="metric">
+            <div class="metric-title">Session Time</div>
+            <div
+              class="metric-value"
+              id="sessionTimer"
+            >
+              00:00
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-title">Distance</div>
+            <div
+              class="metric-value"
+              id="distanceValue"
+            >
+              --
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-title">Target</div>
+            <div
+              class="metric-value"
+              id="targetValue"
+            >
+              40 cm
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-title">Goal</div>
+            <div
+              class="metric-value"
+              id="goalValue"
+            >
+              20 min
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Face Position</h2>
+
+        <div
+          id="positionStatus"
+          class="status"
+        >
+          Face Position: --
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Eye Visibility</h2>
+
+        <div
+          id="leftEyeStatus"
+          class="eye-status"
+        >
+          Left Eye: --
+        </div>
+
+        <div
+          id="rightEyeStatus"
+          class="eye-status"
+        >
+          Right Eye: --
+        </div>
+
+        <div
+          id="eyeOverallStatus"
+          class="status"
+        >
+          Eye visibility: --
+        </div>
+
+        <div class="research-note">
+          Eye visibility is experimental. A possible occlusion
+          may be caused by an eye patch, hand, blink, head
+          movement, lighting, or a model error. This is not
+          reliable patch detection and is not a medical
+          measurement.
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <h2>Session Progress</h2>
+
+        <div class="progress">
+          <div
+            class="progress-bar"
+            id="goalProgress"
+          ></div>
+        </div>
+
+        <p
+          class="muted"
+          id="progressText"
+        >
+          0 / 20 minutes
+        </p>
+
+        <button
+          id="startSession"
+        >
+          Start Session
+        </button>
+
+        <button
+          id="endSession"
+          class="danger"
+          disabled
+        >
+          End Session
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     VIEW 4 — SUMMARY
+====================================================== -->
+
+<section id="summaryView" class="view">
+
+  <div class="step-indicator">
+    <div class="step active"></div>
+    <div class="step active"></div>
+    <div class="step active"></div>
+    <div class="step active"></div>
+  </div>
+
+  <div class="card">
+
+    <div class="topbar">
+      <h2>Session Summary</h2>
+
+      <button
+        id="summaryHistoryButton"
+        class="secondary"
+      >
+        View History
+      </button>
+    </div>
+
+    <div class="metric-grid">
 
       <div class="metric">
         <div class="metric-title">Total Session</div>
-        <div class="metric-value" id="finalTotal">--</div>
+        <div
+          class="metric-value"
+          id="finalTotal"
+        >
+          --
+        </div>
       </div>
 
       <div class="metric">
         <div class="metric-title">Compliance</div>
-        <div class="metric-value" id="finalCompliance">--</div>
+        <div
+          class="metric-value"
+          id="finalCompliance"
+        >
+          --
+        </div>
       </div>
 
       <div class="metric">
         <div class="metric-title">Compliant Time</div>
-        <div class="metric-value" id="finalCompliant">--</div>
+        <div
+          class="metric-value"
+          id="finalCompliant"
+        >
+          --
+        </div>
       </div>
 
       <div class="metric">
         <div class="metric-title">Too Close</div>
-        <div class="metric-value" id="finalTooClose">--</div>
+        <div
+          class="metric-value"
+          id="finalTooClose"
+        >
+          --
+        </div>
       </div>
 
       <div class="metric">
         <div class="metric-title">Poor Position</div>
-        <div class="metric-value" id="finalPoorPosition">--</div>
+        <div
+          class="metric-value"
+          id="finalPoorPosition"
+        >
+          --
+        </div>
       </div>
 
       <div class="metric">
         <div class="metric-title">No Face</div>
-        <div class="metric-value" id="finalNoFace">--</div>
+        <div
+          class="metric-value"
+          id="finalNoFace"
+        >
+          --
+        </div>
       </div>
 
     </div>
@@ -531,8 +827,12 @@
         <span>Compliant</span>
         <span id="compliantPercent">0%</span>
       </div>
+
       <div class="progress">
-        <div class="progress-bar" id="compliantBar"></div>
+        <div
+          class="progress-bar"
+          id="compliantBar"
+        ></div>
       </div>
     </div>
 
@@ -541,8 +841,12 @@
         <span>Too Close</span>
         <span id="tooClosePercent">0%</span>
       </div>
+
       <div class="progress">
-        <div class="progress-bar" id="tooCloseBar"></div>
+        <div
+          class="progress-bar"
+          id="tooCloseBar"
+        ></div>
       </div>
     </div>
 
@@ -551,8 +855,12 @@
         <span>Poor Position</span>
         <span id="poorPositionPercent">0%</span>
       </div>
+
       <div class="progress">
-        <div class="progress-bar" id="poorPositionBar"></div>
+        <div
+          class="progress-bar"
+          id="poorPositionBar"
+        ></div>
       </div>
     </div>
 
@@ -561,8 +869,12 @@
         <span>No Face</span>
         <span id="noFacePercent">0%</span>
       </div>
+
       <div class="progress">
-        <div class="progress-bar" id="noFaceBar"></div>
+        <div
+          class="progress-bar"
+          id="noFaceBar"
+        ></div>
       </div>
     </div>
 
@@ -570,26 +882,61 @@
       Export Latest Session CSV
     </button>
 
-    <button id="startNewSession" class="secondary">
+    <button
+      id="startNewSession"
+      class="secondary"
+    >
       Start New Session
     </button>
-  </section>
+
+  </div>
+
+</section>
 
 
-  <!-- SESSION HISTORY -->
-  <section class="card">
-    <h2>Session History</h2>
+<!-- =====================================================
+     VIEW 5 — HISTORY
+====================================================== -->
+
+<section id="historyView" class="view">
+
+  <div class="card">
+
+    <div class="topbar">
+
+      <h2>Session History</h2>
+
+      <button
+        id="backFromHistory"
+        class="secondary"
+      >
+        ← Back
+      </button>
+
+    </div>
 
     <div id="historyContainer">
-      <p class="muted">No sessions recorded yet.</p>
+      <p class="muted">
+        No sessions recorded yet.
+      </p>
     </div>
-  </section>
+
+  </div>
+
+</section>
 
 </main>
 
 
-<!-- CORRECTION OVERLAY -->
-<div id="correctionOverlay" class="hidden">
+<!-- =====================================================
+     CORRECTION OVERLAY
+====================================================== -->
+
+<div
+  id="correctionOverlay"
+  class="hidden"
+>
+
   <div class="overlayBox">
 
     <h1 id="overlayTitle">
@@ -597,81 +944,88 @@
     </h1>
 
     <p id="overlayMessage">
-      Please move back to the target distance and position your face correctly.
+      Please move back to the target distance and position
+      your face correctly.
     </p>
 
     <p>
-      Monitoring will continue automatically once the issue is corrected.
+      Monitoring will continue automatically once the issue
+      is corrected.
     </p>
 
   </div>
+
 </div>
 
 
-<!-- Hidden canvas used for eye-region pixel analysis -->
 <canvas id="eyeBaselineCanvas"></canvas>
 
 
 <script type="module">
 
 /* =========================================================
-   MEDIAPIPE SETUP
-   ========================================================= */
+   MEDIAPIPE
+========================================================= */
 
 const vision =
   await import(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs"
   );
 
-const { FaceLandmarker, FilesetResolver } = vision;
+const {
+  FaceLandmarker,
+  FilesetResolver
+} = vision;
 
 const filesetResolver =
   await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
   );
 
-let faceLandmarker =
+const faceLandmarker =
   await FaceLandmarker.createFromOptions(
     filesetResolver,
     {
-      baseOptions: {
+      baseOptions:{
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
       },
-
-      runningMode: "VIDEO",
-      numFaces: 1
+      runningMode:"VIDEO",
+      numFaces:1
     }
   );
 
 
 /* =========================================================
-   DOM ELEMENTS
-   ========================================================= */
+   DOM
+========================================================= */
 
 const video =
   document.getElementById("video");
 
+const monitorVideo =
+  document.getElementById("monitorVideo");
+
 const startCameraButton =
   document.getElementById("startCamera");
 
-const calibrateButton =
-  document.getElementById("calibrate");
-
-const saveProfileButton =
-  document.getElementById("saveProfile");
+const startSessionButton =
+  document.getElementById("startSession");
 
 const endSessionButton =
   document.getElementById("endSession");
 
-const startNewSessionButton =
-  document.getElementById("startNewSession");
+const saveProfileButton =
+  document.getElementById("saveProfile");
 
-const exportCSVButton =
-  document.getElementById("exportCSV");
+const calibrateButton =
+  document.getElementById("calibrate");
 
 const captureEyeBaselineButton =
   document.getElementById("captureEyeBaseline");
+
+const continueToMonitoring =
+  document.getElementById("continueToMonitoring");
 
 const cameraStatus =
   document.getElementById("cameraStatus");
@@ -709,8 +1063,23 @@ const overlayTitle =
 const overlayMessage =
   document.getElementById("overlayMessage");
 
-const finalSummary =
-  document.getElementById("finalSummary");
+const finalTotal =
+  document.getElementById("finalTotal");
+
+const finalCompliance =
+  document.getElementById("finalCompliance");
+
+const finalCompliant =
+  document.getElementById("finalCompliant");
+
+const finalTooClose =
+  document.getElementById("finalTooClose");
+
+const finalPoorPosition =
+  document.getElementById("finalPoorPosition");
+
+const finalNoFace =
+  document.getElementById("finalNoFace");
 
 const leftEyeStatus =
   document.getElementById("leftEyeStatus");
@@ -728,49 +1097,95 @@ const eyeBaselineCanvas =
   document.getElementById("eyeBaselineCanvas");
 
 const eyeBaselineContext =
-  eyeBaselineCanvas.getContext("2d", {
-    willReadFrequently: true
+  eyeBaselineCanvas.getContext(
+    "2d",
+    {willReadFrequently:true}
+  );
+
+
+/* =========================================================
+   VIEW NAVIGATION
+========================================================= */
+
+const views = {
+  profile:
+    document.getElementById("profileView"),
+
+  setup:
+    document.getElementById("setupView"),
+
+  monitoring:
+    document.getElementById("monitoringView"),
+
+  summary:
+    document.getElementById("summaryView"),
+
+  history:
+    document.getElementById("historyView")
+};
+
+
+function showView(name){
+
+  Object.values(views)
+    .forEach(view =>
+      view.classList.remove("active")
+    );
+
+  views[name].classList.add("active");
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
   });
+}
 
 
 /* =========================================================
    THERAPY PROFILE
-   ========================================================= */
+========================================================= */
 
 let therapyProfile = {
-
-  treatmentEye: "left",
-
-  targetDistance: 40,
-
-  sessionGoalMinutes: 20,
-
-  gracePeriodSeconds: 20,
-
-  calibrationDistance: 40
+  treatmentEye:"left",
+  targetDistance:40,
+  sessionGoalMinutes:20,
+  gracePeriodSeconds:20,
+  calibrationDistance:40
 };
 
 
-function updateProfileUI() {
+function updateProfileUI(){
 
-  document.getElementById("summaryEye").textContent =
+  document.getElementById(
+    "summaryEye"
+  ).textContent =
     therapyProfile.treatmentEye === "left"
       ? "Left"
       : "Right";
 
-  document.getElementById("summaryDistance").textContent =
+  document.getElementById(
+    "summaryDistance"
+  ).textContent =
     therapyProfile.targetDistance + " cm";
 
-  document.getElementById("summaryGoal").textContent =
+  document.getElementById(
+    "summaryGoal"
+  ).textContent =
     therapyProfile.sessionGoalMinutes + " min";
 
-  document.getElementById("summaryGrace").textContent =
+  document.getElementById(
+    "summaryGrace"
+  ).textContent =
     therapyProfile.gracePeriodSeconds + " sec";
 
-  document.getElementById("targetValue").textContent =
+  document.getElementById(
+    "targetValue"
+  ).textContent =
     therapyProfile.targetDistance + " cm";
 
-  document.getElementById("goalValue").textContent =
+  document.getElementById(
+    "goalValue"
+  ).textContent =
     therapyProfile.sessionGoalMinutes + " min";
 
   progressText.textContent =
@@ -784,36 +1199,70 @@ saveProfileButton.addEventListener(
   "click",
   () => {
 
+    const target =
+      Number(
+        document.getElementById(
+          "targetDistance"
+        ).value
+      );
+
+    const goal =
+      Number(
+        document.getElementById(
+          "sessionGoal"
+        ).value
+      );
+
+    const grace =
+      Number(
+        document.getElementById(
+          "gracePeriod"
+        ).value
+      );
+
+    if(
+      target < 10 ||
+      target > 200 ||
+      goal < 1 ||
+      goal > 180 ||
+      grace < 1 ||
+      grace > 120
+    ){
+
+      alert(
+        "Please enter valid therapy profile values."
+      );
+
+      return;
+    }
+
     therapyProfile.treatmentEye =
-      document.getElementById("treatmentEye").value;
+      document.getElementById(
+        "treatmentEye"
+      ).value;
 
     therapyProfile.targetDistance =
-      Number(
-        document.getElementById("targetDistance").value
-      );
+      target;
 
     therapyProfile.sessionGoalMinutes =
-      Number(
-        document.getElementById("sessionGoal").value
-      );
+      goal;
 
     therapyProfile.gracePeriodSeconds =
-      Number(
-        document.getElementById("gracePeriod").value
-      );
+      grace;
 
     therapyProfile.calibrationDistance =
-      therapyProfile.targetDistance;
+      target;
 
     localStorage.setItem(
       "amblyocare_therapy_profile",
-      JSON.stringify(therapyProfile)
+      JSON.stringify(
+        therapyProfile
+      )
     );
 
     updateProfileUI();
 
-    monitorStatus.textContent =
-      "Therapy profile saved.";
+    showView("setup");
   }
 );
 
@@ -823,26 +1272,34 @@ const savedProfile =
     "amblyocare_therapy_profile"
   );
 
-if (savedProfile) {
+if(savedProfile){
 
-  try {
+  try{
 
     therapyProfile =
       JSON.parse(savedProfile);
 
-    document.getElementById("treatmentEye").value =
+    document.getElementById(
+      "treatmentEye"
+    ).value =
       therapyProfile.treatmentEye;
 
-    document.getElementById("targetDistance").value =
+    document.getElementById(
+      "targetDistance"
+    ).value =
       therapyProfile.targetDistance;
 
-    document.getElementById("sessionGoal").value =
+    document.getElementById(
+      "sessionGoal"
+    ).value =
       therapyProfile.sessionGoalMinutes;
 
-    document.getElementById("gracePeriod").value =
+    document.getElementById(
+      "gracePeriod"
+    ).value =
       therapyProfile.gracePeriodSeconds;
 
-  } catch (error) {
+  }catch(error){
 
     console.log(
       "Could not load saved profile.",
@@ -857,29 +1314,42 @@ updateProfileUI();
 
 /* =========================================================
    CAMERA
-   ========================================================= */
+========================================================= */
 
 let cameraStarted = false;
+let cameraStream = null;
+
 
 startCameraButton.addEventListener(
   "click",
   async () => {
 
-    try {
+    try{
 
-      const stream =
+      cameraStream =
         await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "user"
+          video:{
+            facingMode:"user"
           },
-          audio: false
+          audio:false
         });
 
-      video.srcObject = stream;
+      video.srcObject =
+        cameraStream;
+
+      monitorVideo.srcObject =
+        cameraStream;
 
       await video.play();
+      await monitorVideo.play();
 
       cameraStarted = true;
+
+      startCameraButton.disabled =
+        true;
+
+      startCameraButton.textContent =
+        "Camera Active";
 
       cameraStatus.textContent =
         "Camera active.";
@@ -887,11 +1357,23 @@ startCameraButton.addEventListener(
       cameraStatus.className =
         "status good";
 
-      endSessionButton.disabled = false;
+      captureEyeBaselineButton.disabled =
+        false;
 
-      startSession();
+      continueToMonitoring.disabled =
+        false;
 
-    } catch (error) {
+      eyeBaselineStatus.textContent =
+        "Camera ready. Capture your eye baseline.";
+
+      monitorStatus.textContent =
+        "Camera ready. Start a session when you are ready.";
+
+      requestAnimationFrame(
+        processFrame
+      );
+
+    }catch(error){
 
       console.error(error);
 
@@ -900,7 +1382,6 @@ startCameraButton.addEventListener(
 
       cameraStatus.className =
         "status bad";
-
     }
 
   }
@@ -908,13 +1389,11 @@ startCameraButton.addEventListener(
 
 
 /* =========================================================
-   DISTANCE ESTIMATION
-   ========================================================= */
+   DISTANCE
+========================================================= */
 
 const referenceFaceSize =
-  {
-    value: null
-  };
+  {value:null};
 
 let faceSizeHistory = [];
 
@@ -923,125 +1402,81 @@ const smoothingFrames = 15;
 
 /* =========================================================
    SESSION VARIABLES
-   ========================================================= */
+========================================================= */
 
 let sessionActive = false;
-
 let sessionStartTime = null;
-
 let sessionTimerInterval = null;
-
 let lastFrameTime = null;
 
 let totalElapsedSeconds = 0;
-
 let compliantSeconds = 0;
-
 let tooCloseSeconds = 0;
-
 let poorPositionSeconds = 0;
-
 let noFaceSeconds = 0;
 
 let currentState = "noFace";
-
 let invalidStartedAt = null;
-
 let overlayVisible = false;
 
 
 /* =========================================================
-   EYE VISIBILITY VARIABLES
-   ========================================================= */
+   EYE VARIABLES
+========================================================= */
 
 let currentFaceLandmarks = null;
 
 let leftEyeHistory = [];
-
 let rightEyeHistory = [];
 
 const eyeHistoryLength = 12;
 
 let eyeBaseline = {
-
-  left: null,
-
-  right: null
-
+  left:null,
+  right:null
 };
 
 let eyeBaselineCapturing = false;
-
-
-/*
-  IMPORTANT:
-
-  The actual eye-region detector below is intentionally kept
-  in its original detector-side configuration.
-
-  We do NOT change the MediaPipe/pixel regions themselves.
-
-  Because the selfie camera preview is mirrored, the detector
-  result is translated into the person's anatomical eye only
-  when we display it or use it for the therapy warning.
-
-  Detector region "left" corresponds to the person's RIGHT eye.
-  Detector region "right" corresponds to the person's LEFT eye.
-
-  This keeps the previously working eye-analysis algorithm
-  unchanged while correcting the displayed direction.
-*/
-
-
-/* =========================================================
-   EYE OCCLUSION OVERLAY VARIABLES
-   ========================================================= */
 
 let eyeOcclusionStartedAt = null;
 
 
 /* =========================================================
-   SESSION START
-   ========================================================= */
+   RESET
+========================================================= */
 
-function resetSessionVariables() {
+function resetSessionVariables(){
 
   totalElapsedSeconds = 0;
-
   compliantSeconds = 0;
-
   tooCloseSeconds = 0;
-
   poorPositionSeconds = 0;
-
   noFaceSeconds = 0;
 
   currentState = "noFace";
-
   invalidStartedAt = null;
-
   eyeOcclusionStartedAt = null;
-
   overlayVisible = false;
 
   leftEyeHistory = [];
-
   rightEyeHistory = [];
 
   currentFaceLandmarks = null;
 
-  correctionOverlay.classList.add("hidden");
+  correctionOverlay.classList.add(
+    "hidden"
+  );
 
-  sessionTimer.textContent = "00:00";
+  sessionTimer.textContent =
+    "00:00";
 
-  goalProgress.style.width = "0%";
+  goalProgress.style.width =
+    "0%";
 
   progressText.textContent =
     "0 / " +
     therapyProfile.sessionGoalMinutes +
     " minutes";
-
-  finalSummary.classList.add("hidden");
 
   faceStatus.textContent =
     "Waiting for face...";
@@ -1063,13 +1498,19 @@ function resetSessionVariables() {
     eyeBaseline.right
       ? "Eye visibility: Baseline ready"
       : "Eye visibility: Baseline not captured";
-
 }
 
 
-function startSession() {
+/* =========================================================
+   START SESSION
+========================================================= */
 
-  if (sessionActive) {
+function startSession(){
+
+  if(
+    !cameraStarted ||
+    sessionActive
+  ){
     return;
   }
 
@@ -1083,33 +1524,39 @@ function startSession() {
   lastFrameTime =
     performance.now();
 
+  startSessionButton.disabled =
+    true;
+
+  endSessionButton.disabled =
+    false;
+
   monitorStatus.textContent =
     "Monitoring active.";
 
   monitorStatus.className =
     "status good";
-
-  endSessionButton.disabled = false;
-
-  requestAnimationFrame(
-    processFrame
-  );
 }
+
+
+startSessionButton.addEventListener(
+  "click",
+  startSession
+);
 
 
 /* =========================================================
    END SESSION
-   ========================================================= */
+========================================================= */
 
-function endSession() {
+function endSession(){
 
-  if (!sessionActive) {
+  if(!sessionActive){
     return;
   }
 
   sessionActive = false;
 
-  if (sessionTimerInterval) {
+  if(sessionTimerInterval){
 
     clearInterval(
       sessionTimerInterval
@@ -1118,11 +1565,19 @@ function endSession() {
     sessionTimerInterval = null;
   }
 
-  correctionOverlay.classList.add("hidden");
+  correctionOverlay.classList.add(
+    "hidden"
+  );
 
   overlayVisible = false;
 
   eyeOcclusionStartedAt = null;
+
+  endSessionButton.disabled =
+    true;
+
+  startSessionButton.disabled =
+    false;
 
   monitorStatus.textContent =
     "Session ended.";
@@ -1134,6 +1589,7 @@ function endSession() {
 
   saveSessionToHistory();
 
+  showView("summary");
 }
 
 
@@ -1144,18 +1600,83 @@ endSessionButton.addEventListener(
 
 
 /* =========================================================
+   NAVIGATION
+========================================================= */
+
+document
+  .getElementById("backToProfile")
+  .addEventListener(
+    "click",
+    () => showView("profile")
+  );
+
+document
+  .getElementById("backToSetup")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(sessionActive){
+
+        alert(
+          "Please end the current session before leaving monitoring."
+        );
+
+        return;
+      }
+
+      showView("setup");
+    }
+  );
+
+continueToMonitoring.addEventListener(
+  "click",
+  () => {
+
+    if(!cameraStarted){
+      return;
+    }
+
+    showView("monitoring");
+
+    monitorStatus.textContent =
+      "Camera ready. Press Start Session to begin monitoring.";
+
+    monitorStatus.className =
+      "status";
+  }
+);
+
+document
+  .getElementById("summaryHistoryButton")
+  .addEventListener(
+    "click",
+    () => showView("history")
+  );
+
+document
+  .getElementById("backFromHistory")
+  .addEventListener(
+    "click",
+    () => showView("summary")
+  );
+
+
+/* =========================================================
    TIMER
-   ========================================================= */
+========================================================= */
 
-function updateTimer() {
+function updateTimer(){
 
-  if (!sessionActive) {
+  if(!sessionActive){
     return;
   }
 
   const elapsed =
-    (performance.now() -
-      sessionStartTime) / 1000;
+    (
+      performance.now() -
+      sessionStartTime
+    ) / 1000;
 
   totalElapsedSeconds =
     elapsed;
@@ -1167,17 +1688,18 @@ function updateTimer() {
     Math.floor(elapsed % 60);
 
   sessionTimer.textContent =
-    String(minutes).padStart(2, "0") +
+    String(minutes).padStart(2,"0") +
     ":" +
-    String(seconds).padStart(2, "0");
+    String(seconds).padStart(2,"0");
 
   const goalSeconds =
-    therapyProfile.sessionGoalMinutes * 60;
+    therapyProfile.sessionGoalMinutes *
+    60;
 
   const percentage =
     Math.min(
       100,
-      (elapsed / goalSeconds) * 100
+      elapsed / goalSeconds * 100
     );
 
   goalProgress.style.width =
@@ -1188,16 +1710,16 @@ function updateTimer() {
     " / " +
     therapyProfile.sessionGoalMinutes +
     " minutes";
-
 }
 
 
-function formatDuration(seconds) {
+function formatDuration(seconds){
 
-  seconds = Math.max(
-    0,
-    Math.round(seconds)
-  );
+  seconds =
+    Math.max(
+      0,
+      Math.round(seconds)
+    );
 
   const minutes =
     Math.floor(seconds / 60);
@@ -1206,22 +1728,22 @@ function formatDuration(seconds) {
     seconds % 60;
 
   return (
-    String(minutes).padStart(2, "0") +
+    String(minutes).padStart(2,"0") +
     ":" +
-    String(remainingSeconds).padStart(2, "0")
+    String(remainingSeconds).padStart(2,"0")
   );
 }
 
 
 /* =========================================================
    CALIBRATION
-   ========================================================= */
+========================================================= */
 
 calibrateButton.addEventListener(
   "click",
   () => {
 
-    if (!faceSizeHistory.length) {
+    if(!faceSizeHistory.length){
 
       calibrationStatus.textContent =
         "No face detected. Please position your face in view first.";
@@ -1239,10 +1761,11 @@ calibrateButton.addEventListener(
         ).value
       );
 
-    if (
+    if(
       !physicalDistance ||
-      physicalDistance < 10
-    ) {
+      physicalDistance < 10 ||
+      physicalDistance > 200
+    ){
 
       calibrationStatus.textContent =
         "Enter a valid physical distance.";
@@ -1255,7 +1778,7 @@ calibrateButton.addEventListener(
 
     const averageFaceSize =
       faceSizeHistory.reduce(
-        (a, b) => a + b,
+        (a,b) => a+b,
         0
       ) /
       faceSizeHistory.length;
@@ -1291,88 +1814,74 @@ calibrateButton.addEventListener(
 );
 
 
-/* Load previous calibration */
-
 const savedReference =
   localStorage.getItem(
     "amblyocare_reference_face_size"
   );
 
-if (savedReference) {
+if(savedReference){
 
   referenceFaceSize.value =
     Number(savedReference);
 
   calibrationStatus.textContent =
     "Saved calibration loaded.";
-
 }
 
 
 /* =========================================================
-   FACE GEOMETRY HELPERS
-   ========================================================= */
+   GEOMETRY
+========================================================= */
 
-function distanceBetweenPoints(a, b) {
+function distanceBetweenPoints(a,b){
 
   const dx =
-    a.x - b.x;
+    a.x-b.x;
 
   const dy =
-    a.y - b.y;
+    a.y-b.y;
 
   const dz =
-    (a.z || 0) -
-    (b.z || 0);
+    (a.z||0) -
+    (b.z||0);
 
   return Math.sqrt(
-    dx * dx +
-    dy * dy +
-    dz * dz
+    dx*dx +
+    dy*dy +
+    dz*dz
   );
 }
 
 
-/* =========================================================
-   EYE REGION DEFINITION
-   ========================================================= */
-
 function getEyeRegion(
   landmarks,
   side
-) {
+){
 
-  let cornerA;
-  let cornerB;
-  let upperA;
-  let lowerA;
-  let upperB;
-  let lowerB;
+  let cornerA,cornerB;
+  let upperA,lowerA;
+  let upperB,lowerB;
 
-  if (side === "left") {
+  if(side==="left"){
 
-    cornerA = 33;
-    cornerB = 133;
+    cornerA=33;
+    cornerB=133;
+    upperA=159;
+    lowerA=145;
+    upperB=160;
+    lowerB=144;
 
-    upperA = 159;
-    lowerA = 145;
+  }else{
 
-    upperB = 160;
-    lowerB = 144;
-
-  } else {
-
-    cornerA = 362;
-    cornerB = 263;
-
-    upperA = 386;
-    lowerA = 374;
-
-    upperB = 385;
-    lowerB = 380;
+    cornerA=362;
+    cornerB=263;
+    upperA=386;
+    lowerA=374;
+    upperB=385;
+    lowerB=380;
   }
 
-  const points = [
+  const points=[
     landmarks[cornerA],
     landmarks[cornerB],
     landmarks[upperA],
@@ -1381,23 +1890,22 @@ function getEyeRegion(
     landmarks[lowerB]
   ];
 
-  if (
+  if(
     points.some(
-      point => !point
+      point=>!point
     )
-  ) {
-
+  ){
     return null;
   }
 
   const xs =
     points.map(
-      point => point.x
+      point=>point.x
     );
 
   const ys =
     points.map(
-      point => point.y
+      point=>point.y
     );
 
   const minX =
@@ -1413,137 +1921,95 @@ function getEyeRegion(
     Math.max(...ys);
 
   const width =
-    maxX - minX;
+    maxX-minX;
 
   const height =
-    maxY - minY;
+    maxY-minY;
 
-  if (
-    width < 0.01 ||
-    height < 0.005
-  ) {
-
+  if(
+    width<.01 ||
+    height<.005
+  ){
     return null;
   }
 
   const horizontalPadding =
-    width * 0.35;
+    width*.35;
 
   const verticalPadding =
     Math.max(
-      width * 0.28,
-      height * 1.4
+      width*.28,
+      height*1.4
     );
 
   return {
-
-    left:
-      Math.max(
-        0,
-        minX - horizontalPadding
-      ),
-
-    right:
-      Math.min(
-        1,
-        maxX + horizontalPadding
-      ),
-
-    top:
-      Math.max(
-        0,
-        minY - verticalPadding
-      ),
-
-    bottom:
-      Math.min(
-        1,
-        maxY + verticalPadding
-      ),
-
-    eyeWidth:
-      width,
-
-    eyeHeight:
-      height
+    left:Math.max(
+      0,
+      minX-horizontalPadding
+    ),
+    right:Math.min(
+      1,
+      maxX+horizontalPadding
+    ),
+    top:Math.max(
+      0,
+      minY-verticalPadding
+    ),
+    bottom:Math.min(
+      1,
+      maxY+verticalPadding
+    )
   };
 }
 
 
-/* =========================================================
-   EYE OPEN / CLOSED GEOMETRY
-   ========================================================= */
-
 function getEyeGeometry(
   landmarks,
   side
-) {
+){
 
-  let cornerA;
-  let cornerB;
-  let upperA;
-  let lowerA;
-  let upperB;
-  let lowerB;
+  let cornerA,cornerB;
+  let upperA,lowerA;
+  let upperB,lowerB;
 
-  if (side === "left") {
+  if(side==="left"){
 
-    cornerA = 33;
-    cornerB = 133;
+    cornerA=33;
+    cornerB=133;
+    upperA=159;
+    lowerA=145;
+    upperB=160;
+    lowerB=144;
 
-    upperA = 159;
-    lowerA = 145;
+  }else{
 
-    upperB = 160;
-    lowerB = 144;
-
-  } else {
-
-    cornerA = 362;
-    cornerB = 263;
-
-    upperA = 386;
-    lowerA = 374;
-
-    upperB = 385;
-    lowerB = 380;
+    cornerA=362;
+    cornerB=263;
+    upperA=386;
+    lowerA=374;
+    upperB=385;
+    lowerB=380;
   }
 
-  const a =
-    landmarks[cornerA];
+  const a=landmarks[cornerA];
+  const b=landmarks[cornerB];
 
-  const b =
-    landmarks[cornerB];
+  const upper1=landmarks[upperA];
+  const lower1=landmarks[lowerA];
 
-  const upper1 =
-    landmarks[upperA];
+  const upper2=landmarks[upperB];
+  const lower2=landmarks[lowerB];
 
-  const lower1 =
-    landmarks[lowerA];
-
-  const upper2 =
-    landmarks[upperB];
-
-  const lower2 =
-    landmarks[lowerB];
-
-  if (
-    !a ||
-    !b ||
-    !upper1 ||
-    !lower1 ||
-    !upper2 ||
-    !lower2
-  ) {
-
+  if(
+    !a||!b||
+    !upper1||!lower1||
+    !upper2||!lower2
+  ){
     return null;
   }
 
   const width =
-    distanceBetweenPoints(
-      a,
-      b
-    );
+    distanceBetweenPoints(a,b);
 
   const height1 =
     distanceBetweenPoints(
@@ -1558,43 +2024,33 @@ function getEyeGeometry(
     );
 
   const height =
-    (
-      height1 +
-      height2
-    ) / 2;
+    (height1+height2)/2;
 
-  if (width < 0.01) {
+  if(width<.01){
     return null;
   }
 
   return {
-
-    width:
-      width,
-
-    height:
-      height,
-
-    ratio:
-      height / width
+    width,
+    height,
+    ratio:height/width
   };
 }
 
 
 /* =========================================================
-   PIXEL FEATURE EXTRACTION
-   ========================================================= */
+   PIXEL FEATURES
+========================================================= */
 
 function extractEyeFeature(
   landmarks,
   side
-) {
+){
 
-  if (
+  if(
     !video.videoWidth ||
     !video.videoHeight
-  ) {
-
+  ){
     return null;
   }
 
@@ -1604,7 +2060,7 @@ function extractEyeFeature(
       side
     );
 
-  if (!region) {
+  if(!region){
     return null;
   }
 
@@ -1618,28 +2074,25 @@ function extractEyeFeature(
 
   const sourceWidth =
     (
-      region.right -
-      region.left
+      region.right-region.left
     ) *
     video.videoWidth;
 
   const sourceHeight =
     (
-      region.bottom -
-      region.top
+      region.bottom-region.top
     ) *
     video.videoHeight;
 
-  if (
-    sourceWidth < 5 ||
-    sourceHeight < 5
-  ) {
-
+  if(
+    sourceWidth<5 ||
+    sourceHeight<5
+  ){
     return null;
   }
 
-  const outputWidth = 16;
-  const outputHeight = 12;
+  const outputWidth=16;
+  const outputHeight=12;
 
   eyeBaselineCanvas.width =
     outputWidth;
@@ -1667,136 +2120,100 @@ function extractEyeFeature(
       outputHeight
     );
 
-  const grayscale = [];
+  const grayscale=[];
 
-  let sum = 0;
+  let sum=0;
 
-  for (
-    let i = 0;
-    i < imageData.data.length;
-    i += 4
-  ) {
+  for(
+    let i=0;
+    i<imageData.data.length;
+    i+=4
+  ){
 
-    const r =
-      imageData.data[i];
+    const r=imageData.data[i];
+    const g=imageData.data[i+1];
+    const b=imageData.data[i+2];
 
-    const g =
-      imageData.data[i + 1];
-
-    const b =
-      imageData.data[i + 2];
-
-    const gray =
-      (
-        0.299 * r +
-        0.587 * g +
-        0.114 * b
-      );
+    const gray=
+      .299*r+
+      .587*g+
+      .114*b;
 
     grayscale.push(gray);
-
-    sum += gray;
+    sum+=gray;
   }
 
   const mean =
-    sum /
-    grayscale.length;
+    sum/grayscale.length;
 
-  let variance = 0;
+  let variance=0;
 
-  for (
+  for(
     const value of grayscale
-  ) {
+  ){
 
     const difference =
-      value - mean;
+      value-mean;
 
     variance +=
-      difference * difference;
+      difference*difference;
   }
 
   variance /=
     grayscale.length;
 
   const standardDeviation =
-    Math.sqrt(
-      variance
-    );
+    Math.sqrt(variance);
 
   const normalized =
     grayscale.map(
-      value => {
-
-        if (
-          standardDeviation < 1
-        ) {
-
-          return 0;
-        }
-
-        return (
-          (
-            value -
-            mean
-          ) /
-          standardDeviation
-        );
-
-      }
+      value =>
+        standardDeviation<1
+          ? 0
+          : (value-mean)/
+            standardDeviation
     );
 
-  let edgeStrength = 0;
+  let edgeStrength=0;
 
-  for (
-    let y = 0;
-    y < outputHeight;
+  for(
+    let y=0;
+    y<outputHeight;
     y++
-  ) {
+  ){
 
-    for (
-      let x = 1;
-      x < outputWidth;
+    for(
+      let x=1;
+      x<outputWidth;
       x++
-    ) {
+    ){
 
       const current =
         grayscale[
-          y * outputWidth + x
+          y*outputWidth+x
         ];
 
       const previous =
         grayscale[
-          y * outputWidth + x - 1
+          y*outputWidth+x-1
         ];
 
       edgeStrength +=
         Math.abs(
-          current -
-          previous
+          current-previous
         );
     }
   }
 
   edgeStrength /=
-    (
-      outputHeight *
-      (outputWidth - 1)
-    );
+    outputHeight*
+    (outputWidth-1);
 
   return {
-
-    pixels:
-      normalized,
-
-    mean:
-      mean,
-
-    standardDeviation:
-      standardDeviation,
-
-    edgeStrength:
-      edgeStrength,
-
+    pixels:normalized,
+    mean,
+    standardDeviation,
+    edgeStrength,
     eyeGeometry:
       getEyeGeometry(
         landmarks,
@@ -1806,22 +2223,17 @@ function extractEyeFeature(
 }
 
 
-/* =========================================================
-   FEATURE DISTANCE
-   ========================================================= */
-
 function compareEyeFeatures(
   baseline,
   current
-) {
+){
 
-  if (
-    !baseline ||
-    !current ||
-    !baseline.pixels ||
+  if(
+    !baseline||
+    !current||
+    !baseline.pixels||
     !current.pixels
-  ) {
-
+  ){
     return null;
   }
 
@@ -1831,61 +2243,47 @@ function compareEyeFeatures(
       current.pixels.length
     );
 
-  if (!length) {
-    return null;
-  }
+  let pixelDifference=0;
 
-  let pixelDifference = 0;
-
-  for (
-    let i = 0;
-    i < length;
+  for(
+    let i=0;
+    i<length;
     i++
-  ) {
+  ){
 
     pixelDifference +=
       Math.abs(
-        baseline.pixels[i] -
+        baseline.pixels[i]-
         current.pixels[i]
       );
   }
 
-  pixelDifference /=
-    length;
+  pixelDifference /= length;
 
   const edgeDifference =
     Math.abs(
-      baseline.edgeStrength -
+      baseline.edgeStrength-
       current.edgeStrength
-    ) /
+    )/
     Math.max(
       baseline.edgeStrength,
       1
     );
 
-  const score =
-    (
-      pixelDifference * 0.75
-    ) +
-    (
-      Math.min(
-        edgeDifference,
-        2
-      ) * 0.25
-    );
-
-  return score;
+  return (
+    pixelDifference*.75+
+    Math.min(
+      edgeDifference,
+      2
+    )*.25
+  );
 }
 
-
-/* =========================================================
-   BLINK / EYE CLOSURE CHECK
-   ========================================================= */
 
 function isEyeLikelyClosed(
   landmarks,
   side
-) {
+){
 
   const geometry =
     getEyeGeometry(
@@ -1893,37 +2291,24 @@ function isEyeLikelyClosed(
       side
     );
 
-  if (!geometry) {
+  if(!geometry){
     return true;
   }
 
-  return (
-    geometry.ratio <
-    0.08
-  );
+  return geometry.ratio<.08;
 }
 
-
-/* =========================================================
-   EYE OCCLUSION DECISION
-   ========================================================= */
 
 function evaluateEyeWithPixels(
   landmarks,
   side
-) {
+){
 
-  if (
-    !eyeBaseline[side]
-  ) {
+  if(!eyeBaseline[side]){
 
     return {
-
-      state:
-        "noBaseline",
-
-      score:
-        null
+      state:"noBaseline",
+      score:null
     };
   }
 
@@ -1933,32 +2318,24 @@ function evaluateEyeWithPixels(
       side
     );
 
-  if (!currentFeature) {
+  if(!currentFeature){
 
     return {
-
-      state:
-        "uncertain",
-
-      score:
-        null
+      state:"uncertain",
+      score:null
     };
   }
 
-  if (
+  if(
     isEyeLikelyClosed(
       landmarks,
       side
     )
-  ) {
+  ){
 
     return {
-
-      state:
-        "closed",
-
-      score:
-        null
+      state:"closed",
+      score:null
     };
   }
 
@@ -1968,134 +2345,97 @@ function evaluateEyeWithPixels(
       currentFeature
     );
 
-  if (score === null) {
+  if(score===null){
 
     return {
-
-      state:
-        "uncertain",
-
-      score:
-        null
+      state:"uncertain",
+      score:null
     };
   }
 
-  const occlusionThreshold =
-    0.62;
+  const occlusionThreshold=.62;
 
-  if (
-    score >
-    occlusionThreshold
-  ) {
+  if(
+    score>occlusionThreshold
+  ){
 
     return {
-
-      state:
-        "possibleOcclusion",
-
-      score:
-        score
+      state:"possibleOcclusion",
+      score
     };
-
   }
 
   return {
-
-    state:
-      "visible",
-
-    score:
-      score
+    state:"visible",
+    score
   };
 }
 
 
 /* =========================================================
-   EYE TEMPORAL SMOOTHING
-   ========================================================= */
+   EYE SMOOTHING
+========================================================= */
 
 function smoothEyeState(
   history,
   state
-) {
+){
 
-  history.push(
-    state
-  );
+  history.push(state);
 
-  if (
-    history.length >
+  if(
+    history.length>
     eyeHistoryLength
-  ) {
-
+  ){
     history.shift();
   }
 
+  const total=history.length;
+
   const occlusionCount =
     history.filter(
-      value =>
-        value === "possibleOcclusion"
+      x=>x==="possibleOcclusion"
     ).length;
 
   const visibleCount =
     history.filter(
-      value =>
-        value === "visible"
+      x=>x==="visible"
     ).length;
 
   const closedCount =
     history.filter(
-      value =>
-        value === "closed"
+      x=>x==="closed"
     ).length;
 
   const uncertainCount =
     history.filter(
-      value =>
-        value === "uncertain"
+      x=>x==="uncertain"
     ).length;
 
-  const total =
-    history.length;
-
-  if (
-    total >= 5 &&
-    (
-      occlusionCount /
-      total
-    ) >= 0.60
-  ) {
-
+  if(
+    total>=5 &&
+    occlusionCount/total>=.60
+  ){
     return "possibleOcclusion";
   }
 
-  if (
-    total >= 5 &&
-    (
-      closedCount /
-      total
-    ) >= 0.50
-  ) {
-
+  if(
+    total>=5 &&
+    closedCount/total>=.50
+  ){
     return "closed";
   }
 
-  if (
-    total >= 5 &&
-    (
-      visibleCount /
-      total
-    ) >= 0.60
-  ) {
-
+  if(
+    total>=5 &&
+    visibleCount/total>=.60
+  ){
     return "visible";
   }
 
-  if (
-    uncertainCount >
-    visibleCount
-  ) {
-
+  if(
+    uncertainCount>visibleCount
+  ){
     return "uncertain";
   }
 
@@ -2104,65 +2444,12 @@ function smoothEyeState(
 
 
 /* =========================================================
-   EYE DISPLAY
-   ========================================================= */
-
-function eyeStateText(
-  state
-) {
-
-  if (
-    state === "visible"
-  ) {
-
-    return "Visible";
-  }
-
-  if (
-    state === "possibleOcclusion"
-  ) {
-
-    return "Possible occlusion";
-  }
-
-  if (
-    state === "closed"
-  ) {
-
-    return "Closed / uncertain";
-  }
-
-  if (
-    state === "noBaseline"
-  ) {
-
-    return "Baseline needed";
-  }
-
-  return "Uncertain";
-}
-
-
-/*
-  This is the ONLY place where the mirror correction is
-  applied.
-
-  Original detector-side result:
-
-      detector "left"  = person's RIGHT eye
-      detector "right" = person's LEFT eye
-
-  Therefore:
-
-      displayed LEFT  = detector "right"
-      displayed RIGHT = detector "left"
-
-  The actual eye-analysis algorithm itself is unchanged.
-*/
+   ANATOMICAL EYE MAPPING
+========================================================= */
 
 function getAnatomicalEyeStates(
   landmarks
-) {
+){
 
   const detectorLeftResult =
     evaluateEyeWithPixels(
@@ -2176,16 +2463,6 @@ function getAnatomicalEyeStates(
       "right"
     );
 
-
-  /*
-    IMPORTANT:
-
-    Keep the smoothing histories attached to the
-    detector-side streams exactly as before.
-
-    We only rename the final results anatomically.
-  */
-
   const detectorLeftState =
     smoothEyeState(
       leftEyeHistory,
@@ -2198,36 +2475,39 @@ function getAnatomicalEyeStates(
       detectorRightResult.state
     );
 
-
   return {
-
-    /*
-      Detector right corresponds to the person's
-      anatomical LEFT eye.
-    */
-
-    left:
-      detectorRightState,
-
-    /*
-      Detector left corresponds to the person's
-      anatomical RIGHT eye.
-    */
-
-    right:
-      detectorLeftState
+    left:detectorRightState,
+    right:detectorLeftState
   };
+}
+
+
+function eyeStateText(state){
+
+  if(state==="visible")
+    return "Visible";
+
+  if(state==="possibleOcclusion")
+    return "Possible occlusion";
+
+  if(state==="closed")
+    return "Closed / uncertain";
+
+  if(state==="noBaseline")
+    return "Baseline needed";
+
+  return "Uncertain";
 }
 
 
 function updateEyeDisplay(
   landmarks
-) {
+){
 
-  if (
-    !eyeBaseline.left ||
+  if(
+    !eyeBaseline.left||
     !eyeBaseline.right
-  ) {
+  ){
 
     leftEyeStatus.textContent =
       "Left Eye: Baseline needed";
@@ -2244,36 +2524,27 @@ function updateEyeDisplay(
     return null;
   }
 
-
   const states =
     getAnatomicalEyeStates(
       landmarks
     );
 
-  const leftState =
-    states.left;
-
-  const rightState =
-    states.right;
-
-
   leftEyeStatus.textContent =
-    "Left Eye: " +
+    "Left Eye: "+
     eyeStateText(
-      leftState
+      states.left
     );
 
   rightEyeStatus.textContent =
-    "Right Eye: " +
+    "Right Eye: "+
     eyeStateText(
-      rightState
+      states.right
     );
 
-
-  if (
-    leftState === "visible" &&
-    rightState === "visible"
-  ) {
+  if(
+    states.left==="visible" &&
+    states.right==="visible"
+  ){
 
     eyeOverallStatus.textContent =
       "Eye visibility: Both eyes appear visible";
@@ -2281,10 +2552,10 @@ function updateEyeDisplay(
     eyeOverallStatus.className =
       "status good";
 
-  } else if (
-    leftState === "possibleOcclusion" &&
-    rightState === "visible"
-  ) {
+  }else if(
+    states.left==="possibleOcclusion" &&
+    states.right==="visible"
+  ){
 
     eyeOverallStatus.textContent =
       "Eye visibility: Possible left-eye occlusion";
@@ -2292,10 +2563,10 @@ function updateEyeDisplay(
     eyeOverallStatus.className =
       "status warning";
 
-  } else if (
-    leftState === "visible" &&
-    rightState === "possibleOcclusion"
-  ) {
+  }else if(
+    states.left==="visible" &&
+    states.right==="possibleOcclusion"
+  ){
 
     eyeOverallStatus.textContent =
       "Eye visibility: Possible right-eye occlusion";
@@ -2303,10 +2574,10 @@ function updateEyeDisplay(
     eyeOverallStatus.className =
       "status warning";
 
-  } else if (
-    leftState === "possibleOcclusion" &&
-    rightState === "possibleOcclusion"
-  ) {
+  }else if(
+    states.left==="possibleOcclusion" &&
+    states.right==="possibleOcclusion"
+  ){
 
     eyeOverallStatus.textContent =
       "Eye visibility: Possible occlusion of both eyes";
@@ -2314,7 +2585,7 @@ function updateEyeDisplay(
     eyeOverallStatus.className =
       "status warning";
 
-  } else {
+  }else{
 
     eyeOverallStatus.textContent =
       "Eye visibility: One or both eyes uncertain";
@@ -2328,30 +2599,14 @@ function updateEyeDisplay(
 
 
 /* =========================================================
-   WRONG-EYE DETECTION
-   ========================================================= */
-
-/*
-  The treatment eye is the eye that should remain uncovered.
-
-  Therefore:
-
-      Treatment = Left
-      Correct patch location = Right
-
-      Treatment = Right
-      Correct patch location = Left
-
-  The warning is based on the ANATOMICAL eye states returned
-  by getAnatomicalEyeStates(), so the mirror correction is
-  already accounted for.
-*/
+   WRONG EYE
+========================================================= */
 
 function getWrongEyeOcclusion(
   eyeStates
-) {
+){
 
-  if (!eyeStates) {
+  if(!eyeStates){
     return null;
   }
 
@@ -2359,30 +2614,18 @@ function getWrongEyeOcclusion(
     therapyProfile.treatmentEye;
 
   const correctPatchEye =
-    treatmentEye === "left"
+    treatmentEye==="left"
       ? "right"
       : "left";
 
-
-  /*
-    The treatment eye should remain visible.
-
-    If that eye is showing persistent possible occlusion,
-    trigger the experimental wrong-eye warning.
-  */
-
-  if (
-    eyeStates[treatmentEye] ===
+  if(
+    eyeStates[treatmentEye]===
     "possibleOcclusion"
-  ) {
+  ){
 
     return {
-
-      occludedEye:
-        treatmentEye,
-
-      correctPatchEye:
-        correctPatchEye
+      occludedEye:treatmentEye,
+      correctPatchEye
     };
   }
 
@@ -2391,31 +2634,17 @@ function getWrongEyeOcclusion(
 
 
 /* =========================================================
-   CAPTURE PERSONALIZED EYE BASELINE
-   ========================================================= */
+   BASELINE
+========================================================= */
 
 captureEyeBaselineButton.addEventListener(
   "click",
   async () => {
 
-    if (
-      !cameraStarted ||
-      !video.videoWidth ||
-      !video.videoHeight
-    ) {
-
-      eyeBaselineStatus.textContent =
-        "Start the camera first.";
-
-      eyeBaselineStatus.className =
-        "status bad";
-
-      return;
-    }
-
-    if (
+    if(
+      !cameraStarted||
       !currentFaceLandmarks
-    ) {
+    ){
 
       eyeBaselineStatus.textContent =
         "No face detected. Look at the camera first.";
@@ -2426,80 +2655,48 @@ captureEyeBaselineButton.addEventListener(
       return;
     }
 
-    if (
-      eyeBaselineCapturing
-    ) {
-
+    if(eyeBaselineCapturing){
       return;
     }
 
-    eyeBaselineCapturing = true;
+    eyeBaselineCapturing=true;
 
-    captureEyeBaselineButton.disabled =
-      true;
+    captureEyeBaselineButton.disabled=true;
 
     eyeBaselineStatus.textContent =
-      "Capturing baseline... Keep both eyes uncovered and look normally at the screen.";
+      "Capturing baseline... Keep both eyes uncovered.";
 
     eyeBaselineStatus.className =
       "status warning";
 
+    const leftSamples=[];
+    const rightSamples=[];
 
-    /*
-      IMPORTANT:
+    const samplesToCollect=25;
+    let attempts=0;
+    const maximumAttempts=80;
 
-      The baseline capture is restored to the original
-      detector-side configuration.
-
-      We do NOT swap the detector regions here.
-
-      Detector "left" gets baseline "left".
-      Detector "right" gets baseline "right".
-
-      The anatomical label correction happens later,
-      when displaying/using the results.
-    */
-
-    const leftSamples = [];
-
-    const rightSamples = [];
-
-    const samplesToCollect = 25;
-
-    let attempts = 0;
-
-    const maximumAttempts = 80;
-
-
-    while (
+    while(
       (
-        leftSamples.length <
-        samplesToCollect ||
-        rightSamples.length <
+        leftSamples.length<
+        samplesToCollect||
+        rightSamples.length<
         samplesToCollect
-      ) &&
-      attempts <
+      )&&
+      attempts<
       maximumAttempts
-    ) {
+    ){
 
       attempts++;
 
       await new Promise(
-        resolve =>
-          setTimeout(
-            resolve,
-            40
-          )
+        resolve=>
+          setTimeout(resolve,40)
       );
 
-
-      if (
-        !currentFaceLandmarks
-      ) {
-
+      if(!currentFaceLandmarks){
         continue;
       }
-
 
       const leftFeature =
         extractEyeFeature(
@@ -2513,61 +2710,48 @@ captureEyeBaselineButton.addEventListener(
           "right"
         );
 
-
-      if (
-        leftFeature &&
+      if(
+        leftFeature&&
         !isEyeLikelyClosed(
           currentFaceLandmarks,
           "left"
         )
-      ) {
-
+      ){
         leftSamples.push(
           leftFeature
         );
       }
 
-
-      if (
-        rightFeature &&
+      if(
+        rightFeature&&
         !isEyeLikelyClosed(
           currentFaceLandmarks,
           "right"
         )
-      ) {
-
+      ){
         rightSamples.push(
           rightFeature
         );
       }
-
     }
 
+    if(
+      leftSamples.length<8||
+      rightSamples.length<8
+    ){
 
-    if (
-      leftSamples.length < 8 ||
-      rightSamples.length < 8
-    ) {
+      eyeBaselineCapturing=false;
 
-      eyeBaselineCapturing =
-        false;
-
-      captureEyeBaselineButton.disabled =
-        false;
+      captureEyeBaselineButton.disabled=false;
 
       eyeBaselineStatus.textContent =
-        "Baseline capture failed. Keep both eyes uncovered, face the camera, and try again.";
+        "Baseline capture failed. Keep both eyes uncovered and try again.";
 
       eyeBaselineStatus.className =
         "status bad";
 
       return;
     }
-
-
-    /*
-      Keep the original detector-side baseline storage.
-    */
 
     eyeBaseline.left =
       averageEyeFeatures(
@@ -2579,46 +2763,32 @@ captureEyeBaselineButton.addEventListener(
         rightSamples
       );
 
-
     localStorage.setItem(
       "amblyocare_eye_baseline_exists",
       "true"
     );
 
+    leftEyeHistory=[];
+    rightEyeHistory=[];
 
-    leftEyeHistory = [];
+    eyeBaselineCapturing=false;
 
-    rightEyeHistory = [];
-
-
-    eyeBaselineCapturing =
-      false;
-
-    captureEyeBaselineButton.disabled =
-      false;
+    captureEyeBaselineButton.disabled=false;
 
     eyeBaselineStatus.textContent =
-      "Eye baseline captured successfully. You can now test eye occlusion.";
+      "Eye baseline captured successfully.";
 
     eyeBaselineStatus.className =
       "status good";
-
   }
 );
 
 
-/* =========================================================
-   AVERAGE BASELINE FEATURES
-   ========================================================= */
-
 function averageEyeFeatures(
   samples
-) {
+){
 
-  if (
-    !samples.length
-  ) {
-
+  if(!samples.length){
     return null;
   }
 
@@ -2630,238 +2800,167 @@ function averageEyeFeatures(
       pixelLength
     ).fill(0);
 
-  let averageMean = 0;
-
-  let averageStandardDeviation = 0;
-
-  let averageEdgeStrength = 0;
-
+  let averageMean=0;
+  let averageStandardDeviation=0;
+  let averageEdgeStrength=0;
 
   samples.forEach(
-    sample => {
+    sample=>{
 
-      for (
-        let i = 0;
-        i < pixelLength;
+      for(
+        let i=0;
+        i<pixelLength;
         i++
-      ) {
-
-        averagedPixels[i] +=
+      ){
+        averagedPixels[i]+=
           sample.pixels[i];
       }
 
-      averageMean +=
-        sample.mean;
-
-      averageStandardDeviation +=
+      averageMean+=sample.mean;
+      averageStandardDeviation+=
         sample.standardDeviation;
-
-      averageEdgeStrength +=
+      averageEdgeStrength+=
         sample.edgeStrength;
-
     }
   );
 
-
-  for (
-    let i = 0;
-    i < pixelLength;
+  for(
+    let i=0;
+    i<pixelLength;
     i++
-  ) {
-
-    averagedPixels[i] /=
+  ){
+    averagedPixels[i]/=
       samples.length;
   }
 
-
-  averageMean /=
-    samples.length;
-
-  averageStandardDeviation /=
-    samples.length;
-
-  averageEdgeStrength /=
-    samples.length;
-
-
   return {
-
-    pixels:
-      averagedPixels,
-
+    pixels:averagedPixels,
     mean:
-      averageMean,
-
+      averageMean/samples.length,
     standardDeviation:
-      averageStandardDeviation,
-
+      averageStandardDeviation/
+      samples.length,
     edgeStrength:
-      averageEdgeStrength
+      averageEdgeStrength/
+      samples.length
   };
 }
 
 
 /* =========================================================
    FACE POSITION
-   ========================================================= */
+========================================================= */
 
 function calculateFacePosition(
   landmarks
-) {
+){
 
-  const nose =
-    landmarks[1];
+  const nose=landmarks[1];
+  const chin=landmarks[152];
+  const leftSide=landmarks[234];
+  const rightSide=landmarks[454];
 
-  const chin =
-    landmarks[152];
-
-  const leftSide =
-    landmarks[234];
-
-  const rightSide =
-    landmarks[454];
-
-  if (
-    !nose ||
-    !chin ||
-    !leftSide ||
+  if(
+    !nose||
+    !chin||
+    !leftSide||
     !rightSide
-  ) {
-
+  ){
     return "No face detected";
   }
 
   const centerX =
-    (
-      leftSide.x +
-      rightSide.x
-    ) / 2;
+    (leftSide.x+
+     rightSide.x)/2;
 
   const centerY =
-    (
-      nose.y +
-      chin.y
-    ) / 2;
+    (nose.y+
+     chin.y)/2;
 
-  let horizontalStatus =
-    "Good";
+  let horizontalStatus="Good";
+  let verticalStatus="Good";
 
-  let verticalStatus =
-    "Good";
+  if(centerX<.25)
+    horizontalStatus="Too far left";
+  else if(centerX>.75)
+    horizontalStatus="Too far right";
 
-  if (centerX < 0.25) {
+  if(centerY<.25)
+    verticalStatus="Too high";
+  else if(centerY>.75)
+    verticalStatus="Too low";
 
-    horizontalStatus =
-      "Too far left";
-
-  } else if (centerX > 0.75) {
-
-    horizontalStatus =
-      "Too far right";
-  }
-
-  if (centerY < 0.25) {
-
-    verticalStatus =
-      "Too high";
-
-  } else if (centerY > 0.75) {
-
-    verticalStatus =
-      "Too low";
-  }
-
-  if (
-    horizontalStatus === "Good" &&
-    verticalStatus === "Good"
-  ) {
-
+  if(
+    horizontalStatus==="Good"&&
+    verticalStatus==="Good"
+  ){
     return "Good";
-
   }
 
-  if (
-    horizontalStatus !== "Good" &&
-    verticalStatus !== "Good"
-  ) {
-
+  if(
+    horizontalStatus!=="Good"&&
+    verticalStatus!=="Good"
+  ){
     return (
-      horizontalStatus +
-      " / " +
+      horizontalStatus+
+      " / "+
       verticalStatus
     );
-
   }
 
-  if (
-    horizontalStatus !== "Good"
-  ) {
-
-    return horizontalStatus;
-  }
-
-  return verticalStatus;
+  return horizontalStatus!=="Good"
+    ? horizontalStatus
+    : verticalStatus;
 }
 
 
 /* =========================================================
-   DISTANCE ESTIMATION
-   ========================================================= */
+   DISTANCE
+========================================================= */
 
 function estimateDistance(
   faceSize
-) {
+){
 
-  if (
-    !referenceFaceSize.value ||
+  if(
+    !referenceFaceSize.value||
     !faceSize
-  ) {
-
+  ){
     return null;
   }
 
   return (
-    therapyProfile.targetDistance *
+    therapyProfile.targetDistance*
     (
-      referenceFaceSize.value /
+      referenceFaceSize.value/
       faceSize
     )
   );
 }
 
 
-/* =========================================================
-   DETERMINE CURRENT BEHAVIOUR
-   ========================================================= */
-
 function determineState(
   estimatedDistance,
   position
-) {
+){
 
-  if (
-    estimatedDistance === null
-  ) {
-
+  if(
+    estimatedDistance===null
+  ){
     return "noFace";
   }
 
   const distanceThreshold =
-    therapyProfile.targetDistance *
-    0.85;
+    therapyProfile.targetDistance*.85;
 
-  if (
-    estimatedDistance <
+  if(
+    estimatedDistance<
     distanceThreshold
-  ) {
-
+  ){
     return "tooClose";
   }
 
-  if (
-    position !== "Good"
-  ) {
-
+  if(position!=="Good"){
     return "poorPosition";
   }
 
@@ -2871,289 +2970,180 @@ function determineState(
 
 /* =========================================================
    CORRECTION OVERLAY
-   ========================================================= */
+========================================================= */
 
 function updateCorrectionOverlay(
   state,
   wrongEyeOcclusion
-) {
+){
 
   const now =
     performance.now();
 
+  if(state==="tooClose"){
 
-  /*
-    PRIORITY 1:
-    Distance.
+    eyeOcclusionStartedAt=null;
 
-    If the child is too close, distance correction
-    takes priority over eye messaging.
-  */
-
-  if (
-    state === "tooClose"
-  ) {
-
-    eyeOcclusionStartedAt =
-      null;
-
-    if (
-      invalidStartedAt === null
-    ) {
-
-      invalidStartedAt =
-        now;
+    if(invalidStartedAt===null){
+      invalidStartedAt=now;
     }
 
-    const invalidDuration =
-      (
-        now -
-        invalidStartedAt
-      ) / 1000;
+    const duration=
+      (now-invalidStartedAt)/1000;
 
-    if (
-      invalidDuration >=
+    if(
+      duration>=
       therapyProfile.gracePeriodSeconds
-    ) {
+    ){
 
-      if (!overlayVisible) {
+      overlayVisible=true;
 
-        overlayVisible = true;
-
-        correctionOverlay.classList.remove(
-          "hidden"
-        );
-
-      }
+      correctionOverlay.classList.remove(
+        "hidden"
+      );
 
       overlayTitle.textContent =
         "Let's Fix Your Position";
 
       overlayMessage.textContent =
-        "Please move farther away from the screen. Your target distance is approximately " +
-        therapyProfile.targetDistance +
+        "Please move farther away from the screen. Your target distance is approximately "+
+        therapyProfile.targetDistance+
         " cm.";
-
     }
 
     return;
   }
 
+  if(state==="poorPosition"){
 
-  /*
-    PRIORITY 2:
-    Poor face position.
-  */
+    eyeOcclusionStartedAt=null;
 
-  if (
-    state === "poorPosition"
-  ) {
-
-    eyeOcclusionStartedAt =
-      null;
-
-    if (
-      invalidStartedAt === null
-    ) {
-
-      invalidStartedAt =
-        now;
+    if(invalidStartedAt===null){
+      invalidStartedAt=now;
     }
 
-    const invalidDuration =
-      (
-        now -
-        invalidStartedAt
-      ) / 1000;
+    const duration=
+      (now-invalidStartedAt)/1000;
 
-    if (
-      invalidDuration >=
+    if(
+      duration>=
       therapyProfile.gracePeriodSeconds
-    ) {
+    ){
 
-      if (!overlayVisible) {
+      overlayVisible=true;
 
-        overlayVisible = true;
-
-        correctionOverlay.classList.remove(
-          "hidden"
-        );
-
-      }
+      correctionOverlay.classList.remove(
+        "hidden"
+      );
 
       overlayTitle.textContent =
         "Let's Fix Your Position";
 
       overlayMessage.textContent =
         "Please reposition your face so it is centered and comfortably aligned with the screen.";
-
     }
 
     return;
   }
 
+  invalidStartedAt=null;
 
-  /*
-    Distance and face position are acceptable.
+  if(wrongEyeOcclusion){
 
-    Reset the position correction timer.
-  */
-
-  invalidStartedAt =
-    null;
-
-
-  /*
-    PRIORITY 3:
-    Wrong-eye occlusion.
-
-    This does NOT affect the numerical compliance
-    analytics yet because eye detection is experimental.
-  */
-
-  if (
-    wrongEyeOcclusion
-  ) {
-
-    if (
-      eyeOcclusionStartedAt === null
-    ) {
-
-      eyeOcclusionStartedAt =
-        now;
+    if(
+      eyeOcclusionStartedAt===null
+    ){
+      eyeOcclusionStartedAt=now;
     }
 
-    const occlusionDuration =
-      (
-        now -
-        eyeOcclusionStartedAt
-      ) / 1000;
+    const duration=
+      (now-eyeOcclusionStartedAt)/1000;
 
-    if (
-      occlusionDuration >=
+    if(
+      duration>=
       therapyProfile.gracePeriodSeconds
-    ) {
+    ){
 
-      if (!overlayVisible) {
+      overlayVisible=true;
 
-        overlayVisible = true;
-
-        correctionOverlay.classList.remove(
-          "hidden"
-        );
-
-      }
+      correctionOverlay.classList.remove(
+        "hidden"
+      );
 
       const correctPatchEye =
         wrongEyeOcclusion.correctPatchEye;
-
-      const eyeName =
-        correctPatchEye === "left"
-          ? "left"
-          : "right";
 
       overlayTitle.textContent =
         "Check Eye Patch Position";
 
       overlayMessage.textContent =
-        "Please uncover your " +
-        therapyProfile.treatmentEye +
-        " eye and place the eye patch over your " +
-        eyeName +
+        "Please uncover your "+
+        therapyProfile.treatmentEye+
+        " eye and place the eye patch over your "+
+        correctPatchEye+
         " eye.";
-
     }
 
     return;
   }
 
+  eyeOcclusionStartedAt=null;
 
-  /*
-    Nothing currently requires correction.
-
-    Reset correction timers and hide the overlay.
-  */
-
-  invalidStartedAt =
-    null;
-
-  eyeOcclusionStartedAt =
-    null;
-
-  if (overlayVisible) {
+  if(overlayVisible){
 
     correctionOverlay.classList.add(
       "hidden"
     );
 
-    overlayVisible = false;
+    overlayVisible=false;
   }
-
 }
 
 
 /* =========================================================
-   SESSION ANALYTICS
-   ========================================================= */
+   ANALYTICS
+========================================================= */
 
 function addTimeToCurrentState(
   deltaSeconds
-) {
+){
 
-  if (
-    deltaSeconds <= 0 ||
-    deltaSeconds > 1
-  ) {
-
+  if(
+    deltaSeconds<=0||
+    deltaSeconds>1
+  ){
     return;
   }
 
-  if (
-    currentState === "compliant"
-  ) {
-
-    compliantSeconds +=
-      deltaSeconds;
-
-  } else if (
-    currentState === "tooClose"
-  ) {
-
-    tooCloseSeconds +=
-      deltaSeconds;
-
-  } else if (
-    currentState === "poorPosition"
-  ) {
-
-    poorPositionSeconds +=
-      deltaSeconds;
-
-  } else {
-
-    noFaceSeconds +=
-      deltaSeconds;
-  }
-
+  if(currentState==="compliant")
+    compliantSeconds+=deltaSeconds;
+  else if(currentState==="tooClose")
+    tooCloseSeconds+=deltaSeconds;
+  else if(currentState==="poorPosition")
+    poorPositionSeconds+=deltaSeconds;
+  else
+    noFaceSeconds+=deltaSeconds;
 }
 
 
 /* =========================================================
-   FRAME PROCESSING
-   ========================================================= */
+   MAIN FRAME LOOP
+========================================================= */
+
+let lastVideoTimestamp=-1;
+
 
 async function processFrame(
   timestamp
-) {
+){
 
-  if (!sessionActive) {
+  if(!cameraStarted){
     return;
   }
 
-  if (
-    video.readyState <
-    2
-  ) {
+  if(
+    video.readyState<2
+  ){
 
     requestAnimationFrame(
       processFrame
@@ -3162,27 +3152,23 @@ async function processFrame(
     return;
   }
 
-  const now =
-    performance.now();
+  /*
+    The important architecture change:
 
-  const delta =
-    (
-      now -
-      lastFrameTime
-    ) / 1000;
+    MediaPipe continues running while the camera is active,
+    even before a session begins.
 
-  lastFrameTime =
-    now;
+    This allows:
+      - calibration
+      - eye baseline
+      - face positioning
 
-  addTimeToCurrentState(
-    delta
-  );
-
-  updateTimer();
+    without starting session analytics.
+  */
 
   let results;
 
-  try {
+  try{
 
     results =
       faceLandmarker.detectForVideo(
@@ -3190,7 +3176,7 @@ async function processFrame(
         timestamp
       );
 
-  } catch (error) {
+  }catch(error){
 
     console.error(
       "Face detection error:",
@@ -3205,20 +3191,16 @@ async function processFrame(
   }
 
 
-  /* =======================================================
+  /* -------------------------------------------------------
      NO FACE
-     ======================================================= */
+  ------------------------------------------------------- */
 
-  if (
-    !results.faceLandmarks ||
-    results.faceLandmarks.length === 0
-  ) {
+  if(
+    !results.faceLandmarks||
+    results.faceLandmarks.length===0
+  ){
 
-    currentState =
-      "noFace";
-
-    currentFaceLandmarks =
-      null;
+    currentFaceLandmarks=null;
 
     faceStatus.textContent =
       "No face detected";
@@ -3232,38 +3214,56 @@ async function processFrame(
     positionStatus.className =
       "status bad";
 
-    distanceValue.textContent =
-      "--";
+    distanceValue.textContent="--";
 
-    monitorStatus.textContent =
-      "Move your face into the camera frame.";
-
-    monitorStatus.className =
-      "status warning";
-
-    leftEyeStatus.textContent =
+    leftEyeStatus.textContent=
       "Left Eye: --";
 
-    rightEyeStatus.textContent =
+    rightEyeStatus.textContent=
       "Right Eye: --";
 
     eyeOverallStatus.textContent =
-      eyeBaseline.left &&
+      eyeBaseline.left&&
       eyeBaseline.right
         ? "Eye visibility: No face detected"
         : "Eye visibility: Baseline needed";
 
-    eyeOverallStatus.className =
-      "status warning";
+    leftEyeHistory=[];
+    rightEyeHistory=[];
 
-    leftEyeHistory = [];
+    if(sessionActive){
 
-    rightEyeHistory = [];
+      const now=
+        performance.now();
 
-    updateCorrectionOverlay(
-      "noFace",
-      null
-    );
+      const delta=
+        (
+          now-lastFrameTime
+        )/1000;
+
+      lastFrameTime=now;
+
+      addTimeToCurrentState(
+        delta
+      );
+
+      currentState="noFace";
+
+      updateTimer();
+
+      updateCorrectionOverlay(
+        "noFace",
+        null
+      );
+
+    }else{
+
+      monitorStatus.textContent =
+        "Camera ready. Move your face into view.";
+
+      monitorStatus.className =
+        "status warning";
+    }
 
     requestAnimationFrame(
       processFrame
@@ -3273,9 +3273,9 @@ async function processFrame(
   }
 
 
-  /* =======================================================
+  /* -------------------------------------------------------
      FACE DETECTED
-     ======================================================= */
+  ------------------------------------------------------- */
 
   const landmarks =
     results.faceLandmarks[0];
@@ -3290,22 +3290,22 @@ async function processFrame(
     "status good";
 
 
-  /* =======================================================
-     FACE SIZE / DISTANCE
-     ======================================================= */
+  /* -------------------------------------------------------
+     FACE SIZE
+  ------------------------------------------------------- */
 
-  const leftCheek =
+  const leftCheek=
     landmarks[234];
 
-  const rightCheek =
+  const rightCheek=
     landmarks[454];
 
-  if (
-    leftCheek &&
+  if(
+    leftCheek&&
     rightCheek
-  ) {
+  ){
 
-    const faceSize =
+    const faceSize=
       distanceBetweenPoints(
         leftCheek,
         rightCheek
@@ -3315,131 +3315,148 @@ async function processFrame(
       faceSize
     );
 
-    if (
-      faceSizeHistory.length >
+    if(
+      faceSizeHistory.length>
       smoothingFrames
-    ) {
-
+    ){
       faceSizeHistory.shift();
     }
   }
 
+  let smoothedFaceSize=null;
 
-  let smoothedFaceSize =
-    null;
+  if(faceSizeHistory.length){
 
-  if (
-    faceSizeHistory.length
-  ) {
-
-    smoothedFaceSize =
+    smoothedFaceSize=
       faceSizeHistory.reduce(
-        (a, b) => a + b,
+        (a,b)=>a+b,
         0
-      ) /
+      )/
       faceSizeHistory.length;
   }
 
-
-  const estimatedDistance =
+  const estimatedDistance=
     estimateDistance(
       smoothedFaceSize
     );
 
+  if(
+    estimatedDistance!==null
+  ){
 
-  if (
-    estimatedDistance !== null
-  ) {
-
-    distanceValue.textContent =
+    distanceValue.textContent=
       Math.round(
         estimatedDistance
-      ) +
+      )+
       " cm";
 
-  } else {
+  }else{
 
-    distanceValue.textContent =
-      "--";
+    distanceValue.textContent="--";
   }
 
 
-  /* =======================================================
+  /* -------------------------------------------------------
      POSITION
-     ======================================================= */
+  ------------------------------------------------------- */
 
-  const position =
+  const position=
     calculateFacePosition(
       landmarks
     );
 
-  positionStatus.textContent =
-    "Face Position: " +
+  positionStatus.textContent=
+    "Face Position: "+
     position;
 
-  if (
-    position === "Good"
-  ) {
-
-    positionStatus.className =
-      "status good";
-
-  } else {
-
-    positionStatus.className =
-      "status warning";
-  }
+  positionStatus.className=
+    position==="Good"
+      ? "status good"
+      : "status warning";
 
 
-  /* =======================================================
-     EYE VISIBILITY
-     ======================================================= */
+  /* -------------------------------------------------------
+     EYES
+  ------------------------------------------------------- */
 
-  const eyeStates =
+  const eyeStates=
     updateEyeDisplay(
       landmarks
     );
 
-
-  /* =======================================================
-     WRONG-EYE OCCLUSION
-     ======================================================= */
-
-  const wrongEyeOcclusion =
+  const wrongEyeOcclusion=
     getWrongEyeOcclusion(
       eyeStates
     );
 
 
-  /* =======================================================
-     CURRENT BEHAVIOUR
-     ======================================================= */
+  /* -------------------------------------------------------
+     NOT IN SESSION
+  ------------------------------------------------------- */
 
-  const newState =
+  if(!sessionActive){
+
+    monitorStatus.textContent =
+      "Camera ready. Press Start Session to begin monitoring.";
+
+    monitorStatus.className =
+      "status";
+
+    requestAnimationFrame(
+      processFrame
+    );
+
+    return;
+  }
+
+
+  /* -------------------------------------------------------
+     SESSION TIMING
+  ------------------------------------------------------- */
+
+  const now=
+    performance.now();
+
+  const delta=
+    (
+      now-lastFrameTime
+    )/1000;
+
+  lastFrameTime=now;
+
+  addTimeToCurrentState(
+    delta
+  );
+
+  updateTimer();
+
+
+  /* -------------------------------------------------------
+     CURRENT STATE
+  ------------------------------------------------------- */
+
+  const newState=
     determineState(
       estimatedDistance,
       position
     );
 
-  currentState =
+  currentState=
     newState;
 
+  if(
+    newState==="compliant"
+  ){
 
-  if (
-    newState === "compliant"
-  ) {
-
-    if (
-      wrongEyeOcclusion
-    ) {
+    if(wrongEyeOcclusion){
 
       monitorStatus.textContent =
-        "Position and viewing distance are within range. Possible wrong-eye occlusion detected.";
+        "Position and distance are within range. Possible wrong-eye occlusion detected.";
 
       monitorStatus.className =
         "status warning";
 
-    } else {
+    }else{
 
       monitorStatus.textContent =
         "Position and viewing distance are within the target range.";
@@ -3448,9 +3465,9 @@ async function processFrame(
         "status good";
     }
 
-  } else if (
-    newState === "tooClose"
-  ) {
+  }else if(
+    newState==="tooClose"
+  ){
 
     monitorStatus.textContent =
       "You are too close to the screen.";
@@ -3458,9 +3475,9 @@ async function processFrame(
     monitorStatus.className =
       "status warning";
 
-  } else if (
-    newState === "poorPosition"
-  ) {
+  }else if(
+    newState==="poorPosition"
+  ){
 
     monitorStatus.textContent =
       "Please reposition your face.";
@@ -3470,15 +3487,10 @@ async function processFrame(
   }
 
 
-  /* =======================================================
-     CORRECTION LOGIC
-     ======================================================= */
-
   updateCorrectionOverlay(
     newState,
     wrongEyeOcclusion
   );
-
 
   requestAnimationFrame(
     processFrame
@@ -3487,162 +3499,131 @@ async function processFrame(
 
 
 /* =========================================================
-   FINAL SUMMARY
-   ========================================================= */
+   SUMMARY
+========================================================= */
 
-function showFinalSummary() {
+function showFinalSummary(){
 
-  const total =
+  const total=
     Math.max(
       totalElapsedSeconds,
-      0.1
+      .1
     );
 
-  const compliance =
-    (
-      compliantSeconds /
-      total
-    ) * 100;
+  const compliance=
+    compliantSeconds/
+    total*
+    100;
 
-  finalTotal.textContent =
+  finalTotal.textContent=
     formatDuration(total);
 
-  finalCompliance.textContent =
-    Math.round(
-      compliance
-    ) +
+  finalCompliance.textContent=
+    Math.round(compliance)+
     "%";
 
-  finalCompliant.textContent =
+  finalCompliant.textContent=
     formatDuration(
       compliantSeconds
     );
 
-  finalTooClose.textContent =
+  finalTooClose.textContent=
     formatDuration(
       tooCloseSeconds
     );
 
-  finalPoorPosition.textContent =
+  finalPoorPosition.textContent=
     formatDuration(
       poorPositionSeconds
     );
 
-  finalNoFace.textContent =
+  finalNoFace.textContent=
     formatDuration(
       noFaceSeconds
     );
 
+  const percentages={
+    compliant:
+      compliantSeconds/total*100,
 
-  const compliantPct =
-    (
-      compliantSeconds /
-      total
-    ) * 100;
+    tooClose:
+      tooCloseSeconds/total*100,
 
-  const tooClosePct =
-    (
-      tooCloseSeconds /
-      total
-    ) * 100;
+    poorPosition:
+      poorPositionSeconds/total*100,
 
-  const poorPositionPct =
-    (
-      poorPositionSeconds /
-      total
-    ) * 100;
-
-  const noFacePct =
-    (
-      noFaceSeconds /
-      total
-    ) * 100;
-
+    noFace:
+      noFaceSeconds/total*100
+  };
 
   document.getElementById(
     "compliantPercent"
-  ).textContent =
+  ).textContent=
     Math.round(
-      compliantPct
-    ) +
-    "%";
+      percentages.compliant
+    )+"%";
 
   document.getElementById(
     "tooClosePercent"
-  ).textContent =
+  ).textContent=
     Math.round(
-      tooClosePct
-    ) +
-    "%";
+      percentages.tooClose
+    )+"%";
 
   document.getElementById(
     "poorPositionPercent"
-  ).textContent =
+  ).textContent=
     Math.round(
-      poorPositionPct
-    ) +
-    "%";
+      percentages.poorPosition
+    )+"%";
 
   document.getElementById(
     "noFacePercent"
-  ).textContent =
+  ).textContent=
     Math.round(
-      noFacePct
-    ) +
-    "%";
-
+      percentages.noFace
+    )+"%";
 
   document.getElementById(
     "compliantBar"
-  ).style.width =
-    compliantPct +
-    "%";
+  ).style.width=
+    percentages.compliant+"%";
 
   document.getElementById(
     "tooCloseBar"
-  ).style.width =
-    tooClosePct +
-    "%";
+  ).style.width=
+    percentages.tooClose+"%";
 
   document.getElementById(
     "poorPositionBar"
-  ).style.width =
-    poorPositionPct +
-    "%";
+  ).style.width=
+    percentages.poorPosition+"%";
 
   document.getElementById(
     "noFaceBar"
-  ).style.width =
-    noFacePct +
-    "%";
-
-
-  finalSummary.classList.remove(
-    "hidden"
-  );
-
+  ).style.width=
+    percentages.noFace+"%";
 }
 
 
 /* =========================================================
-   SESSION HISTORY
-   ========================================================= */
+   HISTORY
+========================================================= */
 
-function saveSessionToHistory() {
+function saveSessionToHistory(){
 
-  const total =
+  const total=
     Math.max(
       totalElapsedSeconds,
-      0.1
+      .1
     );
 
-  const compliance =
-    (
-      compliantSeconds /
-      total
-    ) * 100;
+  const compliance=
+    compliantSeconds/
+    total*
+    100;
 
-  const session = {
+  const session={
 
     date:
       new Date().toLocaleString(),
@@ -3650,20 +3631,15 @@ function saveSessionToHistory() {
     totalSeconds:
       total,
 
-    compliance:
-      compliance,
+    compliance,
 
-    compliantSeconds:
-      compliantSeconds,
+    compliantSeconds,
 
-    tooCloseSeconds:
-      tooCloseSeconds,
+    tooCloseSeconds,
 
-    poorPositionSeconds:
-      poorPositionSeconds,
+    poorPositionSeconds,
 
-    noFaceSeconds:
-      noFaceSeconds,
+    noFaceSeconds,
 
     targetDistance:
       therapyProfile.targetDistance,
@@ -3672,33 +3648,26 @@ function saveSessionToHistory() {
       therapyProfile.treatmentEye
   };
 
+  let history=[];
 
-  let history = [];
+  try{
 
-  try {
-
-    history =
+    history=
       JSON.parse(
         localStorage.getItem(
           "amblyocare_session_history"
         )
-      ) || [];
+      )||[];
 
-  } catch (error) {
+  }catch(error){
 
-    history = [];
+    history=[];
   }
 
+  history.unshift(session);
 
-  history.unshift(
-    session
-  );
-
-  history =
-    history.slice(
-      0,
-      20
-    );
+  history=
+    history.slice(0,20);
 
   localStorage.setItem(
     "amblyocare_session_history",
@@ -3709,104 +3678,94 @@ function saveSessionToHistory() {
 }
 
 
-function renderHistory() {
+function renderHistory(){
 
-  const container =
+  const container=
     document.getElementById(
       "historyContainer"
     );
 
-  let history = [];
+  let history=[];
 
-  try {
+  try{
 
-    history =
+    history=
       JSON.parse(
         localStorage.getItem(
           "amblyocare_session_history"
         )
-      ) || [];
+      )||[];
 
-  } catch (error) {
+  }catch(error){
 
-    history = [];
+    history=[];
   }
 
+  if(!history.length){
 
-  if (
-    !history.length
-  ) {
-
-    container.innerHTML =
+    container.innerHTML=
       '<p class="muted">No sessions recorded yet.</p>';
 
     return;
   }
 
-
-  let html =
-    "<table>" +
-    "<thead>" +
-    "<tr>" +
-    "<th>Date</th>" +
-    "<th>Duration</th>" +
-    "<th>Compliance</th>" +
-    "</tr>" +
-    "</thead>" +
+  let html=
+    "<table>"+
+    "<thead>"+
+    "<tr>"+
+    "<th>Date</th>"+
+    "<th>Duration</th>"+
+    "<th>Compliance</th>"+
+    "</tr>"+
+    "</thead>"+
     "<tbody>";
 
-
   history.forEach(
-    session => {
+    session=>{
 
-      html +=
-        "<tr>" +
-        "<td>" +
-        session.date +
-        "</td>" +
-        "<td>" +
+      html+=
+        "<tr>"+
+        "<td>"+
+        session.date+
+        "</td>"+
+        "<td>"+
         formatDuration(
           session.totalSeconds
-        ) +
-        "</td>" +
-        "<td>" +
+        )+
+        "</td>"+
+        "<td>"+
         Math.round(
           session.compliance
-        ) +
-        "%</td>" +
+        )+
+        "%</td>"+
         "</tr>";
-
     }
   );
 
-
-  html +=
+  html+=
     "</tbody></table>";
 
-  container.innerHTML =
+  container.innerHTML=
     html;
 }
-
 
 renderHistory();
 
 
 /* =========================================================
-   CSV EXPORT
-   ========================================================= */
+   CSV
+========================================================= */
 
-function exportLatestResults() {
+function exportLatestResults(){
 
-  const history =
+  const history=
     JSON.parse(
       localStorage.getItem(
         "amblyocare_session_history"
-      ) || "[]"
+      )||"[]"
     );
 
-  if (
-    !history.length
-  ) {
+  if(!history.length){
 
     alert(
       "No completed session is available to export."
@@ -3815,10 +3774,9 @@ function exportLatestResults() {
     return;
   }
 
-  const s =
-    history[0];
+  const s=history[0];
 
-  const rows = [
+  const rows=[
 
     [
       "Date",
@@ -3843,126 +3801,107 @@ function exportLatestResults() {
       s.poorPositionSeconds.toFixed(1),
       s.noFaceSeconds.toFixed(1)
     ]
-
   ];
 
+  const csv=
+    rows.map(
+      row=>
+        row.map(
+          value=>
+            '"'+
+            String(value)
+              .replaceAll(
+                '"',
+                '""'
+              )+
+            '"'
+        ).join(",")
+    ).join("\n");
 
-  const csv =
-    rows
-      .map(
-        row =>
-          row
-            .map(
-              value =>
-                '"' +
-                String(value)
-                  .replaceAll(
-                    '"',
-                    '""'
-                  ) +
-                '"'
-            )
-            .join(",")
-      )
-      .join("\n");
-
-
-  const blob =
+  const blob=
     new Blob(
       [csv],
       {
-        type: "text/csv;charset=utf-8;"
+        type:
+          "text/csv;charset=utf-8;"
       }
     );
 
-  const url =
-    URL.createObjectURL(
-      blob
-    );
+  const url=
+    URL.createObjectURL(blob);
 
-  const link =
-    document.createElement(
-      "a"
-    );
+  const link=
+    document.createElement("a");
 
-  link.href =
-    url;
+  link.href=url;
 
-  link.download =
+  link.download=
     "amblyocare-session.csv";
 
-  document.body.appendChild(
-    link
-  );
+  document.body.appendChild(link);
 
   link.click();
 
-  document.body.removeChild(
-    link
-  );
+  document.body.removeChild(link);
 
-  URL.revokeObjectURL(
-    url
-  );
+  URL.revokeObjectURL(url);
 }
 
 
-exportCSVButton.addEventListener(
-  "click",
-  exportLatestResults
-);
+document
+  .getElementById("exportCSV")
+  .addEventListener(
+    "click",
+    exportLatestResults
+  );
 
 
 /* =========================================================
    NEW SESSION
-   ========================================================= */
+========================================================= */
 
-startNewSessionButton.addEventListener(
-  "click",
-  () => {
+document
+  .getElementById("startNewSession")
+  .addEventListener(
+    "click",
+    () => {
 
-    finalSummary.classList.add(
-      "hidden"
-    );
+      resetSessionVariables();
 
-    resetSessionVariables();
+      startSessionButton.disabled=false;
 
-    if (
-      cameraStarted
-    ) {
+      endSessionButton.disabled=true;
 
-      startSession();
+      showView("monitoring");
+
+      monitorStatus.textContent =
+        "Camera ready. Press Start Session to begin monitoring.";
+
+      monitorStatus.className =
+        "status";
     }
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-);
+  );
 
 
 /* =========================================================
-   SAFETY / PAGE VISIBILITY
-   ========================================================= */
+   VISIBILITY SAFETY
+========================================================= */
 
 document.addEventListener(
   "visibilitychange",
   () => {
 
-    if (
-      document.hidden &&
+    if(
+      document.hidden&&
       overlayVisible
-    ) {
+    ){
 
       correctionOverlay.classList.add(
         "hidden"
       );
 
-      overlayVisible = false;
+      overlayVisible=false;
     }
-
   }
 );
 
