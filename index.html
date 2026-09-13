@@ -4719,3 +4719,155 @@ try{
 
 history=
 JSON.parse(
+localStorage.getItem(
+"amblyocare_session_history"
+)
+||
+"[]"
+);
+
+}catch{
+
+history=[];
+
+}
+
+
+if(
+!history.length
+){
+
+alert(
+"No completed session is available to export."
+);
+
+return;
+
+}
+
+
+const s=
+history[0];
+
+
+const rows=[
+
+[
+"Date",
+"Treatment Eye",
+"Target Distance (cm)",
+"Total Time (sec)",
+"Compliance (%)",
+"Compliant Time (sec)",
+"Too Close (sec)",
+"Poor Position (sec)",
+"No Face (sec)"
+],
+
+[
+s.date,
+s.treatmentEye,
+s.targetDistance,
+s.totalSeconds.toFixed(1),
+s.compliance.toFixed(1),
+s.compliantSeconds.toFixed(1),
+s.tooCloseSeconds.toFixed(1),
+s.poorPositionSeconds.toFixed(1),
+s.noFaceSeconds.toFixed(1)
+]
+
+];
+
+
+const csv=
+rows
+.map(
+row=>
+row
+.map(
+value=>
+`"${String(value).replaceAll('"','""')}"`
+)
+.join(",")
+)
+.join("\n");
+
+
+const blob=
+new Blob(
+[csv],
+{
+type:"text/csv;charset=utf-8"
+}
+);
+
+
+const url=
+URL.createObjectURL(
+blob
+);
+
+
+const link=
+document.createElement(
+"a"
+);
+
+
+link.href=url;
+
+link.download=
+"amblyocare-session.csv";
+
+
+document.body.appendChild(
+link
+);
+
+link.click();
+
+document.body.removeChild(
+link
+);
+
+
+setTimeout(
+()=>URL.revokeObjectURL(url),
+1000
+);
+
+};
+
+
+/* =========================================================
+   NEW SESSION
+   ========================================================= */
+
+$("newSession").onclick=
+()=>{
+
+resetSession();
+
+selectedVideo=null;
+
+startStatus.textContent=
+"Choose a video first.";
+
+startStatus.className=
+"status";
+
+view(
+"youtubeSetupView"
+);
+
+};
+
+
+/* =========================================================
+   END OF APPLICATION
+   ========================================================= */
+
+</script>
+
+</body>
+</html>
