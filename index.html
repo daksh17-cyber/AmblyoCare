@@ -45,22 +45,15 @@ margin:14px 0;
 box-shadow:0 3px 16px rgba(0,0,0,.07)
 }
 
-.view{
-display:none
-}
-
-.view.active{
-display:block
-}
+.view{display:none}
+.view.active{display:block}
 
 h2{
 margin-top:0;
 font-size:21px
 }
 
-h3{
-margin-bottom:8px
-}
+h3{margin-bottom:8px}
 
 .muted{
 color:#667085;
@@ -140,17 +133,9 @@ margin-top:10px;
 font-weight:650
 }
 
-.good{
-color:#067647
-}
-
-.warning{
-color:#b54708
-}
-
-.bad{
-color:#b42318
-}
+.good{color:#067647}
+.warning{color:#b54708}
+.bad{color:#b42318}
 
 .note{
 background:#fff8e7;
@@ -199,9 +184,9 @@ transform:scaleX(-1)
 }
 
 
-/* =========================================================
-   FULLSCREEN YOUTUBE SESSION
-   ========================================================= */
+/* ==============================
+   YOUTUBE SESSION
+   ============================== */
 
 #sessionView{
 position:fixed;
@@ -235,7 +220,47 @@ border:0!important
 }
 
 
-/* Results */
+/*
+Correction screen replaces the player rather than
+sitting on top of it. This keeps the YouTube player
+unobscured while it is visible.
+*/
+
+#correctionScreen{
+position:absolute;
+inset:0;
+z-index:10;
+background:#101820;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:25px
+}
+
+#correctionScreen.hidden{
+display:none
+}
+
+.correctionBox{
+max-width:520px
+}
+
+.correctionBox h1{
+font-size:38px;
+margin:0 0 14px
+}
+
+.correctionBox p{
+font-size:19px;
+line-height:1.5
+}
+
+
+/* ==============================
+   YOUTUBE RESULTS
+   ============================== */
 
 .result{
 display:flex;
@@ -257,42 +282,9 @@ border-radius:8px
 }
 
 
-/* Correction overlay */
-
-.overlay{
-position:fixed;
-inset:0;
-background:rgba(10,15,20,.94);
-color:#fff;
-z-index:9999;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-padding:25px
-}
-
-.overlay.hidden{
-display:none
-}
-
-.overlayBox{
-max-width:500px
-}
-
-.overlay h1{
-font-size:42px;
-margin:0 0 15px
-}
-
-.overlay p{
-font-size:20px;
-line-height:1.45
-}
-
-.hidden{
-display:none!important
-}
+/* ==============================
+   RESPONSIVE
+   ============================== */
 
 @media(max-width:600px){
 
@@ -300,8 +292,8 @@ display:none!important
 grid-template-columns:1fr
 }
 
-.overlay h1{
-font-size:34px
+.correctionBox h1{
+font-size:32px
 }
 
 }
@@ -316,6 +308,11 @@ font-size:34px
 </header>
 
 <main>
+
+
+<!-- ==============================
+     THERAPY PROFILE
+     ============================== -->
 
 <section class="card view active" id="profileView">
 
@@ -364,12 +361,16 @@ Save Therapy Profile
 
 <div class="note">
 AmblyoCare is a computer-vision research prototype.
-It is not a medical device.
-Eye-visibility detection is experimental and has not been clinically validated.
+It is not a medical device. Eye-visibility detection is
+experimental and has not been clinically validated.
 </div>
 
 </section>
 
+
+<!-- ==============================
+     SETUP
+     ============================== -->
 
 <section class="card view" id="setupView">
 
@@ -402,6 +403,10 @@ Eye-visibility detection is experimental and has not been clinically validated.
 </section>
 
 
+<!-- ==============================
+     CAMERA
+     ============================== -->
+
 <section class="card view" id="cameraView">
 
 <h2>Camera</h2>
@@ -424,12 +429,17 @@ Camera not started.
 </section>
 
 
+<!-- ==============================
+     CALIBRATION
+     ============================== -->
+
 <section class="card view" id="calibrationView">
 
 <h2>Distance Calibration</h2>
 
 <p class="muted">
-Sit at a comfortable known distance from the device and enter that physical distance.
+Sit at a comfortable known distance from the device and
+enter that physical distance.
 </p>
 
 <label>Actual Distance From Screen (cm)</label>
@@ -452,6 +462,52 @@ Not calibrated.
 
 </section>
 
+
+<!-- ==============================
+     EYE BASELINE
+     ============================== -->
+
+<section class="card view" id="baselineView">
+
+<h2>Eye Baseline</h2>
+
+<p class="muted">
+Look normally at the camera with both eyes open.
+AmblyoCare will capture your normal eye geometry
+as a personalized baseline.
+</p>
+
+<div id="baselineEyePreview" class="status">
+Waiting for face detection...
+</div>
+
+<button id="captureBaseline">
+Capture Eye Baseline
+</button>
+
+<div id="baselineStatus" class="status">
+Baseline not captured.
+</div>
+
+<button
+id="continueToYouTube"
+class="secondary"
+disabled
+>
+Continue to YouTube
+</button>
+
+<div class="note">
+The eye baseline is experimental and is used only
+to compare later eye geometry during the prototype.
+</div>
+
+</section>
+
+
+<!-- ==============================
+     YOUTUBE SEARCH
+     ============================== -->
 
 <section class="card view" id="youtubeSetupView">
 
@@ -476,13 +532,17 @@ Search
 </button>
 
 <div id="youtubeSearchStatus" class="status">
-Search for a video.
+Preparing YouTube...
 </div>
 
 <div id="youtubeResults"></div>
 
 </section>
 
+
+<!-- ==============================
+     START
+     ============================== -->
 
 <section
 class="card view"
@@ -493,7 +553,8 @@ style="text-align:center"
 <h2>Ready for Your Session?</h2>
 
 <p class="muted">
-Camera, calibration, and a YouTube video are ready.
+Camera, calibration, eye baseline, and a YouTube video
+are ready.
 </p>
 
 <button id="startSession">
@@ -506,6 +567,10 @@ Choose a video first.
 
 </section>
 
+
+<!-- ==============================
+     MONITORING
+     ============================== -->
 
 <section class="card view" id="monitorView">
 
@@ -557,17 +622,6 @@ Right Eye: --
 Eye visibility: --
 </div>
 
-<button
-id="captureBaseline"
-class="secondary"
->
-Capture Eye Baseline
-</button>
-
-<div id="baselineStatus" class="status">
-Baseline not captured.
-</div>
-
 <div id="monitorStatus" class="status">
 Monitoring inactive.
 </div>
@@ -575,16 +629,10 @@ Monitoring inactive.
 <h3>Session Progress</h3>
 
 <div class="progress">
-<div
-id="goalBar"
-class="bar"
-></div>
+<div id="goalBar" class="bar"></div>
 </div>
 
-<p
-id="progressText"
-class="muted"
->
+<p id="progressText" class="muted">
 0 / 20 minutes
 </p>
 
@@ -597,13 +645,17 @@ End Session
 </button>
 
 <div class="note">
-Eye visibility is experimental.
-Normal blinking is treated as closed/uncertain rather than occlusion.
-A possible occlusion requires sustained evidence rather than a single frame.
+Eye visibility is experimental. Normal blinking is treated
+as closed/uncertain rather than occlusion. A possible
+occlusion requires sustained evidence.
 </div>
 
 </section>
 
+
+<!-- ==============================
+     SUMMARY
+     ============================== -->
 
 <section class="card view" id="summaryView">
 
@@ -646,36 +698,28 @@ A possible occlusion requires sustained evidence rather than a single frame.
 <h3>Visual Breakdown</h3>
 
 <div>
-Compliant
-<span id="p1">0%</span>
-
+Compliant <span id="p1">0%</span>
 <div class="progress">
 <div id="b1" class="bar"></div>
 </div>
 </div>
 
 <div style="margin-top:12px">
-Too Close
-<span id="p2">0%</span>
-
+Too Close <span id="p2">0%</span>
 <div class="progress">
 <div id="b2" class="bar"></div>
 </div>
 </div>
 
 <div style="margin-top:12px">
-Poor Position
-<span id="p3">0%</span>
-
+Poor Position <span id="p3">0%</span>
 <div class="progress">
 <div id="b3" class="bar"></div>
 </div>
 </div>
 
 <div style="margin-top:12px">
-No Face
-<span id="p4">0%</span>
-
+No Face <span id="p4">0%</span>
 <div class="progress">
 <div id="b4" class="bar"></div>
 </div>
@@ -685,15 +729,16 @@ No Face
 Export Latest Session CSV
 </button>
 
-<button
-id="newSession"
-class="secondary"
->
+<button id="newSession" class="secondary">
 Start New Session
 </button>
 
 </section>
 
+
+<!-- ==============================
+     HISTORY
+     ============================== -->
 
 <section class="card view" id="historyView">
 
@@ -708,38 +753,36 @@ No sessions recorded yet.
 </main>
 
 
+<!-- ==============================
+     FULLSCREEN YOUTUBE SESSION
+     ============================== -->
+
 <section id="sessionView">
 
 <div id="youtubePlayer"></div>
 
-</section>
+<div id="correctionScreen" class="hidden">
 
+<div class="correctionBox">
 
-<div
-id="overlay"
-class="overlay hidden"
->
-
-<div class="overlayBox">
-
-<h1 id="overlayTitle">
+<h1 id="correctionTitle">
 Let's Fix Your Position
 </h1>
 
-<p id="overlayMessage">
+<p id="correctionMessage">
 Please move back to the target distance.
 </p>
 
 <p>
-Monitoring will continue automatically once the issue is corrected.
+The video will resume automatically when the
+issue is corrected.
 </p>
 
 </div>
 
 </div>
 
-
-<script src="https://www.youtube.com/iframe_api"></script>
+</section>
 
 
 <script type="module">
@@ -758,14 +801,14 @@ FaceLandmarker,
 FilesetResolver
 }=vision;
 
-const resolver =
+const filesetResolver =
 await FilesetResolver.forVisionTasks(
 "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
 );
 
 const faceLandmarker =
 await FaceLandmarker.createFromOptions(
-resolver,
+filesetResolver,
 {
 baseOptions:{
 modelAssetPath:
@@ -781,8 +824,7 @@ numFaces:1
    HELPER
    ========================================================= */
 
-const $=id=>
-document.getElementById(id);
+const $=id=>document.getElementById(id);
 
 
 /* =========================================================
@@ -792,58 +834,45 @@ document.getElementById(id);
 const video=$("video");
 
 const startCameraButton=$("startCamera");
-
 const calibrateButton=$("calibrate");
-
 const saveProfileButton=$("saveProfile");
 
-const endSessionButton=$("endSession");
-
 const captureBaselineButton=$("captureBaseline");
+const continueToYouTubeButton=$("continueToYouTube");
 
 const startSessionButton=$("startSession");
+const endSessionButton=$("endSession");
 
 const youtubeSearch=$("youtubeSearch");
-
 const youtubeSearchButton=$("youtubeSearchButton");
-
 const youtubeSearchStatus=$("youtubeSearchStatus");
-
 const youtubeResults=$("youtubeResults");
 
 const cameraStatus=$("cameraStatus");
-
 const calibrationStatus=$("calibrationStatus");
+
+const baselineStatus=$("baselineStatus");
+const baselineEyePreview=$("baselineEyePreview");
 
 const startStatus=$("startStatus");
 
 const faceStatus=$("faceStatus");
-
 const positionStatus=$("positionStatus");
-
 const monitorStatus=$("monitorStatus");
 
 const distanceValue=$("distanceValue");
-
 const sessionTimer=$("sessionTimer");
 
 const goalBar=$("goalBar");
-
 const progressText=$("progressText");
 
-const correctionOverlay=$("overlay");
-
-const overlayTitle=$("overlayTitle");
-
-const overlayMessage=$("overlayMessage");
-
 const leftEye=$("leftEye");
-
 const rightEye=$("rightEye");
-
 const eyeOverall=$("eyeOverall");
 
-const baselineStatus=$("baselineStatus");
+const correctionScreen=$("correctionScreen");
+const correctionTitle=$("correctionTitle");
+const correctionMessage=$("correctionMessage");
 
 
 /* =========================================================
@@ -854,9 +883,11 @@ function view(id){
 
 document
 .querySelectorAll(".view")
-.forEach(v=>{
-v.classList.remove("active");
-});
+.forEach(
+element=>{
+element.classList.remove("active");
+}
+);
 
 const target=$(id);
 
@@ -881,6 +912,35 @@ targetDistance:40,
 sessionGoalMinutes:20,
 gracePeriodSeconds:20
 };
+
+
+try{
+
+const savedProfile=
+JSON.parse(
+localStorage.getItem(
+"amblyocare_profile"
+)
+||"null"
+);
+
+if(savedProfile)
+profile=savedProfile;
+
+}catch{}
+
+
+$("treatmentEye").value=
+profile.treatmentEye;
+
+$("targetDistance").value=
+profile.targetDistance;
+
+$("sessionGoal").value=
+profile.sessionGoalMinutes;
+
+$("gracePeriod").value=
+profile.gracePeriodSeconds;
 
 
 function updateProfileUI(){
@@ -912,33 +972,6 @@ profile.sessionGoalMinutes+
 
 }
 
-
-try{
-
-const saved=
-JSON.parse(
-localStorage.getItem(
-"amblyocare_profile"
-)
-);
-
-if(saved)
-profile=saved;
-
-}catch{}
-
-
-$("treatmentEye").value=
-profile.treatmentEye;
-
-$("targetDistance").value=
-profile.targetDistance;
-
-$("sessionGoal").value=
-profile.sessionGoalMinutes;
-
-$("gracePeriod").value=
-profile.gracePeriodSeconds;
 
 updateProfileUI();
 
@@ -985,7 +1018,6 @@ updateProfileUI();
 view("setupView");
 
 $("cameraView").classList.add("active");
-
 $("calibrationView").classList.add("active");
 
 };
@@ -996,7 +1028,6 @@ $("calibrationView").classList.add("active");
    ========================================================= */
 
 let cameraStarted=false;
-
 let currentLandmarks=null;
 
 startCameraButton.onclick=
@@ -1048,27 +1079,23 @@ cameraStatus.className=
 
 
 /* =========================================================
-   DISTANCE CALIBRATION
+   DISTANCE
    ========================================================= */
 
 let referenceFaceSize=null;
-
 let calibrated=false;
 
 const faceSizeHistory=[];
-
 const faceSmoothing=15;
 
 
-function d(a,b){
+function distanceBetween(a,b){
 
 if(!a||!b)
 return null;
 
 const dx=a.x-b.x;
-
 const dy=a.y-b.y;
-
 const dz=(a.z||0)-(b.z||0);
 
 return Math.sqrt(
@@ -1129,7 +1156,7 @@ calibrateButton.onclick=()=>{
 if(!faceSizeHistory.length){
 
 calibrationStatus.textContent=
-"No face detected.";
+"No face detected. Look at the camera first.";
 
 calibrationStatus.className=
 "status bad";
@@ -1138,19 +1165,19 @@ return;
 
 }
 
-const cm=
+const enteredDistance=
 Number(
 $("calibrationDistance").value
 );
 
 if(
-!cm||
-cm<10||
-cm>200
+!enteredDistance||
+enteredDistance<10||
+enteredDistance>200
 ){
 
 calibrationStatus.textContent=
-"Enter a valid distance between 10 and 200 cm.";
+"Enter a distance between 10 and 200 cm.";
 
 calibrationStatus.className=
 "status bad";
@@ -1175,18 +1202,25 @@ referenceFaceSize
 
 localStorage.setItem(
 "amblyocare_calibration_distance",
-cm
+enteredDistance
 );
 
 calibrationStatus.textContent=
 "Calibrated at approximately "+
-cm+
+enteredDistance+
 " cm.";
 
 calibrationStatus.className=
 "status good";
 
-view("youtubeSetupView");
+
+/*
+FIXED FLOW:
+
+Calibration → Eye Baseline
+*/
+
+view("baselineView");
 
 };
 
@@ -1220,15 +1254,21 @@ point=>!point
 return null;
 
 const width=
-d(
+distanceBetween(
 points[0],
 points[1]
 );
 
 const height=
 (
-d(points[2],points[3])+
-d(points[4],points[5])
+distanceBetween(
+points[2],
+points[3]
+)+
+distanceBetween(
+points[4],
+points[5]
+)
 )/2;
 
 if(
@@ -1271,7 +1311,7 @@ if(
 return null;
 
 const faceWidth=
-d(
+distanceBetween(
 faceLeft,
 faceRight
 );
@@ -1284,27 +1324,32 @@ return null;
 
 return{
 
-ratio:
-geometry.ratio,
+ratio:geometry.ratio,
 
 width:
-geometry.width/faceWidth,
+geometry.width/
+faceWidth,
 
 height:
-geometry.height/faceWidth
+geometry.height/
+faceWidth
 
 };
 
 }
 
 
-/*
-Raw eye classifier.
+let eyeBaseline={
+left:null,
+right:null
+};
 
-This version is more sensitive to a real obstruction
-than the previous version, but still requires multiple
-independent geometry changes.
-*/
+
+let eyeHistory={
+left:[],
+right:[]
+};
+
 
 function rawEyeState(
 landmarks,
@@ -1321,11 +1366,6 @@ if(!current)
 return"uncertain";
 
 
-/*
-A very small eye opening is treated as closed.
-This prevents normal blinking from becoming occlusion.
-*/
-
 if(
 current.ratio<0.075
 ){
@@ -1338,11 +1378,8 @@ return"closed";
 const baseline=
 eyeBaseline[side];
 
-if(!baseline){
-
+if(!baseline)
 return"visible";
-
-}
 
 
 const ratioDrop=
@@ -1377,11 +1414,7 @@ baseline.height,
 
 
 /*
-Possible occlusion.
-
-The previous version required extremely large changes.
-These thresholds are deliberately lowered, while the
-temporal filter below still requires sustained evidence.
+Require multiple substantial changes.
 */
 
 if(
@@ -1394,23 +1427,9 @@ return"possibleOcclusion";
 
 }
 
-
 return"visible";
 
 }
-
-
-/* Eye temporal history */
-
-let eyeHistory={
-left:[],
-right:[]
-};
-
-let eyeBaseline={
-left:null,
-right:null
-};
 
 
 function smoothEye(
@@ -1425,8 +1444,7 @@ history.length>18
 )
 history.shift();
 
-const total=
-history.length;
+const total=history.length;
 
 const visible=
 history.filter(
@@ -1444,10 +1462,6 @@ x=>x==="possibleOcclusion"
 ).length;
 
 
-/*
-Visible wins when the recent evidence is mixed.
-*/
-
 if(
 total>=5&&
 visible/total>=0.50
@@ -1457,11 +1471,6 @@ return"visible";
 
 }
 
-
-/*
-Closed remains separate from occlusion.
-*/
-
 if(
 total>=6&&
 closed/total>=0.55
@@ -1470,11 +1479,6 @@ closed/total>=0.55
 return"closed";
 
 }
-
-
-/*
-Possible occlusion must remain sustained.
-*/
 
 if(
 total>=12&&
@@ -1491,12 +1495,10 @@ return"uncertain";
 
 
 /*
-IMPORTANT MAPPING
+MediaPipe detector-side mapping:
 
-MediaPipe detector LEFT  = person's anatomical RIGHT
-MediaPipe detector RIGHT = person's anatomical LEFT
-
-So the results are swapped here.
+detector LEFT  → anatomical RIGHT
+detector RIGHT → anatomical LEFT
 */
 
 function getEyeStates(
@@ -1537,19 +1539,13 @@ right:anatomicalRight
 
 function eyeLabel(state){
 
-if(
-state==="visible"
-)
+if(state==="visible")
 return"Visible";
 
-if(
-state==="closed"
-)
+if(state==="closed")
 return"Closed / uncertain";
 
-if(
-state==="possibleOcclusion"
-)
+if(state==="possibleOcclusion")
 return"Possible occlusion";
 
 return"Uncertain";
@@ -1557,104 +1553,14 @@ return"Uncertain";
 }
 
 
-function showEyes(
-landmarks
-){
-
-const states=
-getEyeStates(
-landmarks
-);
-
-leftEye.textContent=
-"Left Eye: "+
-eyeLabel(
-states.left
-);
-
-rightEye.textContent=
-"Right Eye: "+
-eyeLabel(
-states.right
-);
-
-leftEye.className=
-"eye "+
-(
-states.left==="visible"
-?"good"
-:
-states.left==="possibleOcclusion"
-?"warning":""
-);
-
-rightEye.className=
-"eye "+
-(
-states.right==="visible"
-?"good"
-:
-states.right==="possibleOcclusion"
-?"warning":""
-);
-
-
-if(
-!eyeBaseline.left||
-!eyeBaseline.right
-){
-
-eyeOverall.textContent=
-"Eye visibility: Baseline needed";
-
-eyeOverall.className=
-"status warning";
-
-}else if(
-states.left==="possibleOcclusion"||
-states.right==="possibleOcclusion"
-){
-
-eyeOverall.textContent=
-"Eye visibility: Possible occlusion";
-
-eyeOverall.className=
-"status warning";
-
-}else if(
-states.left==="visible"&&
-states.right==="visible"
-){
-
-eyeOverall.textContent=
-"Eye visibility: Both eyes appear visible";
-
-eyeOverall.className=
-"status good";
-
-}else{
-
-eyeOverall.textContent=
-"Eye visibility: Checking...";
-
-eyeOverall.className=
-"status warning";
-
-}
-
-return states;
-
-}
-
-
-/* Capture personalized baseline */
+/* =========================================================
+   BASELINE
+   ========================================================= */
 
 captureBaselineButton.onclick=
 async()=>{
 
-if(
-!currentLandmarks
-){
+if(!currentLandmarks){
 
 baselineStatus.textContent=
 "No face detected. Look at the camera first.";
@@ -1667,6 +1573,7 @@ return;
 }
 
 captureBaselineButton.disabled=true;
+continueToYouTubeButton.disabled=true;
 
 baselineStatus.textContent=
 "Capturing baseline... Keep both eyes open normally.";
@@ -1675,8 +1582,8 @@ baselineStatus.className=
 "status warning";
 
 const leftSamples=[];
-
 const rightSamples=[];
+
 
 for(
 let i=0;
@@ -1692,9 +1599,7 @@ resolve,
 )
 );
 
-if(
-!currentLandmarks
-)
+if(!currentLandmarks)
 continue;
 
 const left=
@@ -1748,55 +1653,27 @@ return;
 }
 
 
+function average(samples,key){
+
+return samples.reduce(
+(sum,item)=>sum+item[key],
+0
+)/
+samples.length;
+
+}
+
+
 eyeBaseline.left={
-
-ratio:
-leftSamples.reduce(
-(a,b)=>a+b.ratio,
-0
-)/
-leftSamples.length,
-
-width:
-leftSamples.reduce(
-(a,b)=>a+b.width,
-0
-)/
-leftSamples.length,
-
-height:
-leftSamples.reduce(
-(a,b)=>a+b.height,
-0
-)/
-leftSamples.length
-
+ratio:average(leftSamples,"ratio"),
+width:average(leftSamples,"width"),
+height:average(leftSamples,"height")
 };
 
-
 eyeBaseline.right={
-
-ratio:
-rightSamples.reduce(
-(a,b)=>a+b.ratio,
-0
-)/
-rightSamples.length,
-
-width:
-rightSamples.reduce(
-(a,b)=>a+b.width,
-0
-)/
-rightSamples.length,
-
-height:
-rightSamples.reduce(
-(a,b)=>a+b.height,
-0
-)/
-rightSamples.length
-
+ratio:average(rightSamples,"ratio"),
+width:average(rightSamples,"width"),
+height:average(rightSamples,"height")
 };
 
 
@@ -1814,12 +1691,19 @@ eyeBaseline
 );
 
 baselineStatus.textContent=
-"Eye baseline captured. Both eyes should now remain Visible during normal viewing.";
+"Eye baseline captured successfully.";
 
 baselineStatus.className=
 "status good";
 
+baselineEyePreview.textContent=
+"Both eyes detected. Baseline ready.";
+
+baselineEyePreview.className=
+"status good";
+
 captureBaselineButton.disabled=false;
+continueToYouTubeButton.disabled=false;
 
 };
 
@@ -1841,25 +1725,55 @@ savedBaseline?.left?.ratio&&
 savedBaseline?.right?.ratio
 ){
 
-eyeBaseline=
-savedBaseline;
+eyeBaseline=savedBaseline;
+
+baselineStatus.textContent=
+"Saved eye baseline loaded.";
+
+baselineStatus.className=
+"status good";
+
+continueToYouTubeButton.disabled=false;
 
 }
 
 }catch{}
 
 
+/* Continue */
+
+continueToYouTubeButton.onclick=
+()=>{
+
+if(
+!eyeBaseline.left||
+!eyeBaseline.right
+){
+
+baselineStatus.textContent=
+"Capture the eye baseline first.";
+
+baselineStatus.className=
+"status warning";
+
+return;
+
+}
+
+view("youtubeSetupView");
+
+};
+
+
 /* =========================================================
-   YOUTUBE
+   YOUTUBE API
    ========================================================= */
 
 
 /*
-IMPORTANT:
+PASTE YOUR NEW RESTRICTED YOUTUBE DATA API KEY HERE.
 
-Put your NEW restricted YouTube Data API key here.
-
-Do NOT use the old key that was exposed previously.
+Do NOT paste the previously exposed key.
 */
 
 const YOUTUBE_API_KEY=
@@ -1867,25 +1781,21 @@ const YOUTUBE_API_KEY=
 
 
 let youtubePlayer=null;
-
 let selectedVideo=null;
-
 let youtubeAPIReady=false;
+let youtubeAPIError=null;
 
-
-/* =========================================================
-   YOUTUBE PLAYER
-   ========================================================= */
 
 /*
-The old version created the player while #sessionView
-was display:none.
+IMPORTANT FIX:
 
-On Safari/iPad this can result in a zero-sized or black
-YouTube iframe.
-
-We now wait until the session screen is visible.
+The callback is registered FIRST.
+Only then do we load the YouTube API script.
 */
+
+const youtubeAPIReadyPromise=
+new Promise(
+(resolve,reject)=>{
 
 window.onYouTubeIframeAPIReady=
 ()=>{
@@ -1898,25 +1808,74 @@ youtubeSearchStatus.textContent=
 youtubeSearchStatus.className=
 "status good";
 
+resolve();
+
 };
 
 
-function createYouTubePlayer(){
+const script=
+document.createElement("script");
 
-if(
-!youtubeAPIReady||
-!window.YT||
-!YT.Player
+script.src=
+"https://www.youtube.com/iframe_api";
+
+script.async=true;
+
+script.onerror=
+()=>{
+
+youtubeAPIError=
+"Could not load the YouTube player API.";
+
+youtubeSearchStatus.textContent=
+youtubeAPIError;
+
+youtubeSearchStatus.className=
+"status bad";
+
+reject(
+new Error(
+youtubeAPIError
 )
+);
+
+};
+
+document.head.appendChild(script);
+
+}
+);
+
+
+/* =========================================================
+   CREATE YOUTUBE PLAYER
+   ========================================================= */
+
+async function createYouTubePlayer(){
+
+try{
+
+await youtubeAPIReadyPromise;
+
+}catch{
+
 return false;
 
+}
+
+if(
+!window.YT||
+!YT.Player
+){
+
+return false;
+
+}
 
 if(youtubePlayer){
 
 try{
-
 youtubePlayer.destroy();
-
 }catch{}
 
 youtubePlayer=null;
@@ -1932,7 +1891,7 @@ new YT.Player(
 width:"100%",
 height:"100%",
 
-videoId:selectedVideo||"",
+videoId:selectedVideo,
 
 playerVars:{
 playsinline:1,
@@ -1943,43 +1902,71 @@ modestbranding:1
 
 events:{
 
-onReady:()=>{
+onReady:event=>{
 
-if(selectedVideo){
+/*
+The Start Session button is the user interaction,
+so we explicitly start playback here.
+*/
 
-youtubePlayer.loadVideoById(
-selectedVideo
-);
+try{
 
-}
+event.target.playVideo();
+
+}catch{}
 
 },
 
 onStateChange:event=>{
 
 if(
-event.data===YT.PlayerState.PLAYING
+event.data===
+YT.PlayerState.PLAYING
 ){
 
-startStatus.textContent=
-"Video is playing.";
+monitorStatus.textContent=
+"Session active. YouTube is playing.";
 
-startStatus.className=
+monitorStatus.className=
 "status good";
 
 }
 
 if(
-event.data===YT.PlayerState.ENDED
+event.data===
+YT.PlayerState.PAUSED
+&&
+sessionActive
 ){
 
-if(sessionActive){
+monitorStatus.textContent=
+"Video paused.";
+
+monitorStatus.className=
+"status warning";
+
+}
+
+if(
+event.data===
+YT.PlayerState.ENDED
+&&
+sessionActive
+){
 
 endSession();
 
 }
 
-}
+},
+
+onAutoplayBlocked:()=>{
+
+monitorStatus.textContent=
+"Tap the YouTube player to start playback.";
+
+monitorStatus.className=
+"status warning";
 
 },
 
@@ -1988,24 +1975,44 @@ onError:event=>{
 let message=
 "YouTube could not play this video.";
 
-if(event.data===2)
-message=
-"YouTube reported an invalid video request.";
+if(event.data===2){
 
-if(event.data===5)
+message=
+"Invalid YouTube video request.";
+
+}
+
+if(event.data===5){
+
 message=
 "The YouTube player could not load this video.";
 
-if(event.data===100)
+}
+
+if(event.data===100){
+
 message=
-"This video was not found or is unavailable.";
+"This video is unavailable or was removed.";
+
+}
 
 if(
 event.data===101||
 event.data===150
-)
+){
+
 message=
-"This video does not allow embedding. Please choose another video.";
+"This video does not allow embedding. Choose another video.";
+
+}
+
+if(event.data===153){
+
+message=
+"YouTube could not verify the embedded player request.";
+
+}
+
 
 startStatus.textContent=
 message;
@@ -2013,15 +2020,11 @@ message;
 startStatus.className=
 "status bad";
 
-if(sessionActive){
-
 monitorStatus.textContent=
 message;
 
 monitorStatus.className=
 "status bad";
-
-}
 
 }
 
@@ -2035,7 +2038,9 @@ return true;
 }
 
 
-/* Escape HTML */
+/* =========================================================
+   HTML ESCAPE
+   ========================================================= */
 
 function esc(value){
 
@@ -2064,7 +2069,9 @@ return;
 
 if(
 !YOUTUBE_API_KEY||
-YOUTUBE_API_KEY.includes("PASTE_YOUR")
+YOUTUBE_API_KEY.includes(
+"PASTE_YOUR"
+)
 ){
 
 youtubeSearchStatus.textContent=
@@ -2112,9 +2119,7 @@ const data=
 await response.json();
 
 
-if(
-!response.ok
-){
+if(!response.ok){
 
 throw new Error(
 data?.error?.message||
@@ -2167,17 +2172,13 @@ alt=""
 <span>
 
 <strong>
-${esc(
-item.snippet.title
-)}
+${esc(item.snippet.title)}
 </strong>
 
 <br>
 
 <span class="muted">
-${esc(
-item.snippet.channelTitle
-)}
+${esc(item.snippet.channelTitle)}
 </span>
 
 </span>
@@ -2246,57 +2247,47 @@ searchYouTube();
 
 }
 
-};
-
-
-/* =========================================================
-   SESSION
+}; /* =========================================================
+   SESSION VARIABLES
    ========================================================= */
 
 let sessionActive=false;
 
 let startTime=0;
-
 let lastTime=0;
 
 let compliant=0;
-
 let tooClose=0;
-
 let poor=0;
-
 let noFace=0;
 
 let currentState="noFace";
 
 let invalidSince=null;
-
 let eyeSince=null;
 
-let overlayVisible=false;
+let correctionVisible=false;
 
 
-/* Reset */
+/* =========================================================
+   SESSION RESET
+   ========================================================= */
 
 function resetSession(){
 
 compliant=0;
-
 tooClose=0;
-
 poor=0;
-
 noFace=0;
 
 currentState="noFace";
 
 invalidSince=null;
-
 eyeSince=null;
 
-overlayVisible=false;
+correctionVisible=false;
 
-correctionOverlay.classList.add(
+correctionScreen.classList.add(
 "hidden"
 );
 
@@ -2319,7 +2310,9 @@ right:[]
 }
 
 
-/* Format time */
+/* =========================================================
+   TIME FORMAT
+   ========================================================= */
 
 function formatTime(seconds){
 
@@ -2332,67 +2325,65 @@ Math.round(seconds)
 return(
 String(
 Math.floor(seconds/60)
-)
-.padStart(2,"0")
+).padStart(2,"0")
 +
 ":"+
 String(
 seconds%60
-)
-.padStart(2,"0")
+).padStart(2,"0")
 );
 
 }
 
 
-/* Face position */
+/* =========================================================
+   FACE POSITION
+   ========================================================= */
 
 function facePosition(
 landmarks
 ){
 
-const nose=
-landmarks[1];
+const nose=landmarks[1];
+const chin=landmarks[152];
 
-const chin=
-landmarks[152];
-
-const left=
-landmarks[234];
-
-const right=
-landmarks[454];
+const left=landmarks[234];
+const right=landmarks[454];
 
 if(
 !nose||
 !chin||
 !left||
 !right
-)
+){
+
 return"No face";
 
-const x=
+}
+
+const centerX=
 (
 left.x+
 right.x
 )/2;
 
-const y=
+const centerY=
 (
 nose.y+
 chin.y
 )/2;
 
-if(x<.25)
+
+if(centerX<0.25)
 return"Too far left";
 
-if(x>.75)
+if(centerX>0.75)
 return"Too far right";
 
-if(y<.25)
+if(centerY<0.25)
 return"Too high";
 
-if(y>.75)
+if(centerY>0.75)
 return"Too low";
 
 return"Good";
@@ -2400,7 +2391,9 @@ return"Good";
 }
 
 
-/* Session state */
+/* =========================================================
+   DETERMINE MONITORING STATE
+   ========================================================= */
 
 function determineState(
 distance,
@@ -2412,172 +2405,152 @@ return"noFace";
 
 if(
 distance<
-profile.targetDistance*.85
-)
+profile.targetDistance*0.85
+){
+
 return"tooClose";
+
+}
 
 if(
 position!=="Good"
-)
+){
+
 return"poorPosition";
+
+}
 
 return"compliant";
 
 }
 
 
-/* Correction */
+/* =========================================================
+   CORRECTION SCREEN
+   ========================================================= */
 
-function updateCorrection(
+function showCorrection(
 state,
 eyeStates
 ){
-
-const now=
-performance.now();
-
-
-/*
-Distance / position first.
-*/
-
-if(
-state==="tooClose"||
-state==="poorPosition"
-){
-
-eyeSince=null;
-
-
-if(
-invalidSince===null
-)
-invalidSince=now;
-
-
-if(
-(
-now-invalidSince
-)/1000>=
-profile.gracePeriodSeconds
-){
-
-overlayVisible=true;
-
-correctionOverlay
-.classList.remove(
-"hidden"
-);
-
 
 if(
 state==="tooClose"
 ){
 
-overlayTitle.textContent=
+correctionTitle.textContent=
 "Let's Fix Your Position";
 
-overlayMessage.textContent=
+correctionMessage.textContent=
 "Please move farther away. Target distance: approximately "+
 profile.targetDistance+
 " cm.";
 
-}else{
+}else if(
+state==="poorPosition"
+){
 
-overlayTitle.textContent=
+correctionTitle.textContent=
 "Reposition Your Face";
 
-overlayMessage.textContent=
+correctionMessage.textContent=
 "Please reposition your face so it is centered with the screen.";
 
-}
-
-}
-
-return;
-
-}
-
-
-invalidSince=null;
-
-
-/*
-Only treatment-eye occlusion matters.
-*/
-
-if(
+}else if(
 eyeStates&&
 eyeStates[
 profile.treatmentEye
 ]==="possibleOcclusion"
 ){
 
-if(
-eyeSince===null
-)
-eyeSince=now;
-
-
-if(
-(
-now-eyeSince
-)/1000>=
-profile.gracePeriodSeconds
-){
-
-overlayVisible=true;
-
-correctionOverlay
-.classList.remove(
-"hidden"
-);
-
-overlayTitle.textContent=
+correctionTitle.textContent=
 "Check Eye Visibility";
 
-overlayMessage.textContent=
+correctionMessage.textContent=
 "Possible occlusion detected. Please check your "+
 profile.treatmentEye+
 " eye.";
 
-}
+}else{
+
+hideCorrection();
 
 return;
 
 }
 
 
-eyeSince=null;
+if(!correctionVisible){
 
+/*
+Pause YouTube while the correction screen
+replaces the player.
+*/
 
 if(
-overlayVisible
+youtubePlayer&&
+youtubePlayer.pauseVideo
 ){
 
-correctionOverlay
-.classList.add(
+try{
+youtubePlayer.pauseVideo();
+}catch{}
+
+}
+
+correctionScreen.classList.remove(
 "hidden"
 );
 
-overlayVisible=false;
+correctionVisible=true;
 
 }
 
 }
 
 
-/* Analytics */
+function hideCorrection(){
 
-function addTime(
-delta
+if(!correctionVisible)
+return;
+
+correctionScreen.classList.add(
+"hidden"
+);
+
+correctionVisible=false;
+
+
+/*
+Resume the selected video after the issue is corrected.
+*/
+
+if(
+youtubePlayer&&
+youtubePlayer.playVideo
 ){
+
+try{
+youtubePlayer.playVideo();
+}catch{}
+
+}
+
+}
+
+
+/* =========================================================
+   TIME ACCOUNTING
+   ========================================================= */
+
+function addTime(delta){
 
 if(
 delta<=0||
 delta>1
 )
 return;
+
 
 if(
 currentState==="compliant"
@@ -2606,7 +2579,9 @@ noFace+=delta;
 }
 
 
-/* Timer */
+/* =========================================================
+   TIMER
+   ========================================================= */
 
 function updateTimer(){
 
@@ -2620,9 +2595,7 @@ startTime
 )/1000;
 
 sessionTimer.textContent=
-formatTime(
-seconds
-);
+formatTime(seconds);
 
 
 const percentage=
@@ -2636,16 +2609,12 @@ profile.sessionGoalMinutes*
 100
 );
 
-
 goalBar.style.width=
 percentage+
 "%";
 
-
 progressText.textContent=
-formatTime(
-seconds
-)+
+formatTime(seconds)+
 " / "+
 profile.sessionGoalMinutes+
 " minutes";
@@ -2660,6 +2629,206 @@ profile.sessionGoalMinutes*
 endSession();
 
 }
+
+}
+
+
+/* =========================================================
+   MONITOR CORRECTION
+   ========================================================= */
+
+function updateCorrection(
+state,
+eyeStates
+){
+
+const now=
+performance.now();
+
+
+/*
+Distance / position problem
+*/
+
+if(
+state==="tooClose"||
+state==="poorPosition"
+){
+
+eyeSince=null;
+
+if(
+invalidSince===null
+){
+
+invalidSince=now;
+
+}
+
+
+if(
+(
+now-invalidSince
+)/1000>=
+profile.gracePeriodSeconds
+){
+
+showCorrection(
+state,
+eyeStates
+);
+
+}
+
+return;
+
+}
+
+
+invalidSince=null;
+
+
+/*
+Eye problem
+*/
+
+if(
+eyeStates&&
+eyeStates[
+profile.treatmentEye
+]==="possibleOcclusion"
+){
+
+if(
+eyeSince===null
+){
+
+eyeSince=now;
+
+}
+
+
+if(
+(
+now-eyeSince
+)/1000>=
+profile.gracePeriodSeconds
+){
+
+showCorrection(
+state,
+eyeStates
+);
+
+}
+
+return;
+
+}
+
+
+eyeSince=null;
+
+
+/*
+Everything is okay.
+*/
+
+hideCorrection();
+
+}
+
+
+/* =========================================================
+   DISPLAY EYES
+   ========================================================= */
+
+function showEyes(
+landmarks
+){
+
+const states=
+getEyeStates(
+landmarks
+);
+
+leftEye.textContent=
+"Left Eye: "+
+eyeLabel(states.left);
+
+rightEye.textContent=
+"Right Eye: "+
+eyeLabel(states.right);
+
+
+leftEye.className=
+"eye "+
+(
+states.left==="visible"
+?"good"
+:
+states.left==="possibleOcclusion"
+?"warning"
+:""
+);
+
+
+rightEye.className=
+"eye "+
+(
+states.right==="visible"
+?"good"
+:
+states.right==="possibleOcclusion"
+?"warning"
+:""
+);
+
+
+if(
+!eyeBaseline.left||
+!eyeBaseline.right
+){
+
+eyeOverall.textContent=
+"Eye visibility: Baseline needed";
+
+eyeOverall.className=
+"status warning";
+
+}else if(
+states.left==="possibleOcclusion"||
+states.right==="possibleOcclusion"
+){
+
+eyeOverall.textContent=
+"Eye visibility: Possible occlusion";
+
+eyeOverall.className=
+"status warning";
+
+}else if(
+states.left==="visible"&&
+states.right==="visible"
+){
+
+eyeOverall.textContent=
+"Eye visibility: Both eyes appear visible";
+
+eyeOverall.className=
+"status good";
+
+}else{
+
+eyeOverall.textContent=
+"Eye visibility: Checking...";
+
+eyeOverall.className=
+"status warning";
+
+}
+
+return states;
 
 }
 
@@ -2691,7 +2860,6 @@ return;
 
 let results;
 
-
 try{
 
 results=
@@ -2700,7 +2868,7 @@ video,
 timestamp
 );
 
-}catch(error){
+}catch{
 
 requestAnimationFrame(
 processFrame
@@ -2711,7 +2879,9 @@ return;
 }
 
 
-/* No face */
+/* =========================================================
+   NO FACE
+   ========================================================= */
 
 if(
 !results.faceLandmarks||
@@ -2752,15 +2922,19 @@ eyeBaseline.right
 eyeOverall.className=
 "status warning";
 
+baselineEyePreview.textContent=
+"Waiting for face detection...";
+
+baselineEyePreview.className=
+"status warning";
+
 eyeHistory={
 left:[],
 right:[]
 };
 
 
-if(
-sessionActive
-){
+if(sessionActive){
 
 const now=
 performance.now();
@@ -2778,13 +2952,16 @@ addTime(delta);
 
 updateTimer();
 
-updateCorrection(
-"noFace",
-null
-);
+if(!correctionVisible){
+
+/*
+No face is not automatically a correction screen.
+The analytics still record it.
+*/
 
 }
 
+}
 
 requestAnimationFrame(
 processFrame
@@ -2795,7 +2972,9 @@ return;
 }
 
 
-/* Face detected */
+/* =========================================================
+   FACE DETECTED
+   ========================================================= */
 
 const landmarks=
 results.faceLandmarks[0];
@@ -2809,8 +2988,16 @@ faceStatus.textContent=
 faceStatus.className=
 "status good";
 
+baselineEyePreview.textContent=
+"Face detected. Ready for eye baseline.";
 
-/* Distance */
+baselineEyePreview.className=
+"status good";
+
+
+/* =========================================================
+   DISTANCE
+   ========================================================= */
 
 const cheekLeft=
 landmarks[234];
@@ -2821,7 +3008,7 @@ landmarks[454];
 const faceSize=
 cheekLeft&&cheekRight
 ?
-d(
+distanceBetween(
 cheekLeft,
 cheekRight
 )
@@ -2831,9 +3018,7 @@ null;
 
 if(faceSize){
 
-faceSizeHistory.push(
-faceSize
-);
+faceSizeHistory.push(faceSize);
 
 if(
 faceSizeHistory.length>
@@ -2876,7 +3061,9 @@ estimatedDistance
 " cm";
 
 
-/* Position */
+/* =========================================================
+   POSITION
+   ========================================================= */
 
 const position=
 facePosition(
@@ -2895,7 +3082,9 @@ position==="Good"
 "status warning";
 
 
-/* Eyes */
+/* =========================================================
+   EYES
+   ========================================================= */
 
 const eyeStates=
 showEyes(
@@ -2903,11 +3092,11 @@ landmarks
 );
 
 
-/* Pre-session */
+/* =========================================================
+   BEFORE SESSION
+   ========================================================= */
 
-if(
-!sessionActive
-){
+if(!sessionActive){
 
 monitorStatus.textContent=
 estimatedDistance===null
@@ -2928,7 +3117,9 @@ return;
 }
 
 
-/* Session */
+/* =========================================================
+   SESSION ANALYTICS
+   ========================================================= */
 
 const now=
 performance.now();
@@ -2940,13 +3131,11 @@ now-lastTime
 
 lastTime=now;
 
-
 currentState=
 determineState(
 estimatedDistance,
 position
 );
-
 
 addTime(delta);
 
@@ -2983,6 +3172,14 @@ monitorStatus.textContent=
 monitorStatus.className=
 "status warning";
 
+}else{
+
+monitorStatus.textContent=
+"Face not detected.";
+
+monitorStatus.className=
+"status warning";
+
 }
 
 
@@ -3006,9 +3203,7 @@ processFrame
 startSessionButton.onclick=
 async()=>{
 
-if(
-!cameraStarted
-){
+if(!cameraStarted){
 
 startStatus.textContent=
 "Start the camera first.";
@@ -3038,8 +3233,24 @@ return;
 
 
 if(
-!selectedVideo
+!eyeBaseline.left||
+!eyeBaseline.right
 ){
+
+startStatus.textContent=
+"Capture the eye baseline first.";
+
+startStatus.className=
+"status bad";
+
+view("baselineView");
+
+return;
+
+}
+
+
+if(!selectedVideo){
 
 startStatus.textContent=
 "Choose a YouTube video first.";
@@ -3054,19 +3265,13 @@ return;
 }
 
 
-if(
-!youtubeAPIReady
-){
+startSessionButton.disabled=true;
 
 startStatus.textContent=
-"YouTube is still loading. Please wait a moment and try again.";
+"Starting session...";
 
 startStatus.className=
 "status warning";
-
-return;
-
-}
 
 
 resetSession();
@@ -3081,17 +3286,12 @@ startTime;
 
 endSessionButton.disabled=false;
 
-startSessionButton.disabled=true;
-
 
 /*
-IMPORTANT:
+CRITICAL FIX:
 
-First make the session view visible.
-Only THEN create the YouTube player.
-
-This fixes the black-player issue caused by creating
-the iframe while its parent was display:none.
+The session view becomes visible BEFORE the
+YouTube player is created.
 */
 
 view("sessionView");
@@ -3106,7 +3306,8 @@ requestAnimationFrame(
 
 
 const playerCreated=
-createYouTubePlayer();
+await createYouTubePlayer();
+
 
 if(!playerCreated){
 
@@ -3119,7 +3320,7 @@ startSessionButton.disabled=false;
 view("startView");
 
 startStatus.textContent=
-"YouTube player is not ready yet. Please try again.";
+"YouTube player could not be initialized. Check your connection.";
 
 startStatus.className=
 "status bad";
@@ -3130,7 +3331,7 @@ return;
 
 
 /*
-Fullscreen after the player has been created.
+Try fullscreen after player creation.
 */
 
 const sessionElement=
@@ -3174,27 +3375,36 @@ addTime(delta);
 sessionActive=false;
 
 
+/*
+Stop correction screen.
+*/
+
+correctionScreen.classList.add(
+"hidden"
+);
+
+correctionVisible=false;
+
+
+/*
+Pause YouTube.
+*/
+
 if(
 youtubePlayer&&
 youtubePlayer.pauseVideo
 ){
 
 try{
-
 youtubePlayer.pauseVideo();
-
 }catch{}
 
 }
 
 
-correctionOverlay
-.classList.add(
-"hidden"
-);
-
-overlayVisible=false;
-
+/*
+Exit fullscreen.
+*/
 
 if(
 document.fullscreenElement
@@ -3251,30 +3461,19 @@ $("finalTotal").textContent=
 formatTime(total);
 
 $("finalCompliance").textContent=
-percentage(
-compliant
-)+
-"%";
+percentage(compliant)+"%";
 
 $("finalCompliant").textContent=
-formatTime(
-compliant
-);
+formatTime(compliant);
 
 $("finalTooClose").textContent=
-formatTime(
-tooClose
-);
+formatTime(tooClose);
 
 $("finalPoor").textContent=
-formatTime(
-poor
-);
+formatTime(poor);
 
 $("finalNoFace").textContent=
-formatTime(
-noFace
-);
+formatTime(noFace);
 
 
 const bars=[
@@ -3293,18 +3492,13 @@ value
 ])=>{
 
 $(text).textContent=
-percentage(
-value
-)+
-"%";
+percentage(value)+"%";
 
 $(bar).style.width=
-percentage(
-value
-)+
-"%";
+percentage(value)+"%";
 
 }
+
 );
 
 }
@@ -3381,26 +3575,23 @@ history=[];
 }
 
 
-history.unshift(
-item
-);
-
+history.unshift(item);
 
 localStorage.setItem(
 "amblyocare_session_history",
 JSON.stringify(
-history.slice(
-0,
-20
-)
+history.slice(0,20)
 )
 );
-
 
 renderHistory();
 
 }
 
+
+/* =========================================================
+   RENDER HISTORY
+   ========================================================= */
 
 function renderHistory(){
 
@@ -3425,9 +3616,7 @@ history=[];
 }
 
 
-if(
-!history.length
-){
+if(!history.length){
 
 $("history").textContent=
 "No sessions recorded yet.";
@@ -3483,7 +3672,7 @@ renderHistory();
 
 
 /* =========================================================
-   CSV
+   CSV EXPORT
    ========================================================= */
 
 $("exportCSV").onclick=
@@ -3503,12 +3692,14 @@ localStorage.getItem(
 "[]"
 );
 
-}catch{}
+}catch{
+
+history=[];
+
+}
 
 
-if(
-!history.length
-){
+if(!history.length){
 
 alert(
 "No completed session is available to export."
@@ -3519,8 +3710,7 @@ return;
 }
 
 
-const s=
-history[0];
+const s=history[0];
 
 
 const rows=[
@@ -3576,30 +3766,21 @@ type:"text/csv;charset=utf-8"
 
 
 const url=
-URL.createObjectURL(
-blob
-);
-
+URL.createObjectURL(blob);
 
 const link=
-document.createElement(
-"a"
-);
+document.createElement("a");
 
 link.href=url;
 
 link.download=
 "amblyocare-session.csv";
 
-document.body.appendChild(
-link
-);
+document.body.appendChild(link);
 
 link.click();
 
-document.body.removeChild(
-link
-);
+document.body.removeChild(link);
 
 setTimeout(
 ()=>URL.revokeObjectURL(url),
@@ -3607,8 +3788,6 @@ setTimeout(
 );
 
 };
-
-
 /* =========================================================
    NEW SESSION
    ========================================================= */
@@ -3619,18 +3798,6 @@ $("newSession").onclick=
 resetSession();
 
 selectedVideo=null;
-
-if(youtubePlayer){
-
-try{
-
-youtubePlayer.destroy();
-
-}catch{}
-
-youtubePlayer=null;
-
-}
 
 startStatus.textContent=
 "Choose a video first.";
